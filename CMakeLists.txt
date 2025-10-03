@@ -42,11 +42,19 @@ endif()
 
 project(wolfBoot)
 
+include(cmake/load_dot_config.cmake)
 include(cmake/utils.cmake)
 include(cmake/functions.cmake)
 
 include_directories(include)
 include_directories(lib/wolfssl)
+
+message(STATUS "Loading config from: ${CMAKE_SOURCE_DIR}")
+load_dot_config("${CMAKE_SOURCE_DIR}/.config")
+
+if ("${WOLFBOOT_TARGET}" STREQUAL "")
+    set(WOLFBOOT_TARGET "${TARGET}")
+endif()
 
 if(NOT DEFINED WOLFBOOT_TARGET)
     message(FATAL_ERROR "WOLFBOOT_TARGET must be defined")

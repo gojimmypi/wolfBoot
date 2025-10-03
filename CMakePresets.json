@@ -1,0 +1,23 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "vs-debug-trace",
+      "displayName": "VS Debug Trace",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_VERBOSE_MAKEFILE": "ON",
+        "CMAKE_FIND_DEBUG_MODE": "ON"
+      },
+      "configureArgs": [
+        "--trace-expand",
+        "--debug-output",
+        "--debug-trycompile",
+        "--log-level=TRACE",
+        "--debug-find"
+      ]
+    }
+  ]
+}
