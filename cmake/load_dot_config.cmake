@@ -38,16 +38,13 @@ function(load_dot_config CONFIG_PATH)
 
         # KEY[?]=VALUE
         # CMAKE_MATCH_1 = KEY, CMAKE_MATCH_2 = "?" or "", CMAKE_MATCH_3 = VALUE
-        #   Group 1: Key name   |                      |
-        #   Optional Space                              | |
-        #   Group 2: Operand                               |    |
-        #   Literal equals                                       |
-        #   Optional Space                                         | |
-        #   Group 3: Value                                            |  |
-#       if(NOT _line MATCHES "^([A-Za-z_][A-Za-z0-9_]*)\\s*(\\??)=\\s*(.*)$")
-#       if(NOT _line MATCHES "^([A-Za-z_][A-Za-z0-9_]*)\\s*(\\?)?=\\s*(.+)$")
-#       if(NOT _line MATCHES "^([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*(\\?)?=[[:space:]]*(.*)$")
-#       if(NOT _line MATCHES "^([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*(\\?=|=)[[:space:]]*(.*)$")
+        # Visual guide (ASCII only):
+        #   Group 1: Key name  (...........1..........)
+        #   Optional Space                             [ \t]*
+        #   Group 2: Operand                                 ( 2  )
+        #   Literal equals                                         =
+        #   Optional Space                                          [ \t]
+        #   Group 3: Value                                                ( 3)
         if(NOT _line MATCHES "^([A-Za-z_][A-Za-z0-9_]*)[ \t]*([?]?)=[ \t]*(.*)$")
             message(WARNING "load_dot_config: Skipping unrecognized line: ${_line}")
             continue()
