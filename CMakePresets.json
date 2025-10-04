@@ -95,7 +95,7 @@
         "SPMATH": "ON",
         "RAM_CODE": "OFF",
         "DUALBANK_SWAP": "OFF",
-        "IMAGE_HEADER_SIZE": "512",
+        "IMAGE_HEADER_SIZE": "256",
         "WOLFBOOT_SECTOR_SIZE": "0x1000",
         "WOLFBOOT_PARTITION_SIZE": "0x7A000",
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x0800A000",
