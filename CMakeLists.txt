@@ -49,10 +49,28 @@ include(cmake/functions.cmake)
 include_directories(include)
 include_directories(lib/wolfssl)
 
-message(STATUS "Loading config from: ${CMAKE_SOURCE_DIR}")
-load_dot_config("${CMAKE_SOURCE_DIR}/.config")
+# Where should configuration values come from?
+#   dot     : parse .config via load_dot_config()
+#   preset  : use cacheVariables from CMakePresets.json
+set(WOLFBOOT_CONFIG_MODE "dot" CACHE STRING "Config source: dot or preset")
+set_property(CACHE WOLFBOOT_CONFIG_MODE PROPERTY STRINGS dot preset)
+
+if(WOLFBOOT_CONFIG_MODE STREQUAL "dot")
+    message(STATUS "Config mode: dot (.config cache)")
+    include(cmake/load_dot_config.cmake)
+    message(STATUS "Loading config from: ${CMAKE_SOURCE_DIR}")
+    load_dot_config("${CMAKE_SOURCE_DIR}/.config")
+
+elseif(WOLFBOOT_CONFIG_MODE STREQUAL "preset")
+  message(STATUS "Config mode: preset (using cacheVariables; skipping .config)")
+
+else()
+  message(FATAL_ERROR "Invalid WOLFBOOT_CONFIG_MODE='${WOLFBOOT_CONFIG_MODE}'. Use 'dot' or 'preset'.")
+endif()
+
 
 if ("${WOLFBOOT_TARGET}" STREQUAL "")
+    message(STATUS "Setting WOLFBOOT_TARGET from TARGET=${TARGET}")
     set(WOLFBOOT_TARGET "${TARGET}")
 endif()
 
