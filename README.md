@@ -66,6 +66,8 @@ hal/stm32l4.c:24:10: fatal error: stm32l4xx_hal.h: No such file or directory
 git clone https://github.com/gojimmypi/wolfBoot.git
 cd wolfBoot
 git submodule update --init
+# edit your .config
+make
 ```
 
 ## Integrating wolfBoot in an existing project
