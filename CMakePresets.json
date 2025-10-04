@@ -7,6 +7,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-win-stm32h7",
       "cacheVariables": {
+        "WOLFBOOT_CONFIG_MODE": "preset",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
         "WOLFBOOT_TARGET": "stm32h7",
         "BUILD_TEST_APPS": "yes"
@@ -20,6 +21,7 @@
       ],
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
+        "WOLFBOOT_CONFIG_MODE": "preset",
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_VERBOSE_MAKEFILE": "ON",
         "CMAKE_FIND_DEBUG_MODE": "ON"
@@ -31,6 +33,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32h7",
       "cacheVariables": {
+        "WOLFBOOT_CONFIG_MODE": "preset",
         "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32h7",
         "SIGN": "ECC256",
