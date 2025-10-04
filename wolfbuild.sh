@@ -66,13 +66,26 @@ if [ $# -gt 0 ]; then
     if [ "$THIS_OPERATION" = "--flash" ]; then
         CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI.exe"
 
+        WOLFBOOT_BIN="build-linux-stm32l4/test-app/wolfboot_stm32l4.bin"
+        if [ ! -f "$WOLFBOOT_BIN" ]; then
+            echo "Missing: $WOLFBOOT_BIN  (build first: cmake --build --preset \"$TARGET\")"
+            exit 2
+        fi
+        IMAGE_WOLFBOOT=$(wslpath -w "$WOLFBOOT_BIN")
+        "$CLI" -c port=SWD mode=UR freq=400 -w "$IMAGE_WOLFBOOT" 0x08000000 -v
+
         SIGNED="build-$TARGET/test-app/image_v1_signed.bin"
+        if [ ! -f "$SIGNED" ]; then
+            echo "Missing: $SIGNED  (try: cmake --build --preset \"$TARGET\" --target test-app)"
+            exit 2
+        fi
+
         BOOT_ADDR=0x0800A000    # your wolfBoot BOOT address
         IMAGE_SIGNED=$(wslpath -w "$SIGNED")
         echo "IMAGE_SIGNED=$IMAGE_SIGNED"
 
         # SWD via ST-LINK (Windows handles the USB)
-        "$CLI" -c port=SWD mode=UR -w "$IMAGE_SIGNED" "$BOOT_ADDR" -v -hardRst
+        "$CLI" -c port=SWD mode=UR freq=400 -w "$IMAGE_SIGNED" "$BOOT_ADDR" -v -hardRst
         status=$?
         if [ "$status" -eq 0 ]; then
             echo "OK: command succeeded"
