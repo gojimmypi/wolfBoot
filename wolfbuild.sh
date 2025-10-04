@@ -50,15 +50,19 @@ if [ $# -gt 0 ]; then
 fi
 
 if [ "$TARGET" = "" ]; then
-    echo "Please specify a target"
+    echo "Please specify a target."
+    echo ""
+    echo "  $0 --target [your target]"
+    echo ""
+    cmake -S . -B build --list-presets=configure
     exit 1
 fi
 
-echo "cmake --preset linux-$TARGET"
-cmake --preset linux-"$TARGET"
+echo "cmake --preset  $TARGET"
+      cmake --preset "$TARGET"
 
-echo "cmake --build --preset linux-$TARGET -j"
-cmake --build --preset linux-"$TARGET" -j
+echo "cmake --build --preset  $TARGET  -j"
+      cmake --build --preset "$TARGET" -j
 
 # Reminder: Manual build
 # mkdir -p build

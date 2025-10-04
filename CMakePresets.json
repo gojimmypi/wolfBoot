@@ -2,10 +2,14 @@
   "version": 3,
   "configurePresets": [
     {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build-${presetName}"
+    },
+    {
       "name": "windows-stm32h7",
       "displayName": "Windows ARM (STM32H7)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-win-stm32h7",
       "cacheVariables": {
         "WOLFBOOT_CONFIG_MODE": "preset",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
@@ -29,9 +33,9 @@
     },
     {
       "name": "linux-stm32h7",
+      "inherits": [ "base" ],
       "displayName": "Linux/WSL ARM (stm32h7)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-stm32h7",
       "cacheVariables": {
         "WOLFBOOT_CONFIG_MODE": "preset",
         "ARCH": "ARM",
@@ -64,9 +68,9 @@
     },
     {
       "name": "linux-stm32l4",
+      "inherits": [ "base" ],
       "displayName": "Linux/WSL ARM (stm32l4)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-stm32l4",
       "cacheVariables": {
         "WOLFBOOT_CONFIG_MODE": "preset",
         "VISUALGDB": "ON",
