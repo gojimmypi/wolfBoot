@@ -54,6 +54,8 @@ def ensure_base_vars(cache, toolchain_path):
     cache.setdefault("CMAKE_TOOLCHAIN_FILE", toolchain_path)
     # Your build typically wants this on
     cache.setdefault("BUILD_TEST_APPS", "ON")
+    # Force preset mode when generating from .config into presets
+    cache["WOLFBOOT_CONFIG_MODE"] = "preset"
     return cache
 
 def make_preset_name(target):
