@@ -49,6 +49,38 @@ if [ $# -gt 0 ]; then
         echo "Set target: $TARGET"
     fi
 
+    if [ "$THIS_OPERATION" = "--stlink-upgrade" ]; then
+        echo "ST-Link upgrade!"
+        CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STLinkUpgrade.exe"
+
+        "$CLI"
+        status=$?
+        if [ "$status" -eq 0 ]; then
+            echo "OK: command succeeded"
+        else
+            echo "Failed: command exited with status $status"
+        fi
+        exit "$status"
+    fi
+
+    if [ "$THIS_OPERATION" = "--flash" ]; then
+        CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI.exe"
+
+        SIGNED="build-$TARGET/test-app/image_v1_signed.bin"
+        BOOT_ADDR=0x0800A000    # your wolfBoot BOOT address
+        IMAGE_SIGNED=$(wslpath -w "$SIGNED")
+        echo "IMAGE_SIGNED=$IMAGE_SIGNED"
+
+        # SWD via ST-LINK (Windows handles the USB)
+        "$CLI" -c port=SWD mode=UR -w "$IMAGE_SIGNED" "$BOOT_ADDR" -v -hardRst
+        status=$?
+        if [ "$status" -eq 0 ]; then
+            echo "OK: command succeeded"
+        else
+            echo "Failed: command exited with status $status"
+        fi
+        exit "$status"
+    fi
 fi
 
 if [ "$TARGET" = "" ]; then
