@@ -61,6 +61,43 @@
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
         "BUILD_TEST_APPS": "ON"
       }
+    },
+    {
+      "name": "linux-stm32l4",
+      "displayName": "Linux/WSL ARM (stm32l4)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32l4",
+      "cacheVariables": {
+        "VISUALGDB": "ON",
+        "VISUALGDB_BASE": "/mnt/c/Users/$(USER)/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx",
+        "WOLFBOOT_TARGET": "stm32l4",
+        "STM32L4_PART": "STM32L475xx",
+        "BOARD": "B-L475E-IOT01A",
+        "SIGN": "ECC256",
+        "HASH": "SHA256",
+        "DEBUG": "OFF",
+        "VTOR": "ON",
+        "CORTEX_M0": "OFF",
+        "NO_ASM": "OFF",
+        "EXT_FLASH": "OFF",
+        "SPI_FLASH": "OFF",
+        "ALLOW_DOWNGRADE": "OFF",
+        "NVM_FLASH_WRITEONCE": "ON",
+        "WOLFBOOT_VERSION": "OFF",
+        "V": "OFF",
+        "SPMATH": "ON",
+        "RAM_CODE": "OFF",
+        "DUALBANK_SWAP": "OFF",
+        "IMAGE_HEADER_SIZE": "512   # 0x200",
+        "WOLFBOOT_SECTOR_SIZE": "0x1000",
+        "WOLFBOOT_PARTITION_SIZE": "0x7A000",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x0800A000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08084000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x080FE000",
+        "WOLFTPM": "OFF",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
+        "BUILD_TEST_APPS": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -77,6 +114,11 @@
     {
       "name": "linux-stm32h7",
       "configurePreset": "linux-stm32h7",
+      "jobs": 0
+    },
+    {
+      "name": "linux-stm32l4",
+      "configurePreset": "linux-stm32l4",
       "jobs": 0
     }
   ]
