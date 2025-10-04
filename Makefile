@@ -69,6 +69,19 @@ include options.mk
 # ==== VisualGDB remap (opt-in) ==============================================
 # Only active if VISUALGDB=1 is set (e.g., in .config or on the CLI).
 ifeq ($(VISUALGDB),1)
+
+  # 1) Strip stale Cube includes/macros that may come from options.mk
+  CFLAGS := $(filter-out -I/home/%/STM32Cube/Repository/%,$(CFLAGS))
+  CFLAGS := $(filter-out -DSTM32L4A6xx,$(CFLAGS))
+
+  # 2) Inject the correct VisualGDB include paths + MCU macro
+  CFLAGS += \
+    -I$(VISUALGDB_BASE)/STM32L4xx_HAL_Driver/Inc \
+    -I$(VISUALGDB_BASE)/STM32L4xx_HAL_Driver/Inc/Legacy \
+    -I$(VISUALGDB_BASE)/CMSIS_HAL/Core/Include \
+    -I$(VISUALGDB_BASE)/CMSIS_HAL/Device/ST/STM32L4xx/Include \
+    -DUSE_HAL_DRIVER -D$(STM32L4_PART)
+
   # --- Finalize crypto objects (dedupe & add once) ----------------------------
   # Normalize paths so filter-out can match both "x.o" and "./x.o"
   override WOLFCRYPT_OBJS := $(patsubst ./%,%,$(WOLFCRYPT_OBJS))
