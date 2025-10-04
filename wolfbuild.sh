@@ -32,9 +32,11 @@ if [ $# -gt 0 ]; then
         shopt -s nullglob
         dirs=(build-*/)
         if ((${#dirs[@]})); then
-          printf 'Warning: Found %d other build dir(s):\n' "${#dirs[@]}"
+          printf 'Warning: Found %d other build directory target(s):\n' "${#dirs[@]}"
+          printf '\n'
           printf '%s\n' "${dirs[@]%/}"
-          echo "Try $0 --CLEAN [target]"
+          printf '\n'
+          echo "Try:  $0 --CLEAN [target]"
           exit 1
         else
           echo 'Success: No other build-[target] directories found.'
