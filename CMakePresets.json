@@ -1,23 +1,62 @@
 {
-  "version": 6,
+  "version": 3,
+
   "configurePresets": [
     {
-      "name": "vs-debug-trace",
-      "displayName": "VS Debug Trace",
+      "name": "linux-stm32h7",
+      "displayName": "Linux/WSL ARM (STM32H7)",
       "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32h7",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
+        "WOLFBOOT_TARGET": "stm32h7",
+        "BUILD_TEST_APPS": "yes",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x8020000",
+        "WOLFBOOT_SECTOR_SIZE": "0x20000",
+        "WOLFBOOT_PARTITION_SIZE": "0xD0000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x80F0000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x81C0000"
+      }
+    },
+    {
+      "name": "windows-stm32h7",
+      "displayName": "Windows ARM (STM32H7)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-win-stm32h7",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
+        "WOLFBOOT_TARGET": "stm32h7",
+        "BUILD_TEST_APPS": "yes"
+      }
+    },
+    {
+      "name": "vs-debug-trace",
+      "displayName": "VS Debug Trace (STM32H7)",
+      "inherits": [ "linux-stm32h7" ],
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_VERBOSE_MAKEFILE": "ON",
         "CMAKE_FIND_DEBUG_MODE": "ON"
-      },
-      "configureArgs": [
-        "--trace-expand",
-        "--debug-output",
-        "--debug-trycompile",
-        "--log-level=TRACE",
-        "--debug-find"
-      ]
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "linux-stm32h7",
+      "configurePreset": "linux-stm32h7",
+      "jobs": 0
+    },
+    {
+      "name": "windows-stm32h7",
+      "configurePreset": "windows-stm32h7",
+      "jobs": 0
+    },
+    {
+      "name": "vs-debug-trace",
+      "configurePreset": "vs-debug-trace",
+      "jobs": 0
     }
   ]
 }
