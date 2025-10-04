@@ -68,6 +68,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32l4",
       "cacheVariables": {
+        "WOLFBOOT_CONFIG_MODE": "preset",
         "VISUALGDB": "ON",
         "VISUALGDB_BASE": "/mnt/c/Users/$(USER)/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx",
         "WOLFBOOT_TARGET": "stm32l4",
