@@ -13,10 +13,33 @@ fi
 
 if [ $# -gt 0 ]; then
     THIS_OPERATION="$1"
+
+    TARGET="$2"
+    if [ "$TARGET" = "" ]; then
+        echo "No target specified"
+    fi
+
     if [ "$THIS_OPERATION" = "--CLEAN" ]; then
-        echo "Clean..."
-        rm -rf ./build
-        exit 0
+        if [ "$TARGET" = "" ]; then
+            echo "Clean... (build)"
+            rm -rf ./build
+        else
+            echo "Clean... (build-$TARGET)"
+            rm -rf "./build-$TARGET"
+        fi
+
+        # Any other build directories?
+        shopt -s nullglob
+        dirs=(build-*/)
+        if ((${#dirs[@]})); then
+          printf 'Warning: Found %d other build dir(s):\n' "${#dirs[@]}"
+          printf '%s\n' "${dirs[@]%/}"
+          echo "Try $0 --CLEAN [target]"
+          exit 1
+        else
+          echo 'Success: No other build-[target] directories found.'
+          exit 0
+        fi
     fi
 
     if [ "$THIS_OPERATION" = "--target" ]; then
@@ -31,7 +54,10 @@ if [ "$TARGET" = "" ]; then
     exit 1
 fi
 
+echo "cmake --preset linux-$TARGET"
 cmake --preset linux-"$TARGET"
+
+echo "cmake --build --preset linux-$TARGET -j"
 cmake --build --preset linux-"$TARGET" -j
 
 # Reminder: Manual build
