@@ -61,3 +61,9 @@ jobs:
           cmake -B build -DWOLFBOOT_TARGET=nrf52 -DWOLFBOOT_PARTITION_SIZE=0x8000 -DWOLFBOOT_SECTOR_SIZE=0x1000 -DWOLFBOOT_PARTITION_BOOT_ADDRESS=0x27000 -DWOLFBOOT_PARTITION_UPDATE_ADDRESS=0x2F000 -DWOLFBOOT_PARTITION_SWAP_ADDRESS=0x37000
       - name: Build wolfBoot
         run: make -C build
+
+      - name: Run wolfbuild script
+        run: |
+          rm -rf ./build
+          ./wolfbuild.sh --CLEAN  "linux-stm32l4"
+          ./wolfbuild.sh --target "linux-stm32l4"
