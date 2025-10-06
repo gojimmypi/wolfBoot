@@ -41,27 +41,68 @@ else()
     set(MCPU_FLAGS "-mcpu=cortex-m3 -mthumb -mlittle-endian -mthumb-interwork ")
 endif()
 
-# -----------------------------------------------------------------------------
-# Set toolchain paths
-# -----------------------------------------------------------------------------
-set(TOOLCHAIN arm-none-eabi)
-set(CMAKE_CXX_STANDARD 20)
 
-execute_process(
-    COMMAND which ${TOOLCHAIN}-gcc
-    OUTPUT_VARIABLE TOOLCHAIN_GCC_PATH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+if (1) # My new Windows VSCode
+    # ---- Cross basics
+    set(CMAKE_SYSTEM_NAME Generic)
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-# get toolchain version. CMAKE_C_COMPILER_VERSION cannot be used here since its not defined until
-# `project()` is run in the top-level cmake. The toolchain has to be setup before the `project` call
-execute_process(
-    COMMAND ${TOOLCHAIN}-gcc -dumpversion
-    OUTPUT_VARIABLE TOOLCHAIN_GCC_VERSION
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    # ---- Allow preset to pass the toolchain bin dir
+    set(ARM_GCC_BIN "" CACHE PATH "Path to Arm GNU Toolchain 'bin' folder")
 
-get_filename_component(TOOLCHAIN_BIN_DIR ${TOOLCHAIN_GCC_PATH} DIRECTORY)
-get_filename_component(TOOLCHAIN_ROOT_DIR "${TOOLCHAIN_BIN_DIR}/../" DIRECTORY ABSOLUTE)
-set(CMAKE_SYSROOT ${TOOLCHAIN_ROOT_DIR}/${TOOLCHAIN})
+    # If provided, set compilers explicitly (prevents empty vars later)
+    if(ARM_GCC_BIN)
+      file(TO_CMAKE_PATH "${ARM_GCC_BIN}" _ARM_GCC_BIN)
+
+      set(CMAKE_C_COMPILER   "${_ARM_GCC_BIN}/arm-none-eabi-gcc.exe"     CACHE FILEPATH "" FORCE)
+      set(CMAKE_CXX_COMPILER "${_ARM_GCC_BIN}/arm-none-eabi-g++.exe"     CACHE FILEPATH "" FORCE)
+      set(CMAKE_ASM_COMPILER "${_ARM_GCC_BIN}/arm-none-eabi-gcc.exe"     CACHE FILEPATH "" FORCE)
+      set(CMAKE_AR           "${_ARM_GCC_BIN}/arm-none-eabi-ar.exe"      CACHE FILEPATH "" FORCE)
+      set(CMAKE_RANLIB       "${_ARM_GCC_BIN}/arm-none-eabi-ranlib.exe"  CACHE FILEPATH "" FORCE)
+      set(CMAKE_OBJCOPY      "${_ARM_GCC_BIN}/arm-none-eabi-objcopy.exe" CACHE FILEPATH "" FORCE)
+      set(CMAKE_OBJDUMP      "${_ARM_GCC_BIN}/arm-none-eabi-objdump.exe" CACHE FILEPATH "" FORCE)
+      set(CMAKE_SIZE         "${_ARM_GCC_BIN}/arm-none-eabi-size.exe"    CACHE FILEPATH "" FORCE)
+    endif()
+
+    # Fallback if not provided: try to find the compiler (no 'which', use find_program)
+    if(NOT CMAKE_C_COMPILER)
+      find_program(CMAKE_C_COMPILER NAMES arm-none-eabi-gcc)
+    endif()
+    if(NOT CMAKE_CXX_COMPILER)
+      find_program(CMAKE_CXX_COMPILER NAMES arm-none-eabi-g++)
+    endif()
+
+    # Guard so later code doesn't crash on empty values
+    if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
+      message(FATAL_ERROR
+        "arm-none-eabi toolchain not found. Set ARM_GCC_BIN in your preset, e.g.\n"
+        "  ARM_GCC_BIN='C:/Program Files (x86)/Arm GNU Toolchain/14.2 rel1/bin'")
+    endif()
+else()
+    # -----------------------------------------------------------------------------
+    # Set toolchain paths
+    # -----------------------------------------------------------------------------
+    set(TOOLCHAIN arm-none-eabi)
+    set(CMAKE_CXX_STANDARD 20)
+
+    execute_process(
+        COMMAND which ${TOOLCHAIN}-gcc
+        OUTPUT_VARIABLE TOOLCHAIN_GCC_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    # get toolchain version. CMAKE_C_COMPILER_VERSION cannot be used here since its not defined until
+    # `project()` is run in the top-level cmake. The toolchain has to be setup before the `project` call
+    execute_process(
+        COMMAND ${TOOLCHAIN}-gcc -dumpversion
+        OUTPUT_VARIABLE TOOLCHAIN_GCC_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    get_filename_component(TOOLCHAIN_BIN_DIR ${TOOLCHAIN_GCC_PATH} DIRECTORY)
+    get_filename_component(TOOLCHAIN_ROOT_DIR "${TOOLCHAIN_BIN_DIR}/../" DIRECTORY ABSOLUTE)
+    set(CMAKE_SYSROOT ${TOOLCHAIN_ROOT_DIR}/${TOOLCHAIN})
+endif()
+
+
 
 
 # -----------------------------------------------------------------------------
@@ -79,14 +120,16 @@ set(CMAKE_EXE_LINKER_FLAGS "${MCPU_FLAGS} ${LD_FLAGS} -Wl,--gc-sections --specs=
 #---------------------------------------------------------------------------------------
 # Set compilers and toolchain utilities
 #---------------------------------------------------------------------------------------
-set(CMAKE_C_COMPILER    ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-gcc       CACHE INTERNAL "C Compiler")
-set(CMAKE_CXX_COMPILER  ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-g++       CACHE INTERNAL "C++ Compiler")
-set(CMAKE_ASM_COMPILER  ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-gcc       CACHE INTERNAL "ASM Compiler")
-set(TOOLCHAIN_LD        ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-ld        CACHE INTERNAL "Toolchain linker")
-set(TOOLCHAIN_AR        ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-gcc-ar    CACHE INTERNAL "Toolchain archive tool")
-set(TOOLCHAIN_OBJCOPY   ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-objcopy   CACHE INTERNAL "Toolchain objcopy tool")
-set(TOOLCHAIN_OBJDUMP   ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-objdump   CACHE INTERNAL "Toolchain objdump tool")
-set(TOOLCHAIN_SIZE      ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-size      CACHE INTERNAL "Toolchain object size tool")
+if(0)
+    set(CMAKE_C_COMPILER    ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-gcc       CACHE INTERNAL "C Compiler")
+    set(CMAKE_CXX_COMPILER  ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-g++       CACHE INTERNAL "C++ Compiler")
+    set(CMAKE_ASM_COMPILER  ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-gcc       CACHE INTERNAL "ASM Compiler")
+    set(TOOLCHAIN_LD        ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-ld        CACHE INTERNAL "Toolchain linker")
+    set(TOOLCHAIN_AR        ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-gcc-ar    CACHE INTERNAL "Toolchain archive tool")
+    set(TOOLCHAIN_OBJCOPY   ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-objcopy   CACHE INTERNAL "Toolchain objcopy tool")
+    set(TOOLCHAIN_OBJDUMP   ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-objdump   CACHE INTERNAL "Toolchain objdump tool")
+    set(TOOLCHAIN_SIZE      ${TOOLCHAIN_BIN_DIR}/${TOOLCHAIN}-size      CACHE INTERNAL "Toolchain object size tool")
+endif()
 
 set(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_PREFIX}/${${TOOLCHAIN}} ${CMAKE_PREFIX_PATH})
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -98,7 +141,7 @@ message(STATUS "Cross-compiling using GNU arm-none-eabi toolchain")
 
 # Options for DEBUG build
 # -Og   Enables optimizations that do not interfere with debugging.
-# -g    Produce debugging information in the operating system’s native format.
+# -g    Produce debugging information in the operating systemÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s native format.
 set(CMAKE_C_FLAGS_DEBUG         "-Og -g"    CACHE INTERNAL "C Compiler options for debug build type")
 set(CMAKE_CXX_FLAGS_DEBUG       "-Og -g"    CACHE INTERNAL "C++ Compiler options for debug build type")
 set(CMAKE_ASM_FLAGS_DEBUG       "-g"        CACHE INTERNAL "ASM Compiler options for debug build type")

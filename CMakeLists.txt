@@ -49,6 +49,35 @@ include(cmake/functions.cmake)
 include_directories(include)
 include_directories(lib/wolfssl)
 
+if(false) # my Windows
+
+    # Cross toolchain basics
+    set(CMAKE_SYSTEM_NAME Generic)
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+    # Allow preset to pass the bin directory of the Arm GCC toolchain
+    set(ARM_GCC_BIN "" CACHE PATH "Path to Arm GNU Toolchain 'bin' folder")
+
+    if(NOT ARM_GCC_BIN)
+      message(FATAL_ERROR "ARM_GCC_BIN not set. Pass it via preset cacheVariables.")
+    endif()
+
+    # Normalize to CMake-style path (forward slashes)
+    file(TO_CMAKE_PATH "${ARM_GCC_BIN}" _ARM_GCC_BIN)
+
+    # Point CMake compilers explicitly
+    set(CMAKE_C_COMPILER   "${_ARM_GCC_BIN}/arm-none-eabi-gcc.exe"   CACHE FILEPATH "" FORCE)
+    set(CMAKE_CXX_COMPILER "${_ARM_GCC_BIN}/arm-none-eabi-g++.exe"   CACHE FILEPATH "" FORCE)
+    set(CMAKE_ASM_COMPILER "${_ARM_GCC_BIN}/arm-none-eabi-gcc.exe"   CACHE FILEPATH "" FORCE)
+    set(CMAKE_AR           "${_ARM_GCC_BIN}/arm-none-eabi-ar.exe"    CACHE FILEPATH "" FORCE)
+    set(CMAKE_RANLIB       "${_ARM_GCC_BIN}/arm-none-eabi-ranlib.exe" CACHE FILEPATH "" FORCE)
+    set(CMAKE_OBJCOPY      "${_ARM_GCC_BIN}/arm-none-eabi-objcopy.exe" CACHE FILEPATH "" FORCE)
+    set(CMAKE_OBJDUMP      "${_ARM_GCC_BIN}/arm-none-eabi-objdump.exe" CACHE FILEPATH "" FORCE)
+    set(CMAKE_SIZE         "${_ARM_GCC_BIN}/arm-none-eabi-size.exe"  CACHE FILEPATH "" FORCE)
+endif()
+
+
+
 # Where should configuration values come from?
 #   dot     : parse .config via load_dot_config()
 #   preset  : use cacheVariables from CMakePresets.json
