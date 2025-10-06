@@ -8,7 +8,8 @@ on:
 
 jobs:
   footprint_test:
-    runs-on: ubuntu-24.04
+    runs-on: windows-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
