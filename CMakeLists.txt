@@ -325,7 +325,7 @@ if(NOT DEFINED PULL_LINKER_DEFINES AND NOT DEFINED BUILD_TEST_APPS)
     endif()
 endif()
 
-# unset cache variables Variables that need to be accessed by the gen_wolfboot_platform_target cmake
+# unset cache variables variables that need to be accessed by the gen_wolfboot_platform_target cmake
 # function called from the parent cmake project are added to the cache so that they can be accessed
 # anywhere in the project
 unset(WOLFBOOT_DEFS CACHE)
@@ -355,24 +355,59 @@ set(WOLFBOOT_SOURCES include/loader.h include/image.h src/string.c src/image.c)
 
 list(APPEND WOLFBOOT_SOURCES src/loader.c)
 
-# build bin-assemble tool
-set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble)
-add_custom_command(
-    OUTPUT ${BINASSEMBLE}
-    COMMAND gcc tools/bin-assemble/bin-assemble.c -o ${BINASSEMBLE}
-    WORKING_DIRECTORY ${WOLFBOOT_ROOT}
-    COMMENT "Generating bin-assemble tool")
+if(0)
+    # build bin-assemble tool
+    set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble)
+    add_custom_command(
+        OUTPUT ${BINASSEMBLE}
+        COMMAND gcc tools/bin-assemble/bin-assemble.c -o ${BINASSEMBLE}
+        WORKING_DIRECTORY ${WOLFBOOT_ROOT}
+        COMMENT "Generating bin-assemble tool")
 
-add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
+    add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
 
-# -----------------------------------------------------------------------------
-# Toolchain Specifications
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
+    # Toolchain Specifications
+    # -----------------------------------------------------------------------------
 
-if(ARCH STREQUAL "ARM")
-    include(cmake/toolchain_arm-none-eabi.cmake)
-elseif(ARCH STREQUAL "AARCH64")
-    include(cmake/toolchain_aarch64-none-elf.cmake)
+    if(ARCH STREQUAL "ARM")
+        include(cmake/toolchain_arm-none-eabi.cmake)
+    elseif(ARCH STREQUAL "AARCH64")
+        include(cmake/toolchain_aarch64-none-elf.cmake)
+    endif()
+else()
+    # build bin-assemble tool Windows
+    set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble${HOST_EXE})
+    set(BINASSEMBLE_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_bin_assemble")
+
+    add_custom_command(
+        OUTPUT ${BINASSEMBLE}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${BINASSEMBLE_OBJDIR}
+        COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+                ${HOST_INCLUDES}            # <-- needed for unistd.h shim
+                /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
+                ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
+                $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
+                ${HOST_LINK_LIBS}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Building bin-assemble tool"
+    )
+    add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
+
+
+
+    # -----------------------------------------------------------------------------
+    # Toolchain Specifications
+    # -----------------------------------------------------------------------------
+    if(NOT CMAKE_C_COMPILER)
+        # Ensure include only once
+        if(ARCH STREQUAL "ARM")
+            include(cmake/toolchain_arm-none-eabi.cmake)
+        elseif(ARCH STREQUAL "AARCH64")
+            include(cmake/toolchain_aarch64-none-elf.cmake)
+        endif()
+    endif()
+
 endif()
 # -----------------------------------------------------------------------------
 # Architecture/CPU configuration
@@ -934,20 +969,36 @@ set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
 set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
 set(SIGN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_sign")
 
-add_custom_command(
-  OUTPUT ${SIGN_TOOL}
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
-  COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
-          ${HOST_INCLUDES} ${HOST_DEFS}
-          # /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
-          $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
-          ${KEYTOOL_SOURCES_ABS}
-          ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
-          ${HOST_LINK_LIBS}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  COMMENT "Building signing tool"
-)
+if(0)
+    add_custom_command(
+      OUTPUT ${SIGN_TOOL}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
+      COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+              ${HOST_INCLUDES} ${HOST_DEFS}
+              # /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
+              $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
+              ${KEYTOOL_SOURCES_ABS}
+              ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
+              ${HOST_LINK_LIBS}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Building signing tool"
+    )
+else()
 
+    add_custom_command(
+      OUTPUT ${SIGN_TOOL}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
+      COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+              ${HOST_INCLUDES} ${HOST_DEFS}
+              /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
+              $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
+              ${KEYTOOL_SOURCES_ABS}
+              ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
+              ${HOST_LINK_LIBS}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT "Building signing tool"
+    )
+endif()
 add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
 set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 
@@ -956,6 +1007,7 @@ set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 set(KEYGEN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/keygen${HOST_EXE})
 set(KEYGEN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_keygen")
 
+if(0)
 add_custom_command(
   OUTPUT ${KEYGEN_TOOL}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${KEYGEN_OBJDIR}
@@ -969,6 +1021,21 @@ add_custom_command(
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Building keygen tool"
 )
+else()
+add_custom_command(
+  OUTPUT ${KEYGEN_TOOL}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${KEYGEN_OBJDIR}
+  COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+          ${HOST_INCLUDES} ${HOST_DEFS}
+          /Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>        # isolate objs
+          $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
+          ${KEYTOOL_SOURCES_ABS}
+          ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
+          ${HOST_LINK_LIBS}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Building keygen tool"
+)
+endif()
 
 add_custom_target(keygen_build DEPENDS ${KEYGEN_TOOL})
 add_dependencies(keytools keygen_build)
