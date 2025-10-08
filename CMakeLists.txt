@@ -42,6 +42,52 @@ endif()
 
 project(wolfBoot)
 
+# ---- Host compiler (for native tools only) -----------------------------------
+# Build-time tools (bin-assemble/sign/keygen) must compile for the host,
+# not the target MCU toolchain.
+if (CMAKE_HOST_WIN32)
+  find_program(HOST_CC NAMES cl clang gcc REQUIRED)
+  set(HOST_EXE ".exe")
+  if (HOST_CC MATCHES "cl(\\.exe)?$")
+    set(HOST_IS_MSVC TRUE)
+    set(HOST_O2 /O2)
+    set(HOST_I /I)
+    set(HOST_D /D)
+    set(HOST_OUT /Fe:)
+    set(HOST_WARN "")
+  else()
+    set(HOST_IS_MSVC FALSE)
+    set(HOST_O2 -O2)
+    set(HOST_I -I)
+    set(HOST_D -D)
+    set(HOST_OUT -o)
+    set(HOST_WARN -Wall -Wextra -Werror)
+  endif()
+else()
+  find_program(HOST_CC NAMES gcc clang cc REQUIRED)
+  set(HOST_EXE "")
+  set(HOST_IS_MSVC FALSE)
+  set(HOST_O2 -O2)
+  set(HOST_I -I)
+  set(HOST_D -D)
+  set(HOST_OUT -o)
+  set(HOST_WARN -Wall -Wextra -Werror)
+endif()
+
+
+# Common includes/defines for host tools
+set(HOST_INCLUDES
+  ${HOST_I}${CMAKE_SOURCE_DIR}/tools/keytools
+  ${HOST_I}${CMAKE_SOURCE_DIR}/lib/wolfssl
+  ${HOST_I}${CMAKE_SOURCE_DIR}/include
+  ${HOST_I}${CMAKE_CURRENT_BINARY_DIR}
+)
+set(HOST_DEFS
+  ${HOST_D}WOLFSSL_USER_SETTINGS
+  ${HOST_D}IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
+  ${HOST_D}DELTA_UPDATES
+)
+
 include(cmake/load_dot_config.cmake)
 include(cmake/utils.cmake)
 include(cmake/functions.cmake)
@@ -249,13 +295,16 @@ set(WOLFBOOT_SOURCES include/loader.h include/image.h src/string.c src/image.c)
 list(APPEND WOLFBOOT_SOURCES src/loader.c)
 
 # build bin-assemble tool
-set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble)
+set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble${HOST_EXE})
+
 add_custom_command(
     OUTPUT ${BINASSEMBLE}
-    COMMAND gcc tools/bin-assemble/bin-assemble.c -o ${BINASSEMBLE}
-    WORKING_DIRECTORY ${WOLFBOOT_ROOT}
-    COMMENT "Generating bin-assemble tool")
-
+    COMMAND ${HOST_CC} ${HOST_O2}
+            ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
+            $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Building bin-assemble tool"
+)
 add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
 
 # -----------------------------------------------------------------------------
@@ -718,7 +767,13 @@ target_sources(wolfboothal PRIVATE include/hal.h hal/${WOLFBOOT_TARGET}.c ${WOLF
 
 # --- HAL for STM32L4 (only the pieces we need) ---
 if(WOLFBOOT_TARGET STREQUAL "stm32l4")
-    set(HAL_BASE "/mnt/c/Users/gojimmypi/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+    if(CMAKE_HOST_WIN32)
+        message(STATUS "Win32 Paths")
+        set(HAL_BASE "c:/Users/gojimmypi/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+    else()
+        message(STATUS "WSL Paths")
+        set(HAL_BASE "/mnt/c/Users/gojimmypi/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+    endif()
     set(HAL_DRV  "${HAL_BASE}/STM32L4xx_HAL_Driver")
     set(HAL_CMSIS_DEV "${HAL_BASE}/CMSIS_HAL/Device/ST/STM32L4xx/Include")
     set(HAL_CMSIS_CORE "${HAL_BASE}/CMSIS_HAL/Include")
@@ -758,8 +813,40 @@ target_include_directories(wolfboothal PRIVATE ${WOLFBOOT_ROOT} include)
 target_compile_options(wolfboothal PRIVATE ${WOLFBOOT_COMPILE_OPTIONS} ${EXTRA_COMPILE_OPTIONS})
 
 message(STATUS "Using C Keytools")
-set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign)
-set(KEYGEN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/keygen)
+set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
+
+add_custom_command(
+  OUTPUT ${SIGN_TOOL}
+  COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+          ${HOST_INCLUDES} ${HOST_DEFS}
+          $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
+          ${KEYTOOL_SOURCES}
+          ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Building signing tool"
+)
+
+# keep your "keytools" target but make it depend on SIGN_TOOL (and KEYGEN below)
+add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL})
+set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
+
+
+set(KEYGEN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/keygen${HOST_EXE})
+
+add_custom_command(
+  OUTPUT ${KEYGEN_TOOL}
+  COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+          ${HOST_INCLUDES} ${HOST_DEFS}
+          $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
+          ${KEYTOOL_SOURCES}
+          ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Building keygen tool"
+)
+
+add_custom_target(keygen_build DEPENDS ${KEYGEN_TOOL})
+add_dependencies(keytools keygen_build)
+set(KEYGEN_TOOL ${KEYGEN_TOOL} CACHE INTERNAL "")
 
 list(APPEND WOLFBOOT_INCLUDE_DIRS ${WOLFBOOT_ROOT} ${WOLFBOOT_ROOT}/include)
 
@@ -880,21 +967,8 @@ list(
     -DIMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
     -DDELTA_UPDATES)
 
-add_custom_command(
-    OUTPUT ${SIGN_TOOL}
-    COMMAND gcc -o ${CMAKE_CURRENT_BINARY_DIR}/sign tools/keytools/sign.c ${KEYTOOL_SOURCES}
-            ${KEYTOOL_FLAGS}
-    WORKING_DIRECTORY ${WOLFBOOT_ROOT}
-    COMMENT "Building signing tool")
 
-add_custom_command(
-    OUTPUT ${KEYGEN_TOOL}
-    COMMAND gcc -o ${CMAKE_CURRENT_BINARY_DIR}/keygen tools/keytools/keygen.c ${KEYTOOL_SOURCES}
-            ${KEYTOOL_FLAGS}
-    WORKING_DIRECTORY ${WOLFBOOT_ROOT}
-    COMMENT "Building keygen tool")
 
-add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
 
 if(NOT SIGN STREQUAL "NONE")
     add_custom_target(keystore DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL} ${KEYSTORE})
@@ -929,5 +1003,5 @@ target_compile_options(wolfboot PUBLIC ${EXTRA_COMPILE_OPTIONS})
 target_include_directories(wolfboot PUBLIC ${WOLFBOOT_INCLUDE_DIRS})
 target_link_libraries(wolfboot wolfboothal target wolfcrypt)
 
-# dont warn on unused code
+# don't warn on unused code
 target_compile_options(wolfboot PRIVATE -Wno-unused ${SIM_COMPILE_OPTIONS})
