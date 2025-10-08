@@ -85,6 +85,25 @@ make
 ### VS Code
 
 
+### Visual Studio
+
+Select `View` - `Terminal` from the menu bar.
+
+* Configure: `cmake --preset <preset name>`
+* Build: `cmake --build --preset <preset name>`
+
+```bash
+# delete build directory
+rm -r -fo build-windows-stm32l4
+
+# configure
+cmake --preset windows-stm32l4
+
+# build
+cmake --build --preset windows-stm32l4
+```
+
+
 
 ## Integrating wolfBoot in an existing project
 
@@ -737,7 +756,7 @@ Use `make keysclean` to delete keys and regenerate.
     * RP2350 (Raspberry Pi Pico 2, ARM Cortex-M33 with TrustZone)
     * NXP MCXA153
     * NXP MCXW716
-    * STM32F1 series (STM32F103 "Blue Pill" board)
+    * STM32F1 series (STM32F103 "Blue Pill"Â board)
   * Improvements to supported targets
     * Xilinx UltraScale+ (ZynqMP)
         * Added hardware-accelerated SHA3 hashing via the CSU engine

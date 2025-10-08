@@ -21,10 +21,13 @@
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES ARM_GCC_BIN WOLFBOOT_TARGET)
 
 # There needs to be a default platform or the `project()` command will fail.
 if(NOT DEFINED WOLFBOOT_TARGET)
-    set(WOLFBOOT_TARGET "stm32h7")
+    message(STATUS "Select a target, e.g. 'cmake --preset linux-stm32l4'")
+    message(FATAL_ERROR "WOLFBOOT_TARGET not set")
+    # set(WOLFBOOT_TARGET "stm32h7")
 endif()
 
 # Cortex-M CPU
@@ -119,7 +122,7 @@ message(STATUS "Cross-compiling using GNU arm-none-eabi toolchain")
 
 # Options for DEBUG build
 # -Og   Enables optimizations that do not interfere with debugging.
-# -g    Produce debugging information in the operating systemÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s native format.
+# -g    Produce debugging information in the operating systemÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s native format.
 set(CMAKE_C_FLAGS_DEBUG         "-Og -g"    CACHE INTERNAL "C Compiler options for debug build type")
 set(CMAKE_CXX_FLAGS_DEBUG       "-Og -g"    CACHE INTERNAL "C++ Compiler options for debug build type")
 set(CMAKE_ASM_FLAGS_DEBUG       "-g"        CACHE INTERNAL "ASM Compiler options for debug build type")

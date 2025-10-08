@@ -43,37 +43,50 @@ endif()
 project(wolfBoot)
 
 # ---- Host compiler (for native tools only) -----------------------------------
-# Build-time tools (bin-assemble/sign/keygen) must compile for the host,
-# not the target MCU toolchain.
+# Build-time tools (bin-assemble/sign/keygen) must compile for the HOST.
 if (CMAKE_HOST_WIN32)
-  find_program(HOST_CC NAMES cl clang gcc REQUIRED)
-  set(HOST_EXE ".exe")
-  if (HOST_CC MATCHES "cl(\\.exe)?$")
+  # Prefer gcc/clang on Windows so POSIX-y headers (unistd.h) are available.
+  find_program(HOST_CC NAMES gcc clang cl REQUIRED)
+
+  if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]])
     set(HOST_IS_MSVC TRUE)
+    set(HOST_EXE ".exe")
     set(HOST_O2 /O2)
     set(HOST_I /I)
     set(HOST_D /D)
     set(HOST_OUT /Fe:)
-    set(HOST_WARN "")
+    # Put .obj files in a private folder to avoid collisions & root litter:
+    set(HOST_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj")
+    file(MAKE_DIRECTORY "${HOST_OBJDIR}")
+    set(HOST_FO "/Fo$<SHELL_PATH:${HOST_OBJDIR}/>")
+    set(HOST_WARN "")   # MSVC warnings already noisy; keep simple
+    # wolfSSL random on Windows needs Advapi32:
+    set(HOST_LINK_LIBS Advapi32.lib)
   else()
+    # gcc or clang
     set(HOST_IS_MSVC FALSE)
+    set(HOST_EXE "")
     set(HOST_O2 -O2)
     set(HOST_I -I)
     set(HOST_D -D)
     set(HOST_OUT -o)
+    set(HOST_FO "")     # gcc/clang handle objs internally here
     set(HOST_WARN -Wall -Wextra -Werror)
+    set(HOST_LINK_LIBS "")  # not needed with MinGW/clang on Windows
   endif()
 else()
+  # POSIX hosts
   find_program(HOST_CC NAMES gcc clang cc REQUIRED)
-  set(HOST_EXE "")
   set(HOST_IS_MSVC FALSE)
+  set(HOST_EXE "")
   set(HOST_O2 -O2)
   set(HOST_I -I)
   set(HOST_D -D)
   set(HOST_OUT -o)
+  set(HOST_FO "")
   set(HOST_WARN -Wall -Wextra -Werror)
+  set(HOST_LINK_LIBS "")
 endif()
-
 
 # Common includes/defines for host tools
 set(HOST_INCLUDES
@@ -87,6 +100,51 @@ set(HOST_DEFS
   ${HOST_D}IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
   ${HOST_D}DELTA_UPDATES
 )
+
+# --- Windows unistd.h shim for MSVC host builds ---
+if(CMAKE_HOST_WIN32 AND HOST_IS_MSVC)
+  set(HOST_SHIM_DIR "${CMAKE_CURRENT_BINARY_DIR}/host_shims")
+  file(MAKE_DIRECTORY "${HOST_SHIM_DIR}")
+
+  # Minimal shims; extend if bin-assemble needs more.
+  file(WRITE "${HOST_SHIM_DIR}/unistd.h" [=[
+#ifndef _WIN32
+#  error "This shim is for Windows/MSVC only"
+#endif
+#include <io.h>
+#include <process.h>
+#include <direct.h>
+#include <stdlib.h>
+
+#ifndef ssize_t
+#  ifdef _WIN64
+     typedef long long ssize_t;
+#  else
+     typedef int ssize_t;
+#  endif
+#endif
+
+#ifndef unlink
+#  define unlink _unlink
+#endif
+#ifndef close
+#  define close _close
+#endif
+#ifndef read
+#  define read _read
+#endif
+#ifndef write
+#  define write _write
+#endif
+#ifndef access
+#  define access _access
+#endif
+]=])
+
+  # Prepend shim include so it is found first
+  list(INSERT HOST_INCLUDES 0 ${HOST_I}$<SHELL_PATH:${HOST_SHIM_DIR}>)
+endif()
+
 
 include(cmake/load_dot_config.cmake)
 include(cmake/utils.cmake)
@@ -296,27 +354,35 @@ list(APPEND WOLFBOOT_SOURCES src/loader.c)
 
 # build bin-assemble tool
 set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble${HOST_EXE})
+set(BINASSEMBLE_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_bin_assemble")
 
 add_custom_command(
     OUTPUT ${BINASSEMBLE}
-    COMMAND ${HOST_CC} ${HOST_O2}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${BINASSEMBLE_OBJDIR}
+    COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+            ${HOST_INCLUDES}            # <-- needed for unistd.h shim
+            /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
             ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
             $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            ${HOST_LINK_LIBS}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Building bin-assemble tool"
 )
 add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
 
+
+
 # -----------------------------------------------------------------------------
 # Toolchain Specifications
 # -----------------------------------------------------------------------------
-
-if(ARCH STREQUAL "ARM")
-    include(cmake/toolchain_arm-none-eabi.cmake)
-elseif(ARCH STREQUAL "AARCH64")
-    include(cmake/toolchain_aarch64-none-elf.cmake)
+if(NOT CMAKE_C_COMPILER)
+    # Ensure include only once
+    if(ARCH STREQUAL "ARM")
+        include(cmake/toolchain_arm-none-eabi.cmake)
+    elseif(ARCH STREQUAL "AARCH64")
+        include(cmake/toolchain_aarch64-none-elf.cmake)
+    endif()
 endif()
-
 # -----------------------------------------------------------------------------
 # Architecture/CPU configuration
 # -----------------------------------------------------------------------------
@@ -798,7 +864,7 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     target_compile_definitions(stm32l4_hal PUBLIC
         USE_HAL_DRIVER
         STM32L475xx
-        # If your stm32l4xx_hal_conf.h doesn’t enable FLASH, you can force it:
+        # If your stm32l4xx_hal_conf.h doesnâ€™t enable FLASH, you can force it:
         # HAL_FLASH_MODULE_ENABLED
     )
 
@@ -813,34 +879,101 @@ target_include_directories(wolfboothal PRIVATE ${WOLFBOOT_ROOT} include)
 target_compile_options(wolfboothal PRIVATE ${WOLFBOOT_COMPILE_OPTIONS} ${EXTRA_COMPILE_OPTIONS})
 
 message(STATUS "Using C Keytools")
+message(STATUS "Using C Keytools")
+
+# define sources/flags BEFORE the custom commands that use them
+list(
+    APPEND
+    KEYTOOL_SOURCES
+    src/delta.c
+    lib/wolfssl/wolfcrypt/src/asn.c
+    lib/wolfssl/wolfcrypt/src/aes.c
+    lib/wolfssl/wolfcrypt/src/ecc.c
+    lib/wolfssl/wolfcrypt/src/coding.c
+    lib/wolfssl/wolfcrypt/src/chacha.c
+    lib/wolfssl/wolfcrypt/src/ed25519.c
+    lib/wolfssl/wolfcrypt/src/ed448.c
+    lib/wolfssl/wolfcrypt/src/fe_operations.c
+    lib/wolfssl/wolfcrypt/src/ge_operations.c
+    lib/wolfssl/wolfcrypt/src/fe_448.c
+    lib/wolfssl/wolfcrypt/src/ge_448.c
+    lib/wolfssl/wolfcrypt/src/hash.c
+    lib/wolfssl/wolfcrypt/src/logging.c
+    lib/wolfssl/wolfcrypt/src/memory.c
+    lib/wolfssl/wolfcrypt/src/random.c
+    lib/wolfssl/wolfcrypt/src/rsa.c
+    lib/wolfssl/wolfcrypt/src/sp_int.c
+    lib/wolfssl/wolfcrypt/src/sp_c32.c
+    lib/wolfssl/wolfcrypt/src/sp_c64.c
+    lib/wolfssl/wolfcrypt/src/sha3.c
+    lib/wolfssl/wolfcrypt/src/sha256.c
+    lib/wolfssl/wolfcrypt/src/sha512.c
+    lib/wolfssl/wolfcrypt/src/tfm.c
+    lib/wolfssl/wolfcrypt/src/wc_port.c
+    lib/wolfssl/wolfcrypt/src/wolfmath.c
+    lib/wolfssl/wolfcrypt/src/dilithium.c
+    lib/wolfssl/wolfcrypt/src/wc_lms.c
+    lib/wolfssl/wolfcrypt/src/wc_lms_impl.c
+    lib/wolfssl/wolfcrypt/src/wc_xmss.c
+    lib/wolfssl/wolfcrypt/src/wc_xmss_impl.c
+)
+
+set(KEYTOOL_SOURCES_ABS ${KEYTOOL_SOURCES})
+list(TRANSFORM KEYTOOL_SOURCES_ABS PREPEND ${CMAKE_SOURCE_DIR}/)
+
+list(APPEND  KEYTOOL_FLAGS
+    -Wall
+    -Wextra
+    -Werror
+    -Itools/keytools
+    -DWOLFSSL_USER_SETTINGS
+    -Ilib/wolfssl/
+    -Iinclude
+    -I${CMAKE_CURRENT_BINARY_DIR}
+    -O2
+    -DIMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
+    -DDELTA_UPDATES
+)
+
 set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
+
+# --- sign ---
+set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
+set(SIGN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_sign")
 
 add_custom_command(
   OUTPUT ${SIGN_TOOL}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
   COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
           ${HOST_INCLUDES} ${HOST_DEFS}
+          /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
-          ${KEYTOOL_SOURCES}
+          ${KEYTOOL_SOURCES_ABS}
           ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+          ${HOST_LINK_LIBS}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Building signing tool"
 )
 
-# keep your "keytools" target but make it depend on SIGN_TOOL (and KEYGEN below)
-add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL})
+add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
 set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 
 
+# --- keygen ---
 set(KEYGEN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/keygen${HOST_EXE})
+set(KEYGEN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_keygen")
 
 add_custom_command(
   OUTPUT ${KEYGEN_TOOL}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${KEYGEN_OBJDIR}
   COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
           ${HOST_INCLUDES} ${HOST_DEFS}
+          /Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>        # isolate objs
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
-          ${KEYTOOL_SOURCES}
+          ${KEYTOOL_SOURCES_ABS}
           ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+          ${HOST_LINK_LIBS}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Building keygen tool"
 )
 
@@ -916,56 +1049,7 @@ target_include_directories(target BEFORE INTERFACE ${CMAKE_CURRENT_BINARY_DIR} l
 
 set(KEYSTORE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
 
-list(
-    APPEND
-    KEYTOOL_SOURCES
-    src/delta.c
-    lib/wolfssl/wolfcrypt/src/asn.c
-    lib/wolfssl/wolfcrypt/src/aes.c
-    lib/wolfssl/wolfcrypt/src/ecc.c
-    lib/wolfssl/wolfcrypt/src/coding.c
-    lib/wolfssl/wolfcrypt/src/chacha.c
-    lib/wolfssl/wolfcrypt/src/ed25519.c
-    lib/wolfssl/wolfcrypt/src/ed448.c
-    lib/wolfssl/wolfcrypt/src/fe_operations.c
-    lib/wolfssl/wolfcrypt/src/ge_operations.c
-    lib/wolfssl/wolfcrypt/src/fe_448.c
-    lib/wolfssl/wolfcrypt/src/ge_448.c
-    lib/wolfssl/wolfcrypt/src/hash.c
-    lib/wolfssl/wolfcrypt/src/logging.c
-    lib/wolfssl/wolfcrypt/src/memory.c
-    lib/wolfssl/wolfcrypt/src/random.c
-    lib/wolfssl/wolfcrypt/src/rsa.c
-    lib/wolfssl/wolfcrypt/src/sp_int.c
-    lib/wolfssl/wolfcrypt/src/sp_c32.c
-    lib/wolfssl/wolfcrypt/src/sp_c64.c
-    lib/wolfssl/wolfcrypt/src/sha3.c
-    lib/wolfssl/wolfcrypt/src/sha256.c
-    lib/wolfssl/wolfcrypt/src/sha512.c
-    lib/wolfssl/wolfcrypt/src/tfm.c
-    lib/wolfssl/wolfcrypt/src/wc_port.c
-    lib/wolfssl/wolfcrypt/src/wolfmath.c
-    lib/wolfssl/wolfcrypt/src/dilithium.c
-    lib/wolfssl/wolfcrypt/src/wc_lms.c
-    lib/wolfssl/wolfcrypt/src/wc_lms_impl.c
-    lib/wolfssl/wolfcrypt/src/wc_xmss.c
-    lib/wolfssl/wolfcrypt/src/wc_xmss_impl.c
-)
 
-list(
-    APPEND
-    KEYTOOL_FLAGS
-    -Wall
-    -Wextra
-    -Werror
-    -Itools/keytools
-    -DWOLFSSL_USER_SETTINGS
-    -Ilib/wolfssl/
-    -Iinclude
-    -I${CMAKE_CURRENT_BINARY_DIR}
-    -O2
-    -DIMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
-    -DDELTA_UPDATES)
 
 
 
