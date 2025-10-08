@@ -42,6 +42,8 @@ endif()
 
 project(wolfBoot)
 
+set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
+
 # ---- Host compiler (for native tools only) -----------------------------------
 # Build-time tools (bin-assemble/sign/keygen) must compile for the HOST.
 if (CMAKE_HOST_WIN32)
@@ -49,6 +51,7 @@ if (CMAKE_HOST_WIN32)
   find_program(HOST_CC NAMES gcc clang cl REQUIRED)
 
   if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]])
+    message(ERROR "")
     set(HOST_IS_MSVC TRUE)
     set(HOST_EXE ".exe")
     set(HOST_O2 /O2)
@@ -353,35 +356,23 @@ set(WOLFBOOT_SOURCES include/loader.h include/image.h src/string.c src/image.c)
 list(APPEND WOLFBOOT_SOURCES src/loader.c)
 
 # build bin-assemble tool
-set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble${HOST_EXE})
-set(BINASSEMBLE_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_bin_assemble")
-
+set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble)
 add_custom_command(
     OUTPUT ${BINASSEMBLE}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${BINASSEMBLE_OBJDIR}
-    COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
-            ${HOST_INCLUDES}            # <-- needed for unistd.h shim
-            /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
-            ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
-            $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
-            ${HOST_LINK_LIBS}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Building bin-assemble tool"
-)
+    COMMAND gcc tools/bin-assemble/bin-assemble.c -o ${BINASSEMBLE}
+    WORKING_DIRECTORY ${WOLFBOOT_ROOT}
+    COMMENT "Generating bin-assemble tool")
+
 add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
-
-
 
 # -----------------------------------------------------------------------------
 # Toolchain Specifications
 # -----------------------------------------------------------------------------
-if(NOT CMAKE_C_COMPILER)
-    # Ensure include only once
-    if(ARCH STREQUAL "ARM")
-        include(cmake/toolchain_arm-none-eabi.cmake)
-    elseif(ARCH STREQUAL "AARCH64")
-        include(cmake/toolchain_aarch64-none-elf.cmake)
-    endif()
+
+if(ARCH STREQUAL "ARM")
+    include(cmake/toolchain_arm-none-eabi.cmake)
+elseif(ARCH STREQUAL "AARCH64")
+    include(cmake/toolchain_aarch64-none-elf.cmake)
 endif()
 # -----------------------------------------------------------------------------
 # Architecture/CPU configuration
@@ -849,12 +840,14 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
         ${HAL_DRV}/Src/stm32l4xx_hal.c
         ${HAL_DRV}/Src/stm32l4xx_hal_flash.c
         ${HAL_DRV}/Src/stm32l4xx_hal_flash_ex.c
+        ${HAL_DRV}/Src/stm32l4xx_hal_cortex.c
         # add more modules later if you get missing symbols, e.g. RCC/GPIO/etc:
         # ${HAL_DRV}/Src/stm32l4xx_hal_rcc.c
         # ${HAL_DRV}/Src/stm32l4xx_hal_gpio.c
     )
 
-    target_include_directories(stm32l4_hal PUBLIC
+    target_include_directories(stm32l4_hal BEFORE PUBLIC
+        ${WOLFBOOT_ROOT}/hal
         ${HAL_DRV}/Inc
         ${HAL_CMSIS_DEV}
         ${HAL_CMSIS_CORE}
@@ -864,7 +857,7 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     target_compile_definitions(stm32l4_hal PUBLIC
         USE_HAL_DRIVER
         STM32L475xx
-        # If your stm32l4xx_hal_conf.h doesnâ€™t enable FLASH, you can force it:
+        # If your stm32l4xx_hal_conf.h doesn't enable FLASH, you can force it:
         # HAL_FLASH_MODULE_ENABLED
     )
 
@@ -946,7 +939,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
   COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
           ${HOST_INCLUDES} ${HOST_DEFS}
-          /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
+          # /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
           ${KEYTOOL_SOURCES_ABS}
           ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
@@ -968,7 +961,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E make_directory ${KEYGEN_OBJDIR}
   COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
           ${HOST_INCLUDES} ${HOST_DEFS}
-          /Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>        # isolate objs
+          # /Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>        # isolate objs
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
           ${KEYTOOL_SOURCES_ABS}
           ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
