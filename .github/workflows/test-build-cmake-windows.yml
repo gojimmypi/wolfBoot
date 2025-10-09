@@ -1,0 +1,142 @@
+name: WolfBoot CMake Build (Windows)
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  windows-cmake:
+    name: Build on Windows (CMake + Ninja)
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release, Debug]
+        target:
+          - stm32l4
+          - stm32h7
+        include:
+          # Optional per-target cache variables you might want to pass later.
+          # Keep empty for now to avoid guessing addresses.
+          - target: stm32l4
+            extra_cache: ""
+          - target: stm32h7
+            extra_cache: ""
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Workaround for sources.list
+        run: |
+            # Replace sources
+
+            set -euxo pipefail
+
+            # Peek (what repos are active now)
+            apt-cache policy
+            grep -RInE '^(deb|Types|URIs)' /etc/apt || true
+
+            # Enable nullglob so *.list/*.sources that don't exist don't break sed
+            shopt -s nullglob
+
+            echo "Replace sources.list (legacy)"
+            sudo sed -i \
+              -e "s|https\?://azure\.archive\.ubuntu\.com/ubuntu/?|http://mirror.arizona.edu/ubuntu/|g" \
+              /etc/apt/sources.list || true
+
+            echo "Replace sources.list.d/*.list (legacy)"
+            for f in /etc/apt/sources.list.d/*.list; do
+              sudo sed -i \
+                -e "s|https\?://azure\.archive\.ubuntu\.com/ubuntu/?|http://mirror.arizona.edu/ubuntu/|g" \
+                "$f"
+            done
+
+            echo "Replace sources.list.d/*.sources (deb822)"
+            for f in /etc/apt/sources.list.d/*.sources; do
+              sudo sed -i \
+                -e "s|https\?://azure\.archive\.ubuntu\.com/ubuntu/?|http://mirror.arizona.edu/ubuntu/|g" \
+                -e "s|https\?://azure\.archive\.ubuntu\.com|http://mirror.arizona.edu|g" \
+                "$f"
+            done
+
+            echo "Fix /etc/apt/apt-mirrors.txt (used by URIs: mirror+file:...)"
+            if grep -qE '^[[:space:]]*https?://azure\.archive\.ubuntu\.com/ubuntu/?' /etc/apt/apt-mirrors.txt; then
+              # Replace azure with our mirror (idempotent)
+              sudo sed -i 's|https\?://azure\.archive\.ubuntu\.com/ubuntu/|http://mirror.arizona.edu/ubuntu/|g' /etc/apt/apt-mirrors.txt
+            fi
+
+            # Peek (verify changes)
+            grep -RIn "azure.archive.ubuntu.com" /etc/apt || true
+            grep -RInE '^(deb|Types|URIs)' /etc/apt || true
+            echo "--- apt-mirrors.txt ---"
+            cat /etc/apt/apt-mirrors.txt || true
+
+      # ARM GCC toolchain (adds the bin dir to PATH)
+      - name: Set up ARM none-eabi GCC 14.x
+        uses: carlosperate/setup-arm-none-eabi-gcc@v1
+        with:
+          version: "14.2.Rel1"
+
+      # CMake + Ninja are preinstalled on windows-latest, but verify & print versions
+      - name: Tool versions
+        shell: bash
+        run: |
+          echo "Compiler versions:"
+          arm-none-eabi-gcc --version
+          echo
+          echo "CMake:"
+          cmake --version
+          echo
+          echo "Ninja:"
+          ninja --version
+          echo
+          echo "MSVC (via vswhere):"
+          "%ProgramFiles(x86)%/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion || true
+
+      # Ensure a predictable out dir per target/config
+      - name: Configure (CMake + Ninja)
+        shell: bash
+        run: |
+          BUILD_DIR="build-${{ matrix.target }}-${{ matrix.build_type }}"
+          cmake -S . -B "$BUILD_DIR" -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
+            -DWOLFBOOT_CONFIG_MODE=preset \
+            -DWOLFBOOT_TARGET=${{ matrix.target }} \
+            -DBUILD_TEST_APPS=ON \
+            ${{ matrix.extra_cache }}
+          echo "Configured: $BUILD_DIR"
+
+      - name: Build
+        shell: bash
+        run: |
+          BUILD_DIR="build-${{ matrix.target }}-${{ matrix.build_type }}"
+          cmake --build "$BUILD_DIR" --parallel
+
+      # Optional: show interesting artifacts
+      - name: List build outputs
+        if: always()
+        shell: bash
+        run: |
+          BUILD_DIR="build-${{ matrix.target }}-${{ matrix.build_type }}"
+          echo "=== Artifacts in $BUILD_DIR ==="
+          find "$BUILD_DIR" -maxdepth 3 -type f \( -name "*.elf" -o -name "*.bin" -o -name "*.hex" -o -name "bin-assemble" -o -name "keystore" \) -print || true
+
+      # Upload binaries if present (non-fatal if none)
+      - name: Upload firmware/artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wolfboot-${{ matrix.target }}-${{ matrix.build_type }}
+          path: |
+            build-${{ matrix.target }}-${{ matrix.build_type }}/**/*.elf
+            build-${{ matrix.target }}-${{ matrix.build_type }}/**/*.bin
+            build-${{ matrix.target }}-${{ matrix.build_type }}/**/*.hex
+          if-no-files-found: warn
