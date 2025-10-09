@@ -385,7 +385,7 @@ else()
         COMMAND ${CMAKE_COMMAND} -E make_directory ${BINASSEMBLE_OBJDIR}
         COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
                 ${HOST_INCLUDES}            # <-- needed for unistd.h shim
-                /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
+                ${HOST_FO} # /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
                 ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
                 $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
                 ${HOST_LINK_LIBS}
@@ -974,13 +974,12 @@ else()
     set(HOST_FO_SIGN "/Fo$<SHELL_PATH:${SIGN_OBJDIR}/>")
 endif()
 
-set(HOST_FO_DIR "/sign")
     add_custom_command(
       OUTPUT ${SIGN_TOOL}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
       COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
               ${HOST_INCLUDES} ${HOST_DEFS}
-              /Fo$<SHELL_PATH:${SIGN_OBJDIR}/> # ${HOST_FO_SIGN}
+              ${HOST_FO_SIGN} # /Fo$<SHELL_PATH:${SIGN_OBJDIR}/> # ${HOST_FO_SIGN}
               $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
               ${KEYTOOL_SOURCES_ABS}
               ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
