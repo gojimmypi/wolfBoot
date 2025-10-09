@@ -9,12 +9,16 @@
     {
       "name": "_template-os-target",
       "displayName": "_sample - target - template",
+      "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-windows-stm32l4",
       "environment": {
-        "PATH": "$penv{LOCALAPPDATA}/Microsoft/WinGet/Links;C:/Program Files (x86)/Arm GNU Toolchain/14.2 rel1/bin;$penv{PATH}"
+        "INC_LINKS": "$penv{LOCALAPPDATA}/Microsoft/WinGet/Links",
+        "INC_ARM_TOOLCHAIN": "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin",
+        "PATH": "$penv{LOCALAPPDATA}/Microsoft/WinGet/Links;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin;$penv{PATH}"
       },
       "cacheVariables": {
+        "ENV_REMINDER":  "use env for cache, penv elsewhere",
         "TARGET_OS": "WINDOWS",
         "WOLFBOOT_CONFIG_MODE": "preset",
         "VISUALGDB": "ON",
@@ -129,11 +133,17 @@
     },
     {
       "name": "windows-stm32l4",
+      "inherits": [ "base" ],
       "displayName": "Windows - STM32L4 - Ninja",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-windows-stm32l4",
       "environment": {
-        "PATH": "$penv{LOCALAPPDATA}/Microsoft/WinGet/Links;C:/Program Files (x86)/Arm GNU Toolchain/14.2 rel1/bin;$penv{PATH}"
+        "WindowsSdkDir": "C:/Program Files (x86)/Windows Kits/10",
+        "WindowsSdkVer": "10.0.26100.0",
+        "VCToolsInstallDir": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207",
+        "INCLUDE": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/include;C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/ucrt;C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/um;C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/shared;$penv{INCLUDE}",
+        "LIB": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/lib/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.26100.0/ucrt/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.26100.0/um/x64;$penv{LIB}",
+        "PATH": "$penv{LOCALAPPDATA}/Microsoft/WinGet/Links;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin;$penv{PATH}"
       },
       "cacheVariables": {
         "TARGET_OS": "WINDOWS",
@@ -177,27 +187,37 @@
     {
       "name": "windows-stm32h7",
       "configurePreset": "windows-stm32h7",
-      "jobs": 0
+      "jobs": 4,
+      "verbose": true,
+      "targets": [ "all" ]
     },
     {
       "name": "vs-debug-trace",
       "configurePreset": "vs-debug-trace",
-      "jobs": 0
+      "jobs": 4,
+      "verbose": true,
+      "targets": [ "all" ]
     },
     {
       "name": "linux-stm32h7",
       "configurePreset": "linux-stm32h7",
-      "jobs": 0
+      "jobs": 4,
+      "verbose": true,
+      "targets": [ "all" ]
     },
     {
       "name": "linux-stm32l4",
       "configurePreset": "linux-stm32l4",
-      "jobs": 0
+      "jobs": 4,
+      "verbose": true,
+      "targets": [ "all" ]
     },
     {
       "name": "windows-stm32l4",
       "configurePreset": "windows-stm32l4",
-      "jobs": 0
+      "jobs": 4,
+      "verbose": true,
+      "targets": [ "all" ]
     }
   ]
 }

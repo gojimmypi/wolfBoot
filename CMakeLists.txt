@@ -31,6 +31,9 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+# ------------------------------------------------------------------------------
+# Initial environment checks
+# ------------------------------------------------------------------------------
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(
         FATAL_ERROR
@@ -40,68 +43,92 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
      You must delete them, or cmake will refuse to work.")
 endif()
 
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    if(DEFINED WOLFBOOT_TARGET AND
+            NOT WOLFBOOT_TARGET STREQUAL "x86_64_efi" AND
+            NOT WOLFBOOT_TARGET STREQUAL "sim")
+        set(CMAKE_TOOLCHAIN_FILE
+        "${CMAKE_SOURCE_DIR}/cmake/toolchain_arm-none-eabi.cmake"
+        CACHE FILEPATH "" FORCE)
+    endif()
+endif()
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 project(wolfBoot)
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+include(cmake/functions.cmake)
+
 
 set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
 
 # ---- Host compiler (for native tools only) -----------------------------------
 # Build-time tools (bin-assemble/sign/keygen) must compile for the HOST.
 if (CMAKE_HOST_WIN32)
-  # Prefer gcc/clang on Windows so POSIX-y headers (unistd.h) are available.
-  find_program(HOST_CC NAMES gcc clang cl REQUIRED)
+    # Prefer gcc/clang on Windows so POSIX-y headers (unistd.h) are available.
+    find_program(HOST_CC NAMES gcc clang cl REQUIRED)
 
-  if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]])
-    message(ERROR "")
-    set(HOST_IS_MSVC TRUE)
-    set(HOST_EXE ".exe")
-    set(HOST_O2 /O2)
-    set(HOST_I /I)
-    set(HOST_D /D)
-    set(HOST_OUT /Fe:)
-    # Put .obj files in a private folder to avoid collisions & root litter:
-    set(HOST_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj")
-    file(MAKE_DIRECTORY "${HOST_OBJDIR}")
-    set(HOST_FO "/Fo$<SHELL_PATH:${HOST_OBJDIR}/>")
-    set(HOST_WARN "")   # MSVC warnings already noisy; keep simple
-    # wolfSSL random on Windows needs Advapi32:
-    set(HOST_LINK_LIBS Advapi32.lib)
-  else()
-    # gcc or clang
+    if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]])
+        message(STATUS "Found CMAKE_HOST_WIN32 and .exe in HOST_CC: Setting HOST_IS_MSVC")
+        # Are we running in Visual Studio 2022 or VSCode from VS2022 command prompt?
+        print_env(VSCMD_VER)
+        print_env(VCToolsInstallDir)
+        print_env(VCINSTALLDIR)
+        print_env(WindowsSdkDir)
+        # DOS/Windows detected by ".exe" extension, not to be confused with WSL and/or WinGW
+        set(HOST_IS_MSVC TRUE)
+        set(HOST_EXE ".exe")
+        set(HOST_O2 /O2)
+        set(HOST_I /I)
+        set(HOST_D /D)
+        set(HOST_OUT /Fe:)
+        # Put .obj files in a private folder to avoid collisions & root litter:
+        set(HOST_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj")
+        file(MAKE_DIRECTORY "${HOST_OBJDIR}")
+        set(HOST_FO "/Fo$<SHELL_PATH:${HOST_OBJDIR}/>")
+        set(HOST_WARN "")   # MSVC warnings already noisy; keep simple
+        # wolfSSL random on Windows needs Advapi32:
+        set(HOST_LINK_LIBS Advapi32.lib)
+    else()
+        # gcc or clang
+        set(HOST_IS_MSVC FALSE)
+        set(HOST_EXE "")
+        set(HOST_O2 -O2)
+        set(HOST_I -I)
+        set(HOST_D -D)
+        set(HOST_OUT -o)
+        set(HOST_FO "")     # gcc/clang handle objs internally here
+        set(HOST_WARN -Wall -Wextra -Werror)
+        set(HOST_LINK_LIBS "")  # not needed with MinGW/clang on Windows
+    endif()
+else()
+    # POSIX hosts
+    find_program(HOST_CC NAMES gcc clang cc REQUIRED)
     set(HOST_IS_MSVC FALSE)
     set(HOST_EXE "")
     set(HOST_O2 -O2)
     set(HOST_I -I)
     set(HOST_D -D)
     set(HOST_OUT -o)
-    set(HOST_FO "")     # gcc/clang handle objs internally here
+    set(HOST_FO "")
     set(HOST_WARN -Wall -Wextra -Werror)
-    set(HOST_LINK_LIBS "")  # not needed with MinGW/clang on Windows
-  endif()
-else()
-  # POSIX hosts
-  find_program(HOST_CC NAMES gcc clang cc REQUIRED)
-  set(HOST_IS_MSVC FALSE)
-  set(HOST_EXE "")
-  set(HOST_O2 -O2)
-  set(HOST_I -I)
-  set(HOST_D -D)
-  set(HOST_OUT -o)
-  set(HOST_FO "")
-  set(HOST_WARN -Wall -Wextra -Werror)
-  set(HOST_LINK_LIBS "")
+    set(HOST_LINK_LIBS "")
 endif()
 
+# ------------------------------------------------------------------------------
 # Common includes/defines for host tools
+# ------------------------------------------------------------------------------
 set(HOST_INCLUDES
-  ${HOST_I}${CMAKE_SOURCE_DIR}/tools/keytools
-  ${HOST_I}${CMAKE_SOURCE_DIR}/lib/wolfssl
-  ${HOST_I}${CMAKE_SOURCE_DIR}/include
-  ${HOST_I}${CMAKE_CURRENT_BINARY_DIR}
+    ${HOST_I}${CMAKE_SOURCE_DIR}/tools/keytools
+    ${HOST_I}${CMAKE_SOURCE_DIR}/lib/wolfssl
+    ${HOST_I}${CMAKE_SOURCE_DIR}/include
+    ${HOST_I}${CMAKE_CURRENT_BINARY_DIR}
 )
 set(HOST_DEFS
-  ${HOST_D}WOLFSSL_USER_SETTINGS
-  ${HOST_D}IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
-  ${HOST_D}DELTA_UPDATES
+    ${HOST_D}WOLFSSL_USER_SETTINGS
+    ${HOST_D}IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
+    ${HOST_D}DELTA_UPDATES
 )
 
 # --- Windows unistd.h shim for MSVC host builds ---
@@ -146,12 +173,11 @@ if(CMAKE_HOST_WIN32 AND HOST_IS_MSVC)
 
   # Prepend shim include so it is found first
   list(INSERT HOST_INCLUDES 0 ${HOST_I}$<SHELL_PATH:${HOST_SHIM_DIR}>)
-endif()
+endif() # Windows Host Shim
 
 
 include(cmake/load_dot_config.cmake)
 include(cmake/utils.cmake)
-include(cmake/functions.cmake)
 
 include_directories(include)
 include_directories(lib/wolfssl)
@@ -184,6 +210,13 @@ if(false) # my Windows
 endif()
 
 
+#---------------------------------------------------------------------------------------------
+# There are different configuration modes:
+#
+#   - Command-line options
+#   - Using a .config file. See load_dot_config()
+#   - Using CMake Presets. (preferred, use cacheVariables from CMakePresets.json)
+#---------------------------------------------------------------------------------------------
 
 # Where should configuration values come from?
 #   dot     : parse .config via load_dot_config()
@@ -203,10 +236,10 @@ if(WOLFBOOT_CONFIG_MODE STREQUAL "dot")
     load_dot_config("${CMAKE_SOURCE_DIR}/.config")
 
 elseif(WOLFBOOT_CONFIG_MODE STREQUAL "preset")
-  message(STATUS "Config mode: preset (using cacheVariables; skipping .config)")
+    message(STATUS "Config mode: preset (using cacheVariables; skipping .config)")
 
 else()
-  message(STATUS "Not using .config nor CMakePresets.json for WOLFBOOT_CONFIG_MODE.")
+    message(STATUS "Not using .config nor CMakePresets.json for WOLFBOOT_CONFIG_MODE.")
 endif()
 
 
@@ -396,9 +429,9 @@ else()
 
 
 
-    # -----------------------------------------------------------------------------
+    #-----------------------------------------------------------------------------------------
     # Toolchain Specifications
-    # -----------------------------------------------------------------------------
+    #-----------------------------------------------------------------------------------------
     if(NOT CMAKE_C_COMPILER)
         # Ensure include only once
         if(ARCH STREQUAL "ARM")
@@ -409,9 +442,10 @@ else()
     endif()
 
 endif()
-# -----------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------------------
 # Architecture/CPU configuration
-# -----------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 set(UPDATE_SOURCES src/update_flash.c)
 
 # Default flash offset
@@ -502,9 +536,9 @@ if(${WOLFBOOT_TARGET} STREQUAL "x86_64_efi")
     set(UPDATE_SOURCES src/update_ram.c)
 endif()
 
-# -----------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 # DSA Settings
-# -----------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 if(SIGN STREQUAL "NONE")
     list(APPEND KEYTOOL_OPTIONS --no-sign)
     message(STATUS "Image signing disabled")
@@ -679,6 +713,10 @@ list(APPEND WOLFBOOT_DEFS IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE})
 list(APPEND WOLFBOOT_DEFS ${SIGN_OPTIONS})
 
 list(APPEND WOLFBOOT_COMPILE_OPTIONS -Wstack-usage=${STACK_USAGE} -Wno-unused)
+
+#---------------------------------------------------------------------------------------------
+#
+#---------------------------------------------------------------------------------------------
 
 if(PULL_LINKER_DEFINES)
     list(APPEND WOLFBOOT_DEFS PULL_LINKER_DEFINES)
@@ -909,7 +947,9 @@ target_compile_options(wolfboothal PRIVATE ${WOLFBOOT_COMPILE_OPTIONS} ${EXTRA_C
 message(STATUS "Using C Keytools")
 message(STATUS "Using C Keytools")
 
+#---------------------------------------------------------------------------------------------
 # define sources/flags BEFORE the custom commands that use them
+#---------------------------------------------------------------------------------------------
 list(
     APPEND
     KEYTOOL_SOURCES
@@ -964,7 +1004,9 @@ list(APPEND  KEYTOOL_FLAGS
 )
 
 
-# --- sign ---
+#---------------------------------------------------------------------------------------------
+# sign tool
+#---------------------------------------------------------------------------------------------
 set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
 set(SIGN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_sign")
 if( "${HOST_EXE}" STREQUAL "")
@@ -990,8 +1032,9 @@ endif()
 add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
 set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 
-
-# --- keygen ---
+#---------------------------------------------------------------------------------------------
+# keygen
+#---------------------------------------------------------------------------------------------
 set(KEYGEN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/keygen${HOST_EXE})
 set(KEYGEN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_keygen")
 if( "${HOST_EXE}" STREQUAL "")
@@ -1024,7 +1067,9 @@ list(APPEND WOLFBOOT_INCLUDE_DIRS ${WOLFBOOT_ROOT} ${WOLFBOOT_ROOT}/include)
 # set default linker script
 set(WOLFBOOT_LSCRIPT_TEMPLATE hal/${WOLFBOOT_TARGET}.ld)
 
+#---------------------------------------------------------------------------------------------
 # wolfcrypt
+#---------------------------------------------------------------------------------------------
 add_subdirectory(lib)
 
 if(BUILD_TEST_APPS OR BUILD_IMAGE)
@@ -1087,11 +1132,9 @@ target_include_directories(target BEFORE INTERFACE ${CMAKE_CURRENT_BINARY_DIR} l
 
 set(KEYSTORE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
 
-
-
-
-
-
+#---------------------------------------------------------------------------------------------
+#
+#---------------------------------------------------------------------------------------------
 if(NOT SIGN STREQUAL "NONE")
     add_custom_target(keystore DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL} ${KEYSTORE})
 

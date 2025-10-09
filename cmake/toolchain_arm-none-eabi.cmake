@@ -76,27 +76,27 @@ endif()
 
 # Some sanity checks on compiler and target OS
 if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
-  if("${TARGET_OS}" STREQUAL "")
-    message(STATUS "Warning: cmake presets should define TARGET_OS = [WINDOWS | LINUX]")
-  endif()
-  if(WIN32)
-    if("${TARGET_OS}" STREQUAL "LINUX")
-      message(FATAL_ERROR "Linux presets are not supported in Windows. Choose a different preset.")
+    if("${TARGET_OS}" STREQUAL "")
+        message(STATUS "Warning: cmake presets should define TARGET_OS = [WINDOWS | LINUX]")
     endif()
-  else()
-    if("${TARGET_OS}" STREQUAL "Windows")
-      message(FATAL_ERROR "Windows presets are only supported on Windows. Choose a different preset.")
+    if(WIN32)
+        if("${TARGET_OS}" STREQUAL "LINUX")
+            message(FATAL_ERROR "Linux presets are not supported in Windows. Choose a different preset.")
+        endif()
+    else()
+        if("${TARGET_OS}" STREQUAL "Windows")
+            message(FATAL_ERROR "Windows presets are only supported on Windows. Choose a different preset.")
+        endif()
     endif()
-  endif()
-  message(FATAL_ERROR "arm-none-eabi toolchain not found. Set ARM_GCC_BIN or add to PATH.")
+    message(FATAL_ERROR "arm-none-eabi toolchain not found. Set ARM_GCC_BIN or add to PATH.")
 endif()
 
 
 
 
-# -----------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 # Set compiler/linker flags
-#-----------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 set(OBJECT_GEN_FLAGS
     "${MCPU_FLAGS} -Wall -Wextra -Wno-main -ffreestanding -Wno-unused -ffunction-sections -fdata-sections"
 )
@@ -106,12 +106,12 @@ set(CMAKE_C_FLAGS   "${OBJECT_GEN_FLAGS}" CACHE INTERNAL "C Compiler options")
 set(CMAKE_ASM_FLAGS "${OBJECT_GEN_FLAGS}" CACHE INTERNAL "ASM Compiler options")
 set(CMAKE_EXE_LINKER_FLAGS "${MCPU_FLAGS} ${LD_FLAGS} -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs" CACHE INTERNAL "Linker options")
 
-#---------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 # Set compilers and toolchain utilities
-#---------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 # Derive toolchain helper paths from the chosen compiler
-#---------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 get_filename_component(_BIN_DIR "${CMAKE_C_COMPILER}" DIRECTORY)
 if(WIN32)
   set(_EXE ".exe")

@@ -84,6 +84,20 @@ make
 
 ### VS Code
 
+#### Launch Stand-alone VS Code
+
+#### Launch VS Code from VS 2022 Command prompt.
+
+Delete any existing `build` or `build-[os]-[target]` directories as needed.
+
+Open a VS 2022 Developer command prompt.
+
+From the command prompt, open the `wolfBoot.code-workspace` VS Code workspace:
+
+```dos
+cd c:\workspace\wolfboot-%USERNAME%
+code ./IDE/VSCode/wolfBoot.code-workspace
+```
 
 ### Visual Studio
 
