@@ -1,4 +1,4 @@
-name: Wolfboot CMake Build
+name: Wolfboot CMake Build (Ubuntu)
 on:
   push:
     branches: [ '*' ]
@@ -62,7 +62,6 @@ jobs:
 
       - name: Install requirements
         run: |
-          sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu/|http://mirror.arizona.edu/ubuntu/|g' /etc/apt/sources.list
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi gcc-powerpc-linux-gnu cmake
 
