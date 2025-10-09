@@ -55,7 +55,7 @@ if(NOT FOUND_STM32L4_LIB)
       # Pick a tag you want to lock to:
       GIT_TAG        v1.13.5
       GIT_SHALLOW    TRUE
-      GIT_PROGRESS   TRUE
+      GIT_PROGRESS   FALSE
     )
 
     # CMSIS device headers for L4
@@ -64,7 +64,7 @@ if(NOT FOUND_STM32L4_LIB)
       GIT_REPOSITORY https://github.com/STMicroelectronics/cmsis_device_l4.git
       GIT_TAG        v1.7.4
       GIT_SHALLOW    TRUE
-      GIT_PROGRESS   TRUE
+      GIT_PROGRESS   FALSE
     )
 
     # CMSIS Core headers
@@ -73,7 +73,7 @@ if(NOT FOUND_STM32L4_LIB)
       GIT_REPOSITORY https://github.com/ARM-software/CMSIS_5.git
       GIT_TAG        5.9.0
       GIT_SHALLOW    TRUE
-      GIT_PROGRESS   TRUE
+      GIT_PROGRESS   FALSE
     )
 
     FetchContent_MakeAvailable(st_hal cmsis_dev cmsis_core)
