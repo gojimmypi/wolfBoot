@@ -42,6 +42,11 @@ endif()
 
 if(NOT FOUND_STM32L4_LIB)
     include(FetchContent)
+    # TIP: Always pin a real tag/commit; avoid main/master.
+
+    # Make behavior explicit & chatty while debugging
+    set(FETCHCONTENT_QUIET OFF)
+    set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/_deps")
 
     # HAL driver
     message(STATUS "Fetching https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git")
@@ -49,6 +54,8 @@ if(NOT FOUND_STM32L4_LIB)
       GIT_REPOSITORY https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git
       # Pick a tag you want to lock to:
       GIT_TAG        v1.13.5
+      GIT_SHALLOW    TRUE
+      GIT_PROGRESS   TRUE
     )
 
     # CMSIS device headers for L4
@@ -56,6 +63,8 @@ if(NOT FOUND_STM32L4_LIB)
     FetchContent_Declare(cmsis_dev
       GIT_REPOSITORY https://github.com/STMicroelectronics/cmsis_device_l4.git
       GIT_TAG        v1.7.4
+      GIT_SHALLOW    TRUE
+      GIT_PROGRESS   TRUE
     )
 
     # CMSIS Core headers
@@ -63,6 +72,8 @@ if(NOT FOUND_STM32L4_LIB)
     FetchContent_Declare(cmsis_core
       GIT_REPOSITORY https://github.com/ARM-software/CMSIS_5.git
       GIT_TAG        5.9.0
+      GIT_SHALLOW    TRUE
+      GIT_PROGRESS   TRUE
     )
 
     FetchContent_MakeAvailable(st_hal cmsis_dev cmsis_core)
