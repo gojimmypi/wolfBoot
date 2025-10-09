@@ -94,7 +94,7 @@ Select `View` - `Terminal` from the menu bar.
 
 ```bash
 # delete build directory
-rm -r -fo build-windows-stm32l4
+rmdir /s /q build-windows-stm32l4
 
 # configure
 cmake --preset windows-stm32l4
@@ -361,6 +361,13 @@ USE_LOCAL_WOLFSSL=/usr/local pip3 install .
 
 The error `Key algorithm mismatch. Remove old keys via 'make keysclean'` indicates the current `.config` `SIGN` algorithm does not match what is in the generated `src/keystore.c` file.
 Use `make keysclean` to delete keys and regenerate.
+
+
+3.  Cannot open compiler generated file ... Permission denied
+
+```text
+sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.obj': Permission denied
+```
 
 
 ## Release Notes
@@ -756,7 +763,7 @@ Use `make keysclean` to delete keys and regenerate.
     * RP2350 (Raspberry Pi Pico 2, ARM Cortex-M33 with TrustZone)
     * NXP MCXA153
     * NXP MCXW716
-    * STM32F1 series (STM32F103 "Blue Pill"Â board)
+    * STM32F1 series (STM32F103 "Blue Pill"Ã‚Â board)
   * Improvements to supported targets
     * Xilinx UltraScale+ (ZynqMP)
         * Added hardware-accelerated SHA3 hashing via the CSU engine

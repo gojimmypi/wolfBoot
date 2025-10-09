@@ -963,34 +963,24 @@ list(APPEND  KEYTOOL_FLAGS
     -DDELTA_UPDATES
 )
 
-set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
 
 # --- sign ---
 set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
 set(SIGN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_sign")
-
-if(0)
-    add_custom_command(
-      OUTPUT ${SIGN_TOOL}
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
-      COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
-              ${HOST_INCLUDES} ${HOST_DEFS}
-              # /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
-              $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
-              ${KEYTOOL_SOURCES_ABS}
-              ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
-              ${HOST_LINK_LIBS}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Building signing tool"
-    )
+if( "${HOST_EXE}" STREQUAL "")
+    set(HOST_FO_SIGN "") # No /Fo for most environments
 else()
+    # isolate objs only for Windows (.exe)
+    set(HOST_FO_SIGN "/Fo$<SHELL_PATH:${SIGN_OBJDIR}/>")
+endif()
 
+set(HOST_FO_DIR "/sign")
     add_custom_command(
       OUTPUT ${SIGN_TOOL}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
       COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
               ${HOST_INCLUDES} ${HOST_DEFS}
-              /Fo$<SHELL_PATH:${SIGN_OBJDIR}/>          # isolate objs
+              /Fo$<SHELL_PATH:${SIGN_OBJDIR}/> # ${HOST_FO_SIGN}
               $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
               ${KEYTOOL_SOURCES_ABS}
               ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
@@ -998,7 +988,6 @@ else()
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Building signing tool"
     )
-endif()
 add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
 set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 
@@ -1006,28 +995,19 @@ set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 # --- keygen ---
 set(KEYGEN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/keygen${HOST_EXE})
 set(KEYGEN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_keygen")
-
-if(0)
-add_custom_command(
-  OUTPUT ${KEYGEN_TOOL}
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${KEYGEN_OBJDIR}
-  COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
-          ${HOST_INCLUDES} ${HOST_DEFS}
-          # /Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>        # isolate objs
-          $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
-          ${KEYTOOL_SOURCES_ABS}
-          ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
-          ${HOST_LINK_LIBS}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  COMMENT "Building keygen tool"
-)
+if( "${HOST_EXE}" STREQUAL "")
+    set(HOST_FO_KEYGEN "") # No /Fo for most environments
 else()
+    # isolate objs only for Windows (.exe)
+    set(HOST_FO_KEYGEN "/Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>")
+endif()
+
 add_custom_command(
   OUTPUT ${KEYGEN_TOOL}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${KEYGEN_OBJDIR}
   COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
           ${HOST_INCLUDES} ${HOST_DEFS}
-          /Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>        # isolate objs
+          ${HOST_FO_KEYGEN}
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
           ${KEYTOOL_SOURCES_ABS}
           ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
@@ -1035,7 +1015,6 @@ add_custom_command(
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Building keygen tool"
 )
-endif()
 
 add_custom_target(keygen_build DEPENDS ${KEYGEN_TOOL})
 add_dependencies(keytools keygen_build)

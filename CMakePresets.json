@@ -72,6 +72,7 @@
       "displayName": "Linux/WSL ARM (stm32l4)",
       "generator": "Ninja",
       "cacheVariables": {
+        "TARGET_OS":  "LINUX",
         "WOLFBOOT_CONFIG_MODE": "preset",
         "VISUALGDB": "ON",
         "VISUALGDB_BASE": "/mnt/c/Users/$penv{USERNAME}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx",
@@ -115,6 +116,7 @@
         "PATH": "$penv{LOCALAPPDATA}/Microsoft/WinGet/Links;C:/Program Files (x86)/Arm GNU Toolchain/14.2 rel1/bin;$penv{PATH}"
       },
       "cacheVariables": {
+        "TARGET_OS": "WINDOWS",
         "WOLFBOOT_CONFIG_MODE": "preset",
         "VISUALGDB": "ON",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
