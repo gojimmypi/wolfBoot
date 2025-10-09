@@ -30,6 +30,7 @@
 # $ cmake --build .
 
 cmake_minimum_required(VERSION 3.16)
+include(cmake/config_defaults.cmake)
 
 # ------------------------------------------------------------------------------
 # Initial environment checks
@@ -59,7 +60,6 @@ project(wolfBoot)
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 include(cmake/functions.cmake)
-
 
 set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
 
@@ -897,18 +897,26 @@ target_sources(wolfboothal PRIVATE include/hal.h hal/${WOLFBOOT_TARGET}.c ${WOLF
 
 # --- HAL for STM32L4 (only the pieces we need) ---
 if(WOLFBOOT_TARGET STREQUAL "stm32l4")
-    if(CMAKE_HOST_WIN32)
-        message(STATUS "Win32 Paths")
-        set(HAL_BASE "c:/Users/gojimmypi/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+    if(CMAKE_HOST_WIN32 AND IS_DIRECTORY "${LIB_STM32L4_WINDOWS}" )
+        message(STATUS "Win32 Path found: ${LIB_STM32L4_WINDOWS}")
+        set(HAL_BASE "${LIB_STM32L4_WINDOWS}")
+    elseif(IS_DIRECTORY "${LIB_STM32L4_WSL}")
+        message(STATUS "WSL Path found: ${LIB_STM32L4_WSL}")
+        set(HAL_BASE "${LIB_STM32L4_WSL}")
     else()
-        message(STATUS "WSL Paths")
-        set(HAL_BASE "/mnt/c/Users/gojimmypi/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+        message(STATUS "STM32L4 Path bot found")
+        set(HAL_BASE "")
     endif()
-    set(HAL_DRV  "${HAL_BASE}/STM32L4xx_HAL_Driver")
-    set(HAL_CMSIS_DEV "${HAL_BASE}/CMSIS_HAL/Device/ST/STM32L4xx/Include")
-    set(HAL_CMSIS_CORE "${HAL_BASE}/CMSIS_HAL/Include")
-    set(HAL_TEMPLATE_INC "${HAL_BASE}/VendorSamples/L4/Projects/B-L475E-IOT01A/Templates/Inc")
 
+    if(false)
+
+        set(HAL_DRV  "${HAL_BASE}/STM32L4xx_HAL_Driver")
+        set(HAL_CMSIS_DEV "${HAL_BASE}/CMSIS_HAL/Device/ST/STM32L4xx/Include")
+        set(HAL_CMSIS_CORE "${HAL_BASE}/CMSIS_HAL/Include")
+        set(HAL_TEMPLATE_INC "${HAL_BASE}/VendorSamples/L4/Projects/B-L475E-IOT01A/Templates/Inc")
+    endif()
+
+    message(STATUS "HAL_DRV=${HAL_DRV}")
     add_library(stm32l4_hal STATIC
         ${HAL_DRV}/Src/stm32l4xx_hal.c
         ${HAL_DRV}/Src/stm32l4xx_hal_flash.c

@@ -19,6 +19,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
 #
 
+# This is NOT a place for device-specific project settings. For that, see CMakePresets.json
+
+set(FOUND_STM32L4_LIB false)
 include(cmake/current_user.cmake)
 
 get_current_user(CURRENT_USER)
@@ -26,3 +29,46 @@ message(STATUS "Current user detected: ${CURRENT_USER}")
 
 set(LIB_STM32L4_WINDOWS "c:/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
 set(LIB_STM32L4_WSL "/mnt/c/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+
+if(IS_DIRECTORY "${LIB_STM32L4_WINDOWS}")
+    set(FOUND_STM32L4_LIB true)
+    message(STATUS "LIB_STM32L4_WINDOWS found: ${LIB_STM32L4_WINDOWS}")
+endif()
+
+if(IS_DIRECTORY "${LIB_STM32L4_WSL}")
+    set(FOUND_STM32L4_LIB true)
+    message(STATUS "LIB_STM32L4_WSL found: ${LIB_STM32L4_WSL}")
+endif()
+
+if(NOT FOUND_STM32L4_LIB)
+    include(FetchContent)
+
+    # HAL driver
+    message(STATUS "Fetching https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git")
+    FetchContent_Declare(st_hal
+      GIT_REPOSITORY https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git
+      # Pick a tag you want to lock to:
+      GIT_TAG        v1.13.5
+    )
+
+    # CMSIS device headers for L4
+    message(STATUS "Fetching https://github.com/STMicroelectronics/cmsis_device_l4.git")
+    FetchContent_Declare(cmsis_dev
+      GIT_REPOSITORY https://github.com/STMicroelectronics/cmsis_device_l4.git
+      GIT_TAG        v1.7.4
+    )
+
+    # CMSIS Core headers
+    message(STATUS "Fetching https://github.com/ARM-software/CMSIS_5.git")
+    FetchContent_Declare(cmsis_core
+      GIT_REPOSITORY https://github.com/ARM-software/CMSIS_5.git
+      GIT_TAG        5.9.0
+    )
+
+    FetchContent_MakeAvailable(st_hal cmsis_dev cmsis_core)
+
+    # Map to the include structures of the fetched repos
+    set(HAL_DRV        "${st_hal_SOURCE_DIR}")                                   # Inc/, Src/
+    set(HAL_CMSIS_DEV  "${cmsis_dev_SOURCE_DIR}/Include")                        # device
+    set(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")            # core
+endif()

@@ -267,3 +267,5 @@ language.settings.xml
 /**/build
 /**/build-**
 
+/IDE/VisualGDB
+/IDE/VisualStudio
