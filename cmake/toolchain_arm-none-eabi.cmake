@@ -74,7 +74,20 @@ else()
   endif()
 endif()
 
+# Some sanity checks on compiler and target OS
 if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
+  if("${TARGET_OS}" STREQUAL "")
+    message(STATUS "Warning: cmake presets should define TARGET_OS = [WINDOWS | LINUX]")
+  endif()
+  if(WIN32)
+    if("${TARGET_OS}" STREQUAL "LINUX")
+      message(FATAL_ERROR "Linux presets are not supported in Windows. Choose a different preset.")
+    endif()
+  else()
+    if("${TARGET_OS}" STREQUAL "Windows")
+      message(FATAL_ERROR "Windows presets are only supported on Windows. Choose a different preset.")
+    endif()
+  endif()
   message(FATAL_ERROR "arm-none-eabi toolchain not found. Set ARM_GCC_BIN or add to PATH.")
 endif()
 
@@ -122,7 +135,7 @@ message(STATUS "Cross-compiling using GNU arm-none-eabi toolchain")
 
 # Options for DEBUG build
 # -Og   Enables optimizations that do not interfere with debugging.
-# -g    Produce debugging information in the operating systemÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s native format.
+# -g    Produce debugging information in the operating systemÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s native format.
 set(CMAKE_C_FLAGS_DEBUG         "-Og -g"    CACHE INTERNAL "C Compiler options for debug build type")
 set(CMAKE_CXX_FLAGS_DEBUG       "-Og -g"    CACHE INTERNAL "C++ Compiler options for debug build type")
 set(CMAKE_ASM_FLAGS_DEBUG       "-g"        CACHE INTERNAL "ASM Compiler options for debug build type")
