@@ -24,7 +24,6 @@
         "VISUALGDB": "ON",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
         "ARM_GCC_BIN": "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin",
-        "CMAKE_MAKE_PROGRAM": "C:/Users/$penv{USERNAME}/AppData/Local/Microsoft/WinGet/Packages/Ninja-build.Ninja_Microsoft.Winget.Source_8wekyb3d8bbwe/ninja.exe",
         "CMAKE_C_STANDARD_INCLUDE_DIRECTORIES": "c:/Users/$penv{USERNAME}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/VendorSamples/L4/Projects/B-L475E-IOT01A/Templates/Inc",
         "WOLFBOOT_TARGET": "stm32l4"
       }
@@ -175,7 +174,6 @@
         "VISUALGDB": "ON",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
         "ARM_GCC_BIN": "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin",
-        "CMAKE_MAKE_PROGRAM": "C:/Users/$penv{USERNAME}/AppData/Local/Microsoft/WinGet/Packages/Ninja-build.Ninja_Microsoft.Winget.Source_8wekyb3d8bbwe/ninja.exe",
         "CMAKE_C_STANDARD_INCLUDE_DIRECTORIES": "c:/Users/$penv{USERNAME}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/VendorSamples/L4/Projects/B-L475E-IOT01A/Templates/Inc",
         "WOLFBOOT_TARGET": "stm32l4",
         "STM32L4_PART": "STM32L475xx",
