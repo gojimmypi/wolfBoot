@@ -15,7 +15,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [Release, Debug]
         target:
           - stm32l4
           - stm32h7
@@ -55,13 +54,33 @@ jobs:
           echo "MSVC (via vswhere):"
           "%ProgramFiles(x86)%/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion || true
 
+      - name: Build via cmd inline
+        shell: cmd
+        run: |
+          if exist build-windows-stm32l4 rmdir /s /q build-windows-stm32l4
+          cmake --preset windows-stm32l4
+          cmake --build --preset windows-stm32l4 --parallel %NUMBER_OF_PROCESSORS%
+
+      - name: Build via batch (cmd)
+        shell: cmd
+        run: |
+          # Call my_test.bat
+
+          call my_test.bat
+          #
+
+            # -DWOLFBOOT_PARTITION_BOOT_ADDRESS=0x8020000
+            # -DWOLFBOOT_SECTOR_SIZE=0x20000
+            # -DWOLFBOOT_PARTITION_SIZE=0xD0000
+            # -DWOLFBOOT_PARTITION_UPDATE_ADDRESS=0x80F0000
+            # -DWOLFBOOT_PARTITION_SWAP_ADDRESS=0x81C0000
+
       # Ensure a predictable out dir per target/config
       - name: Configure (CMake + Ninja)
         shell: bash
         run: |
-          BUILD_DIR="build-${{ matrix.target }}-${{ matrix.build_type }}"
+          BUILD_DIR="build-${{ matrix.target }}"
           cmake -S . -B "$BUILD_DIR" -G Ninja \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
             -DWOLFBOOT_CONFIG_MODE=preset \
             -DWOLFBOOT_TARGET=${{ matrix.target }} \
@@ -72,7 +91,8 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          BUILD_DIR="build-${{ matrix.target }}-${{ matrix.build_type }}"
+          # runs in git bash
+          BUILD_DIR="build-${{ matrix.target }}"
           cmake --build "$BUILD_DIR" --parallel
 
       # Optional: show interesting artifacts
@@ -80,7 +100,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          BUILD_DIR="build-${{ matrix.target }}-${{ matrix.build_type }}"
+          BUILD_DIR="build-${{ matrix.target }}"
           echo "=== Artifacts in $BUILD_DIR ==="
           find "$BUILD_DIR" -maxdepth 3 -type f \( -name "*.elf" -o -name "*.bin" -o -name "*.hex" -o -name "bin-assemble" -o -name "keystore" \) -print || true
 
@@ -89,9 +109,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wolfboot-${{ matrix.target }}-${{ matrix.build_type }}
+          name: wolfboot-${{ matrix.target }}
           path: |
-            build-${{ matrix.target }}-${{ matrix.build_type }}/**/*.elf
-            build-${{ matrix.target }}-${{ matrix.build_type }}/**/*.bin
-            build-${{ matrix.target }}-${{ matrix.build_type }}/**/*.hex
+            build-${{ matrix.target }}/**/*.elf
+            build-${{ matrix.target }}/**/*.bin
+            build-${{ matrix.target }}/**/*.hex
           if-no-files-found: warn
