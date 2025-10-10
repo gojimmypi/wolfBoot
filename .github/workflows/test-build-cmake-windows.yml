@@ -80,7 +80,7 @@ jobs:
 
       # ARM GCC toolchain (adds the bin dir to PATH)
       - name: Set up ARM none-eabi GCC 14.x
-        uses: carlosperate/setup-arm-none-eabi-gcc@v1
+        uses: carlosperate/arm-none-eabi-gcc-action@v1
         with:
           version: "14.2.Rel1"
 
