@@ -1,4 +1,4 @@
-# toolchain_arm-none-eabi.cmake
+# wolfboot/cmake/toolchain_arm-none-eabi.cmake
 #
 # Copyright (C) 2022 wolfSSL Inc.
 #
@@ -50,28 +50,28 @@ endif()
 set(ARM_GCC_BIN "" CACHE PATH "Path to Arm GNU Toolchain 'bin' directory")
 
 if(WIN32)
-  if(ARM_GCC_BIN)
-    file(TO_CMAKE_PATH "${ARM_GCC_BIN}" _BIN)
-    set(CMAKE_C_COMPILER   "${_BIN}/arm-none-eabi-gcc.exe"   CACHE FILEPATH "" FORCE)
-    set(CMAKE_CXX_COMPILER "${_BIN}/arm-none-eabi-g++.exe"   CACHE FILEPATH "" FORCE)
-    set(CMAKE_ASM_COMPILER "${_BIN}/arm-none-eabi-gcc.exe"   CACHE FILEPATH "" FORCE)
-  else()
-    # Try PATH
-    find_program(CMAKE_C_COMPILER   NAMES arm-none-eabi-gcc.exe)
-    find_program(CMAKE_CXX_COMPILER NAMES arm-none-eabi-g++.exe)
-    set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}" CACHE FILEPATH "" FORCE)
-  endif()
+    if(ARM_GCC_BIN)
+        file(TO_CMAKE_PATH "${ARM_GCC_BIN}" _BIN)
+        set(CMAKE_C_COMPILER   "${_BIN}/arm-none-eabi-gcc.exe"   CACHE FILEPATH "" FORCE)
+        set(CMAKE_CXX_COMPILER "${_BIN}/arm-none-eabi-g++.exe"   CACHE FILEPATH "" FORCE)
+        set(CMAKE_ASM_COMPILER "${_BIN}/arm-none-eabi-gcc.exe"   CACHE FILEPATH "" FORCE)
+    else()
+        # Try PATH
+        find_program(CMAKE_C_COMPILER   NAMES arm-none-eabi-gcc.exe)
+        find_program(CMAKE_CXX_COMPILER NAMES arm-none-eabi-g++.exe)
+        set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}" CACHE FILEPATH "" FORCE)
+    endif()
 else()
-  if(ARM_GCC_BIN)
-    file(TO_CMAKE_PATH "${ARM_GCC_BIN}" _BIN)
-    set(CMAKE_C_COMPILER   "${_BIN}/arm-none-eabi-gcc" CACHE FILEPATH "" FORCE)
-    set(CMAKE_CXX_COMPILER "${_BIN}/arm-none-eabi-g++" CACHE FILEPATH "" FORCE)
-    set(CMAKE_ASM_COMPILER "${_BIN}/arm-none-eabi-gcc" CACHE FILEPATH "" FORCE)
-  else()
-    find_program(CMAKE_C_COMPILER   NAMES arm-none-eabi-gcc)
-    find_program(CMAKE_CXX_COMPILER NAMES arm-none-eabi-g++)
-    set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}" CACHE FILEPATH "" FORCE)
-  endif()
+    if(ARM_GCC_BIN)
+        file(TO_CMAKE_PATH "${ARM_GCC_BIN}" _BIN)
+        set(CMAKE_C_COMPILER   "${_BIN}/arm-none-eabi-gcc" CACHE FILEPATH "" FORCE)
+        set(CMAKE_CXX_COMPILER "${_BIN}/arm-none-eabi-g++" CACHE FILEPATH "" FORCE)
+        set(CMAKE_ASM_COMPILER "${_BIN}/arm-none-eabi-gcc" CACHE FILEPATH "" FORCE)
+    else()
+        find_program(CMAKE_C_COMPILER   NAMES arm-none-eabi-gcc)
+        find_program(CMAKE_CXX_COMPILER NAMES arm-none-eabi-g++)
+        set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}" CACHE FILEPATH "" FORCE)
+    endif()
 endif()
 
 # Some sanity checks on compiler and target OS
@@ -90,9 +90,6 @@ if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
     endif()
     message(FATAL_ERROR "arm-none-eabi toolchain not found. Set ARM_GCC_BIN or add to PATH.")
 endif()
-
-
-
 
 #---------------------------------------------------------------------------------------------
 # Set compiler/linker flags
@@ -114,9 +111,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${MCPU_FLAGS} ${LD_FLAGS} -Wl,--gc-sections --specs=
 #---------------------------------------------------------------------------------------------
 get_filename_component(_BIN_DIR "${CMAKE_C_COMPILER}" DIRECTORY)
 if(WIN32)
-  set(_EXE ".exe")
+    set(_EXE ".exe")
 else()
-  set(_EXE "")
+    set(_EXE "")
 endif()
 
 set(TOOLCHAIN_AR      "${_BIN_DIR}/arm-none-eabi-ar${_EXE}"      CACHE INTERNAL "")
@@ -135,7 +132,7 @@ message(STATUS "Cross-compiling using GNU arm-none-eabi toolchain")
 
 # Options for DEBUG build
 # -Og   Enables optimizations that do not interfere with debugging.
-# -g    Produce debugging information in the operating systemÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s native format.
+# -g    Produce debugging information in the operating systemÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s native format.
 set(CMAKE_C_FLAGS_DEBUG         "-Og -g"    CACHE INTERNAL "C Compiler options for debug build type")
 set(CMAKE_CXX_FLAGS_DEBUG       "-Og -g"    CACHE INTERNAL "C++ Compiler options for debug build type")
 set(CMAKE_ASM_FLAGS_DEBUG       "-g"        CACHE INTERNAL "ASM Compiler options for debug build type")
