@@ -1,0 +1,35 @@
+name: WolfBoot CMake Build (macOS)
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  macos-cmake:
+    name: Build on macOS (CMake + Ninja)
+    runs-on: macos-14
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install toolchain and build tools
+        run: |
+          brew update
+          brew install cmake ninja arm-none-eabi-gcc
+
+      - name: Configure (STM32L4)
+        run: |
+          rm -rf build
+          cmake -B build -G Ninja \
+            -DWOLFBOOT_TARGET=stm32l4 \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
+            -DBUILD_TEST_APPS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
