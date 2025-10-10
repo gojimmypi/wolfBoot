@@ -52,7 +52,7 @@ jobs:
           ninja --version
           echo
           echo "MSVC (via vswhere):"
-          & "%ProgramFiles(x86)%/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion || true
+          cmd.exe /c "\"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe\" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion"
 
       - name: Build via cmd inline
         shell: cmd
