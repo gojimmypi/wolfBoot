@@ -12,17 +12,47 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 20
 
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"    # avoid updating taps during install
+      HOMEBREW_NO_ANALYTICS: "1"
+      HOMEBREW_CURL_RETRIES: "6"      # ask curl inside brew to retry
+
     steps:
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
           submodules: true
 
+      - name: Cache Homebrew bottles # downloads (so retries don’t redownload)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /Users/runner/Library/Caches/Homebrew
+          key: homebrew-${{ runner.os }}-mac14-cmake-gcc-newlib
+          restore-keys: |
+            homebrew-${{ runner.os }}-
+
       - name: Install toolchain and build tools
         run: |
-          brew update
-          brew install cmake ninja arm-none-eabi-gcc
+          # Install with step throttle to hopefully avoid stuck jobs
 
+          set -euxo pipefail
+
+          throttle_delay=delay=5
+          brew update
+
+          sleep "$throttle_delay"
+          brew install --force-bottle cmake
+
+          sleep "$throttle_delay"
+          brew install --force-bottle ninja
+
+          sleep "$throttle_delay"
+          brew install --force-bottle arm-none-eabi-gcc
+
+          # On macOS/Homebrew, arm-none-eabi-gcc does not ship the C library headers, so install:
+          brew install --force-bottle arm-none-eabi-newlib
 
       - name: Configure (STM32L4)
         run: |
