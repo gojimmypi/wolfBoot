@@ -1,5 +1,10 @@
 {
   "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "base",
@@ -16,7 +21,7 @@
         "PATH": "$penv{LOCALAPPDATA}/Microsoft/WinGet/Links;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin;$penv{PATH}"
       },
       "cacheVariables": {
-        "ENV_REMINDER":  "use env for cache, penv elsewhere",
+        "ENV_REMINDER": "use env for cache, penv elsewhere",
         "TARGET_OS": "WINDOWS",
         "WOLFBOOT_CONFIG_MODE": "preset",
         "VISUALGDB": "ON",
@@ -151,6 +156,19 @@
       }
     },
     {
+      "name": "mac-stm32l4",
+      "displayName": "macOS ARM (STM32L4)",
+      "inherits": [ "base" ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-mac-stm32l4",
+      "cacheVariables": {
+        "WOLFBOOT_CONFIG_MODE": "preset",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
+        "WOLFBOOT_TARGET": "stm32l4",
+        "BUILD_TEST_APPS": "ON"
+      }
+    },
+    {
       "name": "windows-stm32l4",
       "inherits": [ "base" ],
       "displayName": "Windows - STM32L4 - Ninja",
@@ -202,13 +220,6 @@
   ],
   "buildPresets": [
     {
-      "name": "windows-stm32h7",
-      "configurePreset": "windows-stm32h7",
-      "jobs": 4,
-      "verbose": true,
-      "targets": [ "all" ]
-    },
-    {
       "name": "vs-debug-trace",
       "configurePreset": "vs-debug-trace",
       "jobs": 4,
@@ -230,8 +241,22 @@
       "targets": [ "all" ]
     },
     {
+      "name": "windows-stm32h7",
+      "configurePreset": "windows-stm32h7",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [ "all" ]
+    },
+    {
       "name": "windows-stm32l4",
       "configurePreset": "windows-stm32l4",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [ "all" ]
+    },
+    {
+      "name": "mac-stm32l4",
+      "configurePreset": "mac-stm32l4",
       "jobs": 4,
       "verbose": true,
       "targets": [ "all" ]

@@ -23,13 +23,22 @@ jobs:
           brew update
           brew install cmake ninja arm-none-eabi-gcc
 
+
       - name: Configure (STM32L4)
         run: |
           rm -rf build
-          cmake -B build -G Ninja \
-            -DWOLFBOOT_TARGET=stm32l4 \
-            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
-            -DBUILD_TEST_APPS=ON
+          cmake -B build -G Ninja         \
+            -DWOLFBOOT_CONFIG_MODE=preset \
+            -DWOLFBOOT_TARGET=stm32l4     \
+            -DBUILD_TEST_APPS=ON          \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake
+
+      - name: Presets
+        run: |
+          rm -rf ./build-mac-stm32l4
+
+          cmake --preset mac-stm32l4
+          cmake --build --preset mac-stm32l4
 
       - name: Build
         run: cmake --build build --parallel
