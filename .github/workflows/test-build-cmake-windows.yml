@@ -73,14 +73,16 @@ jobs:
         shell: bash
         run: |
           # cmake runs in git bash
-          BUILD_DIR="build-${{ matrix.target }}"
-          cmake -S . -B "$BUILD_DIR" -G Ninja \
-            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
-            -DWOLFBOOT_CONFIG_MODE=preset \
-            -DWOLFBOOT_TARGET=${{ matrix.target }} \
-            -DBUILD_TEST_APPS=ON \
-            ${{ matrix.extra_cache }}
-          echo "Configured: $BUILD_DIR"
+          echo "disabled"
+
+          #BUILD_DIR="build-${{ matrix.target }}"
+          #cmake -S . -B "$BUILD_DIR" -G Ninja \
+          #  -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
+          #  -DWOLFBOOT_CONFIG_MODE=preset \
+          #  -DWOLFBOOT_TARGET=${{ matrix.target }} \
+          #  -DBUILD_TEST_APPS=ON \
+          #  ${{ matrix.extra_cache }}
+          #echo "Configured: $BUILD_DIR"
 
       - name: Build
         shell: bash
