@@ -39,7 +39,7 @@ jobs:
 
           set -euxo pipefail
 
-          throttle_delay=delay=5
+          throttle_delay=5
           brew update
 
           sleep "$throttle_delay"
