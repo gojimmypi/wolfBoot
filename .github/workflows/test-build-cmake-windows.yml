@@ -65,14 +65,14 @@ jobs:
       - name: Build via batch (cmd)
         shell: cmd
         run: |
-          :: Call my_test.bat
+          :: # Call my_test.bat
 
           call my_test.bat
 
       - name: Configure (CMake + Ninja)
         shell: bash
         run: |
-          :: # cmake runs in git bash
+          # cmake runs in git bash
           BUILD_DIR="build-${{ matrix.target }}"
           cmake -S . -B "$BUILD_DIR" -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
@@ -85,7 +85,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          :: # cmake runs in git bash
+          # cmake runs in git bash
           BUILD_DIR="build-${{ matrix.target }}"
           cmake --build "$BUILD_DIR" --parallel
 
