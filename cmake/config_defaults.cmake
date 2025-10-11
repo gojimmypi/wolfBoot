@@ -40,6 +40,8 @@ if(IS_DIRECTORY "${LIB_STM32L4_WSL}")
     message(STATUS "LIB_STM32L4_WSL found: ${LIB_STM32L4_WSL}")
 endif()
 
+# set(ARM_GCC_BIN "")
+
 if(NOT FOUND_STM32L4_LIB)
     include(FetchContent)
     # TIP: Always pin a real tag/commit; avoid main/master.
@@ -83,3 +85,8 @@ if(NOT FOUND_STM32L4_LIB)
     set(HAL_CMSIS_DEV  "${cmsis_dev_SOURCE_DIR}/Include")                        # device
     set(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")            # core
 endif()
+
+message(STATUS "config.defaults:")
+message(STATUS "-- HAL_DRV:       ${HAL_DRV}")
+message(STATUS "-- HAL_CMSIS_DEV: ${HAL_CMSIS_DEV}")
+message(STATUS "-- HAL_CMSIS_CORE:${HAL_CMSIS_CORE}")

@@ -84,7 +84,19 @@ make
 
 ### VS Code
 
+Windows users may need one of these:
+
+- [Visual Studio 2022](https://visualstudio.microsoft.com/)
+- [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/). See `C:\Program Files(x86)\Windows kits`.
+
 #### Launch Stand-alone VS Code
+
+The MSVC kit may be needed if VS 2022 is not installed.
+
+Select `View` - `Command Palette`, search for CMake: Select a Compiler
+
+See also: CMake: Delete Cache and Reconfigure
+
 
 #### Launch VS Code from VS 2022 Command prompt.
 
@@ -99,7 +111,15 @@ cd c:\workspace\wolfboot-%USERNAME%
 code ./IDE/VSCode/wolfBoot.code-workspace
 ```
 
-### Visual Studio
+### Visual Studio IDE
+
+For the `Select Startup Item`, leave at default. Do not select `image`, wolfboot_name[], etc.
+
+Right click on `CMakeLists.txt` and select `Delete Cache and Reconfigure`.
+
+Right click on `CMakeLists.txt` and select `Build`.
+
+### Visual Studio Command Prompt
 
 Select `View` - `Terminal` from the menu bar.
 
@@ -117,7 +137,8 @@ cmake --preset windows-stm32l4
 cmake --build --preset windows-stm32l4
 ```
 
-
+If there are no devices listed in the `Manage Configurations` drop-down, ensure the `CMakePresets.json` is valid.
+A single json syntax error will spoil the entire project.
 
 ## Integrating wolfBoot in an existing project
 
@@ -777,7 +798,7 @@ sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.o
     * RP2350 (Raspberry Pi Pico 2, ARM Cortex-M33 with TrustZone)
     * NXP MCXA153
     * NXP MCXW716
-    * STM32F1 series (STM32F103 "Blue Pill"Ã‚Â board)
+    * STM32F1 series (STM32F103 "Blue Pill"ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â board)
   * Improvements to supported targets
     * Xilinx UltraScale+ (ZynqMP)
         * Added hardware-accelerated SHA3 hashing via the CSU engine

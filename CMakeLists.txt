@@ -908,7 +908,7 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
         set(HAL_BASE "")
     endif()
 
-    if(false)
+    if(true)
 
         set(HAL_DRV  "${HAL_BASE}/STM32L4xx_HAL_Driver")
         set(HAL_CMSIS_DEV "${HAL_BASE}/CMSIS_HAL/Device/ST/STM32L4xx/Include")

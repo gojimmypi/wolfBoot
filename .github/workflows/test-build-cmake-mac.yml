@@ -51,8 +51,13 @@ jobs:
           sleep "$throttle_delay"
           brew install --force-bottle arm-none-eabi-gcc
 
-          # On macOS/Homebrew, arm-none-eabi-gcc does not ship the C library headers, so install:
-          brew install --force-bottle arm-none-eabi-newlib
+      - name: Probe GCC sysroot (headers check)
+        run: |
+          set -euxo pipefail
+          SYSROOT="$(arm-none-eabi-gcc -print-sysroot)"
+          echo "GCC sysroot: $SYSROOT"
+          test -f "$SYSROOT/include/stdlib.h" || { echo "Missing stdlib.h in $SYSROOT/include"; exit 1; }
+          test -f "$SYSROOT/include/string.h" || { echo "Missing string.h in $SYSROOT/include"; exit 1; }
 
       - name: Configure (STM32L4)
         run: |
@@ -70,6 +75,3 @@ jobs:
 
           cmake --preset mac-stm32l4
           cmake --build --preset mac-stm32l4
-
-      - name: Build
-        run: cmake --build build --parallel
