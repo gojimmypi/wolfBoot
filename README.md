@@ -359,6 +359,8 @@ $ cmake -DWOLFBOOT_TARGET=stm32l0 -DWOLFBOOT_PARTITION_BOOT_ADDRESS=0x8000 -DWOL
 
 ## CMake Logic Flow
 
+
+```mermaid
 flowchart TD
   %% wolfBoot CMake Build Logic Flow (Vertical)
 
@@ -429,7 +431,7 @@ flowchart TD
   A5 -.-> X1([Preset not found or Ninja missing])
   C2 -.-> X2([Toolchain not found: fix ARM_GCC_BIN/PATH, verify VisualGDB])
   C3 -.-> X3([Address/partition mismatch: verify BOARD, flash offsets, IMAGE_HEADER_SIZE])
-
+```
 
 ## Troubleshooting
 
@@ -871,7 +873,7 @@ sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.o
     * RP2350 (Raspberry Pi Pico 2, ARM Cortex-M33 with TrustZone)
     * NXP MCXA153
     * NXP MCXW716
-    * STM32F1 series (STM32F103 "Blue Pill"ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â board)
+    * STM32F1 series (STM32F103 "Blue Pill"ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â board)
   * Improvements to supported targets
     * Xilinx UltraScale+ (ZynqMP)
         * Added hardware-accelerated SHA3 hashing via the CSU engine
