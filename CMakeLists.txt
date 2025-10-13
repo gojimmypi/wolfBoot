@@ -61,12 +61,13 @@ project(wolfBoot)
 # ------------------------------------------------------------------------------
 include(cmake/functions.cmake)
 
-set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
+# set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
 
 # ---- Host compiler (for native tools only) -----------------------------------
 # Build-time tools (bin-assemble/sign/keygen) must compile for the HOST.
 if (CMAKE_HOST_WIN32)
     # Prefer gcc/clang on Windows so POSIX-y headers (unistd.h) are available.
+    message(STATUS "Tip: If find_program cannot find HOST_CC (not in path?), try launching from VS2022 dev prompt or edit path.")
     find_program(HOST_CC NAMES gcc clang cl REQUIRED)
 
     if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]])
@@ -115,6 +116,9 @@ else()
     set(HOST_WARN -Wall -Wextra -Werror)
     set(HOST_LINK_LIBS "")
 endif()
+
+message(STATUS "Host CC: ${HOST_CC}")
+message(STATUS "Host compiler treated as MSVC: ${HOST_IS_MSVC}")
 
 # ------------------------------------------------------------------------------
 # Common includes/defines for host tools
@@ -392,12 +396,12 @@ if(0)
     # build bin-assemble tool
     set(BINASSEMBLE ${CMAKE_CURRENT_BINARY_DIR}/bin-assemble)
     add_custom_command(
-        OUTPUT ${BINASSEMBLE}
-        COMMAND gcc tools/bin-assemble/bin-assemble.c -o ${BINASSEMBLE}
-        WORKING_DIRECTORY ${WOLFBOOT_ROOT}
+        OUTPUT "${BINASSEMBLE}"
+        COMMAND gcc tools/bin-assemble/bin-assemble.c -o "${BINASSEMBLE}"
+        WORKING_DIRECTORY "${WOLFBOOT_ROOT}"
         COMMENT "Generating bin-assemble tool")
 
-    add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
+    add_custom_target(binAssemble DEPENDS "${BINASSEMBLE}")
 
     # -----------------------------------------------------------------------------
     # Toolchain Specifications
@@ -414,15 +418,15 @@ else()
     set(BINASSEMBLE_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_bin_assemble")
 
     add_custom_command(
-        OUTPUT ${BINASSEMBLE}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${BINASSEMBLE_OBJDIR}
-        COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+        OUTPUT "${BINASSEMBLE}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory ${BINASSEMBLE_OBJDIR}
+        COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
                 ${HOST_INCLUDES}            # <-- needed for unistd.h shim
                 ${HOST_FO} # /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
                 ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
                 $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
                 ${HOST_LINK_LIBS}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         COMMENT "Building bin-assemble tool"
     )
     add_custom_target(binAssemble DEPENDS ${BINASSEMBLE})
@@ -904,7 +908,7 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
         message(STATUS "WSL Path found: ${LIB_STM32L4_WSL}")
         set(HAL_BASE "${LIB_STM32L4_WSL}")
     else()
-        message(STATUS "STM32L4 Path bot found")
+        message(STATUS "STM32L4 Path not found")
         set(HAL_BASE "")
     endif()
 
@@ -952,7 +956,6 @@ target_compile_definitions(wolfboothal PRIVATE ${WOLFBOOT_DEFS})
 target_include_directories(wolfboothal PRIVATE ${WOLFBOOT_ROOT} include)
 target_compile_options(wolfboothal PRIVATE ${WOLFBOOT_COMPILE_OPTIONS} ${EXTRA_COMPILE_OPTIONS})
 
-message(STATUS "Using C Keytools")
 message(STATUS "Using C Keytools")
 
 #---------------------------------------------------------------------------------------------
@@ -1026,17 +1029,18 @@ endif()
 
     add_custom_command(
       OUTPUT ${SIGN_TOOL}
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${SIGN_OBJDIR}
-      COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+      COMMAND "${CMAKE_COMMAND}" -E make_directory ${SIGN_OBJDIR}
+      COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
               ${HOST_INCLUDES} ${HOST_DEFS}
               ${HOST_FO_SIGN} # /Fo$<SHELL_PATH:${SIGN_OBJDIR}/> # ${HOST_FO_SIGN}
               $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
               ${KEYTOOL_SOURCES_ABS}
               ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
               ${HOST_LINK_LIBS}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       COMMENT "Building signing tool"
     )
+
 add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
 set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 
@@ -1054,8 +1058,8 @@ endif()
 
 add_custom_command(
   OUTPUT ${KEYGEN_TOOL}
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${KEYGEN_OBJDIR}
-  COMMAND ${HOST_CC} ${HOST_O2} ${HOST_WARN}
+  COMMAND "${CMAKE_COMMAND}" -E make_directory ${KEYGEN_OBJDIR}
+  COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
           ${HOST_INCLUDES} ${HOST_DEFS}
           ${HOST_FO_KEYGEN}
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
@@ -1150,14 +1154,14 @@ if(NOT SIGN STREQUAL "NONE")
     if(NOT EXISTS ${KEYSTORE})
         add_custom_command(
             OUTPUT ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
-            COMMAND ${KEYGEN_TOOL} ${KEYTOOL_OPTIONS} -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
+            COMMAND "${KEYGEN_TOOL}" ${KEYTOOL_OPTIONS} -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
                     -keystoreDir ${CMAKE_CURRENT_BINARY_DIR}
             WORKING_DIRECTORY ${WOLFBOOT_ROOT}
             COMMENT "Generating keystore.c and signing private key")
 
         add_custom_command(
-            OUTPUT ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
-            DEPENDS ${KEYGEN_TOOL}
+            OUTPUT "${KEYSTORE}" ${WOLFBOOT_SIGNING_PRIVATE_KEY}
+            DEPENDS "${KEYGEN_TOOL}"
             APPEND)
     endif()
 

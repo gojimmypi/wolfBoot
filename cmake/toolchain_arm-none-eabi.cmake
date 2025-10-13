@@ -20,7 +20,10 @@
 
 
 set(CMAKE_SYSTEM_NAME Generic)
+
+# Keep try-compile from attempting to run target binaries
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
 set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES ARM_GCC_BIN WOLFBOOT_TARGET)
 
 # There needs to be a default platform or the `project()` command will fail.
@@ -40,6 +43,10 @@ elseif(WOLFBOOT_TARGET STREQUAL "stm32u5")
 elseif(WOLFBOOT_TARGET STREQUAL "stm32h7")
     set(CMAKE_SYSTEM_PROCESSOR cortex-m7)
     set(MCPU_FLAGS "-mcpu=cortex-m7 -mthumb -mlittle-endian -mthumb-interwork")
+elseif(WOLFBOOT_TARGET STREQUAL "stm32l4")
+    set(CMAKE_SYSTEM_PROCESSOR cortex-m4)
+    # L4 has FPU (single-precision). Let the toolchain pick the right libs.
+    set(MCPU_FLAGS "-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 else()
     set(CMAKE_SYSTEM_PROCESSOR cortex-m3)
     set(MCPU_FLAGS "-mcpu=cortex-m3 -mthumb -mlittle-endian -mthumb-interwork ")
@@ -47,7 +54,7 @@ endif()
 
 # ----- Select compilers (works on WSL/Linux and Windows) -----
 # Optional: allow an explicit bin dir
-set(ARM_GCC_BIN "" CACHE PATH "Path to Arm GNU Toolchain 'bin' directory")
+set(ARM_GCC_BIN "" CACHE PATH "Path to Arm GNU Toolchai       'bin' directory")
 
 if(WIN32)
     if(ARM_GCC_BIN)
@@ -73,6 +80,28 @@ else()
         set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}" CACHE FILEPATH "" FORCE)
     endif()
 endif()
+
+# Use the compiler's own include dir (Homebrew GCC may have no sysroot)
+execute_process(
+    COMMAND ${CMAKE_C_COMPILER} -print-file-name=include
+    OUTPUT_VARIABLE GCC_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(GCC_INCLUDE_DIR AND EXISTS "${GCC_INCLUDE_DIR}")
+    include_directories(SYSTEM "${GCC_INCLUDE_DIR}")
+endif()
+
+# get toolchain version. CMAKE_C_COMPILER_VERSION cannot be used here since its not defined until
+# `project()` is run in the top-level cmake. The toolchain has to be setup before the `project` call
+execute_process(
+    COMMAND ${CMAKE_C_COMPILER} -print-sysroot
+    OUTPUT_VARIABLE GCC_SYSROOT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(GCC_SYSROOT)
+    set(CMAKE_SYSROOT "${GCC_SYSROOT}")
+endif()
+
 
 # Some sanity checks on compiler and target OS
 if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
@@ -116,6 +145,7 @@ else()
     set(_EXE "")
 endif()
 
+
 set(TOOLCHAIN_AR      "${_BIN_DIR}/arm-none-eabi-ar${_EXE}"      CACHE INTERNAL "")
 set(TOOLCHAIN_OBJCOPY "${_BIN_DIR}/arm-none-eabi-objcopy${_EXE}" CACHE INTERNAL "")
 set(TOOLCHAIN_OBJDUMP "${_BIN_DIR}/arm-none-eabi-objdump${_EXE}" CACHE INTERNAL "")
@@ -132,7 +162,7 @@ message(STATUS "Cross-compiling using GNU arm-none-eabi toolchain")
 
 # Options for DEBUG build
 # -Og   Enables optimizations that do not interfere with debugging.
-# -g    Produce debugging information in the operating systemÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s native format.
+# -g    Produce debugging information in the operating system's native format.
 set(CMAKE_C_FLAGS_DEBUG         "-Og -g"    CACHE INTERNAL "C Compiler options for debug build type")
 set(CMAKE_CXX_FLAGS_DEBUG       "-Og -g"    CACHE INTERNAL "C++ Compiler options for debug build type")
 set(CMAKE_ASM_FLAGS_DEBUG       "-g"        CACHE INTERNAL "ASM Compiler options for debug build type")

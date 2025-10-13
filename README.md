@@ -1,5 +1,35 @@
 # wolfBoot
 
+CMake Dev Status:
+
+|Status | Environment               | Test With
+|-------| ------------------------- | --------
+|  ✅   | VS 2022                   | Right-Click on [CMakeLists.txt](./CMakeLists.txt), Build
+|  ✅   | WSL                       | [./my_test.sh](./my_test.sh)
+|  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
+|  ✅   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
+|  ✅   | DOS Prompt, Dev Prompt    | [my_test.bat](./my_test.bat)
+|  ✅   | PowerShell, Dev Prompt    | [.\my_test.bat](./my_test.bat)
+|  ❌   | DOS Prompt, direct launch | [my_test.bat](./my_test.bat)
+|  ❌   | PowerShell, direct launch | [my_test.bat](./my_test.bat)
+|  ❌   | VS Code, direct launch    | Click "build"
+
+Make Dev Status:
+
+|Status | Environment               | Test With
+|-------| ------------------------- | --------
+|   ?   | VS 2022                   | N/A (?)
+|  ✅  | WSL                       | `./wolfbuild.sh --target stm32l4`
+|  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
+|   ?   | VS Code, Dev Prompt       | N/A (?)
+|  ❌    | DOS Prompt, Dev Prompt    |
+|  ❌   | PowerShell, Dev Prompt    |
+|  ❌   | DOS Prompt, direct launch |
+|  ❌    | PowerShell, direct launch |
+|   ?    | VS Code, direct launch    | N/A (?)
+
+---
+
 wolfSSL Secure Bootloader ([Home page](https://www.wolfssl.com/products/wolfboot/))
 
 wolfBoot is a portable, OS-agnostic, secure bootloader solution for 32-bit microcontrollers,
@@ -139,6 +169,31 @@ cmake --build --preset windows-stm32l4
 
 If there are no devices listed in the `Manage Configurations` drop-down, ensure the `CMakePresets.json` is valid.
 A single json syntax error will spoil the entire project.
+
+## Your own toolchain
+
+Create a `CMakeUserPresets.json` (ignored by git, rename `CMakeUserPresets.json.sample` ):
+
+```json
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "my-arm-bin",
+      "inherits": "windows-stm32l4",
+      "cacheVariables": {
+        "ARM_GCC_BIN": "C:/Tools/arm-none-eabi-14.2/bin"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "my-arm-bin",
+      "configurePreset": "my-arm-bin"
+    }
+  ]
+}
+```
 
 ## Integrating wolfBoot in an existing project
 
@@ -875,7 +930,7 @@ sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.o
     * RP2350 (Raspberry Pi Pico 2, ARM Cortex-M33 with TrustZone)
     * NXP MCXA153
     * NXP MCXW716
-    * STM32F1 series (STM32F103 "Blue Pill"ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â board)
+    * STM32F1 series (STM32F103 "Blue Pill"Ãƒâ€šÃ‚Âboard)
   * Improvements to supported targets
     * Xilinx UltraScale+ (ZynqMP)
         * Added hardware-accelerated SHA3 hashing via the CSU engine
