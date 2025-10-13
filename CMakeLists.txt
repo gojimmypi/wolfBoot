@@ -32,6 +32,14 @@
 cmake_minimum_required(VERSION 3.16)
 include(cmake/config_defaults.cmake)
 
+include(cmake/cube_ide_config.cmake)
+
+# Some OS-specific checks and configs
+if(CMAKE_HOST_WIN32)
+    include(cmake/vs2022_config.cmake)
+endif()
+
+
 # ------------------------------------------------------------------------------
 # Initial environment checks
 # ------------------------------------------------------------------------------
@@ -900,6 +908,7 @@ target_sources(wolfboothal PRIVATE include/hal.h hal/${WOLFBOOT_TARGET}.c ${WOLF
 
 
 # --- HAL for STM32L4 (only the pieces we need) ---
+# TODO move this to preset and/or cmake dir
 if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     if(CMAKE_HOST_WIN32 AND IS_DIRECTORY "${LIB_STM32L4_WINDOWS}" )
         message(STATUS "Win32 Path found: ${LIB_STM32L4_WINDOWS}")
@@ -913,7 +922,6 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     endif()
 
     if(true)
-
         set(HAL_DRV  "${HAL_BASE}/STM32L4xx_HAL_Driver")
         set(HAL_CMSIS_DEV "${HAL_BASE}/CMSIS_HAL/Device/ST/STM32L4xx/Include")
         set(HAL_CMSIS_CORE "${HAL_BASE}/CMSIS_HAL/Include")
