@@ -27,6 +27,11 @@ include(cmake/current_user.cmake)
 get_current_user(CURRENT_USER)
 message(STATUS "Current user detected: ${CURRENT_USER}")
 
+
+# The ST CubeIDE location is searched in cmake/cube_ide_config.cmake
+# Want to specify your specific STCubeIDE? Uncomment and set it here:
+#   set(STM32CUBEIDE_DIR "/your/path")
+
 # TODO need to be more generic, in presets?
 if(IS_DIRECTORY  "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB")
     set(LIB_STM32L4_WINDOWS "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")

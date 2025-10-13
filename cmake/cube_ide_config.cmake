@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
 #
 
+# Some logic to find the ST Cube IDE in various directories on various systems
 # See also https://www.st.com/resource/en/application_note/an5952-how-to-use-cmake-in-stm32cubeide-stmicroelectronics.pdf
 
 # Usage:
@@ -184,7 +185,14 @@ if(NOT STM32CUBEIDE_EXECUTABLE)
         else()
             # Fall back: scan *.app names
             file(GLOB _apps "/Applications/STM32CubeIDE*.app")
-            list(SORT _apps DESC)
+
+            if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.7")
+                list(SORT _apps COMPARE NATURAL ORDER DESCENDING)
+            else()
+                list(SORT _apps)
+                list(REVERSE _apps)
+            endif()
+
             foreach(app ${_apps})
                 if(EXISTS "${app}/Contents/MacOS/STM32CubeIDE")
                     _stm32cubeide_set_from_exec("${app}/Contents/MacOS/STM32CubeIDE")
@@ -228,7 +236,14 @@ if(NOT STM32CUBEIDE_EXECUTABLE)
         # Typical install roots under /opt
         if(NOT STM32CUBEIDE_EXECUTABLE)
             file(GLOB _candidates "/opt/st/stm32cubeide_*")
-            list(SORT _candidates DESC)
+
+            if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.7")
+                list(SORT _candidates COMPARE NATURAL ORDER DESCENDING)
+            else()
+                list(SORT _candidates)
+                list(REVERSE _candidates)
+            endif()
+
             foreach(c ${_candidates})
                 if(EXISTS "${c}/stm32cubeide")
                     _stm32cubeide_set_from_exec("${c}/stm32cubeide")
