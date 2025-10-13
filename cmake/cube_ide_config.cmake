@@ -27,53 +27,76 @@
 #   message(STATUS "STM32CubeIDE: ${STM32CUBEIDE_EXECUTABLE} (root: ${STM32CUBEIDE_ROOT}, ver: ${STM32CUBEIDE_VERSION})")
 
 include_guard(GLOBAL)
-
+message(STATUS "Begin cube_ide_config.cmake")
 unset(STM32CUBEIDE_ROOT       CACHE)
 unset(STM32CUBEIDE_FOUND      CACHE)
 unset(STM32CUBEIDE_VERSION    CACHE)
 unset(STM32CUBEIDE_EXECUTABLE CACHE)
 
-function(_stm32cubeide_set_from_exec EXE)
-    if(NOT EXISTS "${EXE}")
+function(_stm32cubeide_set_from_exec PARAM_EXE)
+    if(NOT EXISTS "${PARAM_EXE}")
         return()
     endif()
-    set(STM32CUBEIDE_EXECUTABLE "${EXE}" PARENT_SCOPE)
+    set(STM32CUBEIDE_EXECUTABLE "${PARAM_EXE}" PARENT_SCOPE)
     # Root: up two dirs works for Linux default; handle macOS bundle separately below.
-    get_filename_component(_dir "${EXE}" DIRECTORY)
+    get_filename_component(_dir "${PARAM_EXE}" DIRECTORY)
     if(CMAKE_HOST_APPLE AND _dir MATCHES "\\.app/Contents/MacOS$")
         get_filename_component(_root "${_dir}/../.." REALPATH)
     else()
         get_filename_component(_root "${_dir}/.." REALPATH)
     endif()
+
+    message(STATUS "Found STM32CUBEIDE_ROOT=${_root}")
     set(STM32CUBEIDE_ROOT "${_root}" PARENT_SCOPE)
 
-    # Version heuristic from directory names like STM32CubeIDE_1.15.0
-    string(REGEX MATCH "STM32[Cc]ubeIDE[_-]([0-9]+\\.[0-9]+\\.[0-9]+)" _m "${_root}")
-    if(_m)
-        string(REGEX REPLACE ".*STM32[Cc]ubeIDE[_-]([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" _ver "${_root}")
+    # Version extract from directory names like STM32CubeIDE_1.15.0
+    file(TO_CMAKE_PATH "${_root}" _root_norm)
+    get_filename_component(_leaf "${_root_norm}" NAME)  # e.g. "STM32CubeIDE_1.14.1"
+
+    set(_ver "")
+    set(_mark "STM32CubeIDE_")
+    string(FIND "${_leaf}" "${_mark}" _pos)
+    if(NOT _pos EQUAL -1)
+        string(LENGTH "${_mark}" _mlen)
+        math(EXPR _start "${_pos} + ${_mlen}")
+        string(SUBSTRING "${_leaf}" ${_start} -1 _ver_raw)
+        string(STRIP "${_ver_raw}" _ver)
+    endif()
+
+    if(_ver) # e.g. "1.14.1"
+        # set both locally and in parent scope for immediate logging + export
+        set(STM32CUBEIDE_VERSION "${_ver}")
         set(STM32CUBEIDE_VERSION "${_ver}" PARENT_SCOPE)
+        message(NOTICE "Found STM32CUBEIDE_VERSION=${_ver}")
+    else()
+        message(VERBOSE "Could not derive version (leaf='${_leaf}', root='${_root_norm}')")
     endif()
 endfunction()
 
 # 1) Hints from environment or cache
 set(_HINTS "")
 if(DEFINED ENV{STM32CUBEIDE_DIR})
+    message(STATUS "Found env STM32CUBEIDE_DIR=$ENV{STM32CUBEIDE_DIR}")
     list(APPEND _HINTS "$ENV{STM32CUBEIDE_DIR}")
 endif()
 
 if(DEFINED STM32CUBEIDE_DIR)
+    message(STATUS "Found STM32CUBEIDE_DIR=${STM32CUBEIDE_DIR}")
     list(APPEND _HINTS "${STM32CUBEIDE_DIR}")
 endif()
 
 if(DEFINED ENV{STM32CUBEIDE_ROOT})
+    message(STATUS "Found env STM32CUBEIDE_ROOT=$ENV{STM32CUBEIDE_ROOT}")
     list(APPEND _HINTS "$ENV{STM32CUBEIDE_ROOT}")
 endif()
 
 if(DEFINED STM32CUBEIDE_ROOT)
+    message(STATUS "Found STM32CUBEIDE_ROOT=${STM32CUBEIDE_ROOT}")
     list(APPEND _HINTS "${STM32CUBEIDE_ROOT}")
 endif()
 
 foreach(h ${_HINTS})
+    message(STATUS "Looking for STM32CubeIDE.exe in ${h}")
     if(CMAKE_HOST_WIN32)
         if(EXISTS "${h}/STM32CubeIDE.exe")
             _stm32cubeide_set_from_exec("${h}/STM32CubeIDE.exe")
@@ -94,12 +117,12 @@ endforeach()
 # 2) PATH search
 if(NOT STM32CUBEIDE_EXECUTABLE)
     if(CMAKE_HOST_WIN32)
-        find_program(_EXE NAMES STM32CubeIDE.exe)
+        find_program(_CUBE_EXE NAMES "STM32CubeIDE.exe")
     elseif(CMAKE_HOST_APPLE OR CMAKE_HOST_UNIX)
-        find_program(_EXE NAMES stm32cubeide)
+        find_program(_CUBE_EXE NAMES "stm32cubeide")
     endif()
-    if(_EXE)
-        _stm32cubeide_set_from_exec("${_EXE}")
+    if(_CUBE_EXE)
+        _stm32cubeide_set_from_exec("${_CUBE_EXE}")
     endif()
 endif()
 
@@ -130,10 +153,25 @@ if(NOT STM32CUBEIDE_EXECUTABLE)
                       "C:/ST/STM32CubeIDE_*"
                       "C:/Program Files/STMicroelectronics/STM32CubeIDE*"
                       "C:/Program Files (x86)/STMicroelectronics/STM32CubeIDE*")
-            list(SORT _candidates)
-            foreach(c ${_candidates})
-                if(EXISTS "${c}/STM32CubeIDE.exe")
-                    _stm32cubeide_set_from_exec("${c}/STM32CubeIDE.exe")
+
+            if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.7")
+                list(SORT _candidates COMPARE NATURAL ORDER DESCENDING)
+            else()
+                list(SORT _candidates)
+                list(REVERSE _candidates)
+            endif()
+
+            foreach(_this_c ${_candidates})
+                message(STATUS "Looking at ${_this_c}")
+                if(EXISTS "${_this_c}/STM32CubeIDE.exe")
+                    message(STATUS "Found ${_this_c}/STM32CubeIDE.exe")
+                    _stm32cubeide_set_from_exec("${_this_c}/STM32CubeIDE.exe")
+                    break()
+                endif()
+
+                if(EXISTS "${_this_c}/STM32CubeIDE/STM32CubeIDE.exe")
+                    message(STATUS "Found ${_this_c}/STM32CubeIDE/STM32CubeIDE.exe")
+                    _stm32cubeide_set_from_exec("${_this_c}/STM32CubeIDE/STM32CubeIDE.exe")
                     break()
                 endif()
             endforeach()
@@ -209,7 +247,11 @@ find_package_handle_standard_args(STM32CubeIDE
 )
 
 if(STM32CUBEIDE_EXECUTABLE)
+    message(STATUS "Found STM32 CubeIDE: ${STM32CUBEIDE_EXECUTABLE}")
     set(STM32CUBEIDE_FOUND TRUE)
+else()
+    message(STATUS "Not found: STM32 CubeIDE")
 endif()
 
 mark_as_advanced(STM32CUBEIDE_EXECUTABLE STM32CUBEIDE_ROOT STM32CUBEIDE_VERSION)
+message(STATUS "End cube_ide_config.cmake")

@@ -32,13 +32,6 @@
 cmake_minimum_required(VERSION 3.16)
 include(cmake/config_defaults.cmake)
 
-include(cmake/cube_ide_config.cmake)
-
-# Some OS-specific checks and configs
-if(CMAKE_HOST_WIN32)
-    include(cmake/vs2022_config.cmake)
-endif()
-
 
 # ------------------------------------------------------------------------------
 # Initial environment checks
@@ -52,6 +45,19 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
      You must delete them, or cmake will refuse to work.")
 endif()
 
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+project(wolfBoot)
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+include(cmake/functions.cmake)
+include(cmake/cube_ide_config.cmake)
+
+# Some OS-specific checks and configs
+if(CMAKE_HOST_WIN32)
+    include(cmake/vs2022_config.cmake)
+endif()
+
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     if(DEFINED WOLFBOOT_TARGET AND
             NOT WOLFBOOT_TARGET STREQUAL "x86_64_efi" AND
@@ -62,12 +68,6 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     endif()
 endif()
 
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-project(wolfBoot)
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-include(cmake/functions.cmake)
 
 # set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
 
