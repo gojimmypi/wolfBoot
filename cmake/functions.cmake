@@ -76,3 +76,5 @@ function(set_and_echo_dir var_name value_expr)
         message(STATUS "set ${var_name}; Directory not found: ${_val}")
     endif()
 endfunction()
+
+set(functions_cmake_loaded true)

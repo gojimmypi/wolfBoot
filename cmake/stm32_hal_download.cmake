@@ -25,6 +25,9 @@
 #
 # ... then download HAL files as needed
 
+if(NOT functions_cmake_loaded)
+    include(cmake/functions.cmake)
+endif()
 
 if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     if(FOUND_STM32L4_LIB)
@@ -68,8 +71,10 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
         FetchContent_MakeAvailable(st_hal cmsis_dev cmsis_core)
 
         # Map to the include structures of the fetched repos
-        set(HAL_DRV        "${st_hal_SOURCE_DIR}")                                   # Inc/, Src/
-        set(HAL_CMSIS_DEV  "${cmsis_dev_SOURCE_DIR}/Include")                        # device
-        set(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")            # core
+        message("stm32_hal_download.cmake setting hal directories:")
+        set_and_echo_dir(HAL_BASE       "${st_hal_SOURCE_DIR}")
+        set_and_echo_dir(HAL_DRV        "${st_hal_SOURCE_DIR}")                                   # Inc/, Src/
+        set_and_echo_dir(HAL_CMSIS_DEV  "${cmsis_dev_SOURCE_DIR}/Include")                        # device
+        set_and_echo_dir(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")            # core
     endif()
 endif()

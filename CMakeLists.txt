@@ -51,7 +51,8 @@ project(wolfBoot)
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 include(cmake/functions.cmake)
-include(cmake/cube_ide_config.cmake)
+
+# include(cmake/cube_ide_config.cmake)
 
 # Some OS-specific checks and configs
 if(CMAKE_HOST_WIN32)
@@ -69,7 +70,7 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 if(WOLFBOOT_TARGET STREQUAL "stm32l4" AND NOT FOUND_STM32L4_LIB)
-    include(stm32_hal_download.cmake)
+    include(cmake/stm32_hal_download.cmake)
 endif()
 
 
@@ -920,9 +921,6 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     elseif(IS_DIRECTORY "${LIB_STM32L4_WSL}")
         message(STATUS "WSL Path found: ${LIB_STM32L4_WSL}")
         set(HAL_BASE "${LIB_STM32L4_WSL}")
-    else()
-        message(STATUS "STM32L4 Path not found")
-        set(HAL_BASE "${STM32CUBE_L4_ROOT}")
     endif()
 
     # HAL_BASE "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx"
@@ -941,10 +939,10 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
             set_and_echo_dir(HAL_TEMPLATE_INC "${HAL_BASE}/VendorSamples/L4/Projects/B-L475E-IOT01A/Templates/Inc")
         else()
             # CubeIDE
-            set_and_echo_dir(HAL_DRV          "${HAL_BASE}/Drivers/STM32L4xx_HAL_Driver")
-            set_and_echo_dir(HAL_CMSIS_DEV    "${HAL_BASE}/Drivers/CMSIS/Device/ST/STM32L4xx/Include")
-            set_and_echo_dir(HAL_CMSIS_CORE   "${HAL_BASE}/Drivers/CMSIS/Include")
-            set_and_echo_dir(HAL_TEMPLATE_INC "${HAL_BASE}/Projects/B-L475E-IOT01A/Templates/Inc")
+            # set_and_echo_dir(HAL_DRV          "${HAL_BASE}/Drivers/STM32L4xx_HAL_Driver")
+            # set_and_echo_dir(HAL_CMSIS_DEV    "${HAL_BASE}/Drivers/CMSIS/Device/ST/STM32L4xx/Include")
+            # set_and_echo_dir(HAL_CMSIS_CORE   "${HAL_BASE}/Drivers/CMSIS/Include")
+            # set_and_echo_dir(HAL_TEMPLATE_INC "${HAL_BASE}/Projects/B-L475E-IOT01A/Templates/Inc")
         endif()
     endif()
 
