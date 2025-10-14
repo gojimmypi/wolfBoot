@@ -89,6 +89,7 @@ else()
         set(CMAKE_CXX_COMPILER "${_BIN}/arm-none-eabi-g++" CACHE FILEPATH "" FORCE)
         set(CMAKE_ASM_COMPILER "${_BIN}/arm-none-eabi-gcc" CACHE FILEPATH "" FORCE)
     else()
+        # Assume Mac / Linux is in path. No hints.
         find_program(CMAKE_C_COMPILER   NAMES arm-none-eabi-gcc)
         find_program(CMAKE_CXX_COMPILER NAMES arm-none-eabi-g++)
         set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}" CACHE FILEPATH "" FORCE)

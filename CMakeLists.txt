@@ -68,6 +68,10 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     endif()
 endif()
 
+if(WOLFBOOT_TARGET STREQUAL "stm32l4" AND NOT FOUND_STM32L4_LIB)
+    include(stm32_hal_download.cmake)
+endif()
+
 
 # set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
 

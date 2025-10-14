@@ -22,6 +22,7 @@
 # This is NOT a place for device-specific project settings. For that, see CMakePresets.json
 
 set(FOUND_STM32L4_LIB false)
+
 include(cmake/current_user.cmake)
 
 get_current_user(CURRENT_USER)
@@ -55,49 +56,6 @@ endif()
 
 # set(ARM_GCC_BIN "")
 
-if(NOT FOUND_STM32L4_LIB)
-    include(FetchContent)
-    # TIP: Always pin a real tag/commit; avoid main/master.
-
-    # Make behavior explicit & chatty while debugging
-    set(FETCHCONTENT_QUIET OFF)
-    set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/_deps")
-
-    # HAL driver
-    message(STATUS "Fetching https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git")
-    FetchContent_Declare(st_hal
-      GIT_REPOSITORY https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git
-      # Pick a tag you want to lock to:
-      GIT_TAG        v1.13.5
-      GIT_SHALLOW    TRUE
-      GIT_PROGRESS   FALSE
-    )
-
-    # CMSIS device headers for L4
-    message(STATUS "Fetching https://github.com/STMicroelectronics/cmsis_device_l4.git")
-    FetchContent_Declare(cmsis_dev
-      GIT_REPOSITORY https://github.com/STMicroelectronics/cmsis_device_l4.git
-      GIT_TAG        v1.7.4
-      GIT_SHALLOW    TRUE
-      GIT_PROGRESS   FALSE
-    )
-
-    # CMSIS Core headers
-    message(STATUS "Fetching https://github.com/ARM-software/CMSIS_5.git")
-    FetchContent_Declare(cmsis_core
-      GIT_REPOSITORY https://github.com/ARM-software/CMSIS_5.git
-      GIT_TAG        5.9.0
-      GIT_SHALLOW    TRUE
-      GIT_PROGRESS   FALSE
-    )
-
-    FetchContent_MakeAvailable(st_hal cmsis_dev cmsis_core)
-
-    # Map to the include structures of the fetched repos
-    set(HAL_DRV        "${st_hal_SOURCE_DIR}")                                   # Inc/, Src/
-    set(HAL_CMSIS_DEV  "${cmsis_dev_SOURCE_DIR}/Include")                        # device
-    set(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")            # core
-endif()
 
 message(STATUS "config.defaults:")
 message(STATUS "-- HAL_DRV:       ${HAL_DRV}")
