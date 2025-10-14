@@ -32,23 +32,25 @@ message(STATUS "Current user detected: ${CURRENT_USER}")
 # Want to specify your specific STCubeIDE? Uncomment and set it here:
 #   set(STM32CUBEIDE_DIR "/your/path")
 
-# TODO need to be more generic, in presets?
-if(IS_DIRECTORY  "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB")
-    set(LIB_STM32L4_WINDOWS "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
-endif()
+if(false)
+    # TODO need to be more generic, in presets?
+    if(IS_DIRECTORY  "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB")
+        set(LIB_STM32L4_WINDOWS "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+    endif()
 
-if(IS_DIRECTORY  "/mnt/c/Users/${CURRENT_USER}/AppData/Local/VisualGDB")
-    set(LIB_STM32L4_WSL "/mnt/c/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
-endif()
+    if(IS_DIRECTORY  "/mnt/c/Users/${CURRENT_USER}/AppData/Local/VisualGDB")
+        set(LIB_STM32L4_WSL "/mnt/c/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
+    endif()
 
-if(IS_DIRECTORY "${LIB_STM32L4_WINDOWS}")
-    set(FOUND_STM32L4_LIB true)
-    message(STATUS "LIB_STM32L4_WINDOWS found: ${LIB_STM32L4_WINDOWS}")
-endif()
+    if(IS_DIRECTORY "${LIB_STM32L4_WINDOWS}")
+        set(FOUND_STM32L4_LIB true)
+        message(STATUS "LIB_STM32L4_WINDOWS found: ${LIB_STM32L4_WINDOWS}")
+    endif()
 
-if(IS_DIRECTORY "${LIB_STM32L4_WSL}")
-    set(FOUND_STM32L4_LIB true)
-    message(STATUS "LIB_STM32L4_WSL found: ${LIB_STM32L4_WSL}")
+    if(IS_DIRECTORY "${LIB_STM32L4_WSL}")
+        set(FOUND_STM32L4_LIB true)
+        message(STATUS "LIB_STM32L4_WSL found: ${LIB_STM32L4_WSL}")
+    endif()
 endif()
 
 # set(ARM_GCC_BIN "")

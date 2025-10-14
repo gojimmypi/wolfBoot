@@ -74,6 +74,111 @@ function(_stm32cubeide_set_from_exec PARAM_EXE)
     endif()
 endfunction()
 
+# Finds the newest STM32Cube L4 firmware folder under the standard Repository path.
+# Usage:
+#     find_newest_stm32cube_fw_l4(OUT_DIR OUT_VER)
+# After the call:
+#     OUT_DIR = full path to the newest STM32Cube_FW_L4_Vx.y.z directory
+#     OUT_VER = version string x.y.z
+#
+# Optional inputs that you may predefine before calling:
+#     CURRENT_USER          Used only on Windows if USERPROFILE is not set
+#     STM32CUBE_REPO_HINT   Override the Repository root folder if you know it already
+#
+# Examples:
+#     find_newest_stm32cube_fw_l4(STM32CUBE_L4_ROOT STM32CUBE_L4_VERSION)
+#     message(STATUS "STM32Cube L4 root: ${STM32CUBE_L4_ROOT} (version ${STM32CUBE_L4_VERSION})")
+function(find_newest_stm32cube_fw_l4 OUT_DIR OUT_VER)
+    set(_repo_root "")
+
+    # 1) If the caller provided a direct hint, use it
+    if(DEFINED STM32CUBE_REPO_HINT AND EXISTS "${STM32CUBE_REPO_HINT}")
+        set(_repo_root "${STM32CUBE_REPO_HINT}")
+    else()
+        # 2) Build the default path based on platform
+        if(CMAKE_HOST_WIN32)
+            # Prefer USERPROFILE if available
+            set(_userprofile "$ENV{USERPROFILE}")
+            if(_userprofile STREQUAL "")
+                # Fallback to C:/Users/<CURRENT_USER>
+                if(NOT DEFINED CURRENT_USER OR CURRENT_USER STREQUAL "")
+                    set(_env_user "$ENV{USERNAME}")
+                    if(NOT _env_user STREQUAL "")
+                        set(CURRENT_USER "${_env_user}")
+                    endif()
+                endif()
+                if(DEFINED CURRENT_USER AND NOT CURRENT_USER STREQUAL "")
+                    set(_repo_root "C:/Users/${CURRENT_USER}/STM32Cube/Repository")
+                endif()
+            else()
+                # Convert backslashes to forward slashes for CMake path sanity
+                file(TO_CMAKE_PATH "${_userprofile}" _userprofile_cmake)
+                set(_repo_root "${_userprofile_cmake}/STM32Cube/Repository")
+            endif()
+        else()
+            # macOS and Linux
+            set(_home "$ENV{HOME}")
+            if(NOT _home STREQUAL "")
+                file(TO_CMAKE_PATH "${_home}" _home_cmake)
+                set(_repo_root "${_home_cmake}/STM32Cube/Repository")
+            endif()
+        endif()
+    endif()
+
+    # Validate we have a repository root
+    if(_repo_root STREQUAL "" OR NOT EXISTS "${_repo_root}")
+        set(${OUT_DIR} "" PARENT_SCOPE)
+        set(${OUT_VER} "" PARENT_SCOPE)
+        message(STATUS "STM32Cube Repository not found. Checked: ${_repo_root}")
+        return()
+    endif()
+
+    # 3) Glob STM32Cube L4 folders
+    file(GLOB _candidates
+        LIST_DIRECTORIES true
+        "${_repo_root}/STM32Cube_FW_L4_V*"
+    )
+
+    if(_candidates STREQUAL "")
+        set(${OUT_DIR} "" PARENT_SCOPE)
+        set(${OUT_VER} "" PARENT_SCOPE)
+        message(STATUS "No STM32Cube L4 packages found under: ${_repo_root}")
+        return()
+    endif()
+
+    # 4) Pick the highest semantic version using CMake's VERSION comparison
+    set(_best_dir "")
+    set(_best_ver "")
+
+    foreach(_dir IN LISTS _candidates)
+        get_filename_component(_name "${_dir}" NAME)
+        # Expect names like STM32Cube_FW_L4_V1.17.2
+        # Extract the numeric version after the V
+        string(REGEX MATCH "STM32Cube_FW_L4_V([0-9]+\\.[0-9]+\\.[0-9]+)" _m "${_name}")
+        if(_m)
+            # Capture group 1 is the version x.y.z
+            string(REGEX REPLACE "STM32Cube_FW_L4_V" "" _ver "${_m}")
+            if(_best_ver STREQUAL "" OR _best_ver VERSION_LESS _ver)
+                set(_best_ver "${_ver}")
+                set(_best_dir "${_dir}")
+            endif()
+        endif()
+    endforeach()
+
+    if(_best_dir STREQUAL "")
+        set(${OUT_DIR} "" PARENT_SCOPE)
+        set(${OUT_VER} "" PARENT_SCOPE)
+        message(STATUS "STM32Cube L4 directories found but no valid version pattern matched under: ${_repo_root}")
+        return()
+    endif()
+
+    # 5) Return results
+    set(${OUT_DIR} "${_best_dir}" PARENT_SCOPE)
+    set(${OUT_VER} "${_best_ver}" PARENT_SCOPE)
+    message(STATUS "Found newest STM32Cube L4: ${_best_dir} (version ${_best_ver})")
+endfunction() # find_newest_stm32cube_fw_l4
+
+
 # 1) Hints from environment or cache
 set(_HINTS "")
 if(DEFINED ENV{STM32CUBEIDE_DIR})
@@ -266,6 +371,23 @@ if(STM32CUBEIDE_EXECUTABLE)
     set(STM32CUBEIDE_FOUND TRUE)
 else()
     message(STATUS "Not found: STM32 CubeIDE")
+endif()
+
+# The CubeIDE version likely does not match FW version:
+# C:\Users\${CURRENT_USER}\STM32Cube\Repository\STM32Cube_FW_L4_V1.18.0\Drivers\STM32L4xx_HAL_Driver
+# C:/Users/${CURRENT_USER}/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.1/Drivers/
+
+find_newest_stm32cube_fw_l4(STM32CUBE_L4_ROOT STM32CUBE_L4_VERSION)
+set(STM32_HAL_DIR "${STM32CUBE_L4_ROOT}/Drivers/STM32L4xx_HAL_Driver")
+set(CMSIS_DIR     "${STM32CUBE_L4_ROOT}/Drivers/CMSIS")
+
+if(STM32CUBE_L4_VERSION)
+    set(HAL_BASE "${STM32CUBE_L4_ROOT}")
+    if(IS_DIRECTORY "${HAL_BASE}")
+        message(STATUS "Found HAL_BASE=${HAL_BASE}")
+    else()
+        message(STATUS "Not found expected HAL_BASE=${HAL_BASE}")
+    endif()
 endif()
 
 mark_as_advanced(STM32CUBEIDE_EXECUTABLE STM32CUBEIDE_ROOT STM32CUBEIDE_VERSION)
