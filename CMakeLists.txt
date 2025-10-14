@@ -45,6 +45,18 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
      You must delete them, or cmake will refuse to work.")
 endif()
 
+# This must appear before project(wolfBoot)
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    if(DEFINED WOLFBOOT_TARGET AND
+            NOT WOLFBOOT_TARGET STREQUAL "x86_64_efi" AND
+            NOT WOLFBOOT_TARGET STREQUAL "sim")
+        set(CMAKE_TOOLCHAIN_FILE
+        "${CMAKE_SOURCE_DIR}/cmake/toolchain_arm-none-eabi.cmake"
+        CACHE FILEPATH "" FORCE)
+    endif()
+endif()
+
+
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 project(wolfBoot)
@@ -57,16 +69,6 @@ include(cmake/functions.cmake)
 # Some OS-specific checks and configs
 if(CMAKE_HOST_WIN32)
     include(cmake/vs2022_config.cmake)
-endif()
-
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    if(DEFINED WOLFBOOT_TARGET AND
-            NOT WOLFBOOT_TARGET STREQUAL "x86_64_efi" AND
-            NOT WOLFBOOT_TARGET STREQUAL "sim")
-        set(CMAKE_TOOLCHAIN_FILE
-        "${CMAKE_SOURCE_DIR}/cmake/toolchain_arm-none-eabi.cmake"
-        CACHE FILEPATH "" FORCE)
-    endif()
 endif()
 
 if(WOLFBOOT_TARGET STREQUAL "stm32l4" AND NOT FOUND_STM32L4_LIB)
