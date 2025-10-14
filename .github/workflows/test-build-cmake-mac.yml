@@ -50,7 +50,7 @@ jobs:
 
           # Use cask to include headers such as <stdlib.h>
           sleep "$throttle_delay"
-          brew install --cask arm-none-eabi-gcc
+          brew install --cask gcc-arm-embedded
 
       - name: Probe ARM GCC (paths + smoke build)
         run: |
