@@ -21,7 +21,28 @@
 
 # This is NOT a place for device-specific project settings. For that, see CMakePresets.json
 
-set(FOUND_STM32L4_LIB false)
+# Ensure this file is only included and initialized once
+if(CMAKE_VERSION VERSION_LESS 3.10)
+    # Fallback path for older CMake
+    if(DEFINED CONFIG_DEFAULTS_CMAKE_INCLUDED)
+        return()
+    endif()
+else()
+    include_guard(GLOBAL)
+endif()
+
+
+
+# Environments are detected in this order:
+set(DETECT_VISUALGDB true)
+set(DETECT_CUBEIDE true)
+set(DETECT_VS2022 true)
+
+set(ENABLE_HAL_DOWNLOAD true)
+
+
+set(USE_DOT_CONFIG false) # optionally use .config files; See CMakePresets.json
+set(FOUND_HAL_BASE false)
 
 include(cmake/current_user.cmake)
 
@@ -33,27 +54,6 @@ message(STATUS "Current user detected: ${CURRENT_USER}")
 # Want to specify your specific STCubeIDE? Uncomment and set it here:
 #   set(STM32CUBEIDE_DIR "/your/path")
 
-if(false)
-    # TODO need to be more generic, in presets?
-    if(IS_DIRECTORY  "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB")
-        set(LIB_STM32L4_WINDOWS "C:/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
-    endif()
-
-    if(IS_DIRECTORY  "/mnt/c/Users/${CURRENT_USER}/AppData/Local/VisualGDB")
-        set(LIB_STM32L4_WSL "/mnt/c/Users/${CURRENT_USER}/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32L4xxxx")
-    endif()
-
-    if(IS_DIRECTORY "${LIB_STM32L4_WINDOWS}")
-        set(FOUND_STM32L4_LIB true)
-        message(STATUS "LIB_STM32L4_WINDOWS found: ${LIB_STM32L4_WINDOWS}")
-    endif()
-
-    if(IS_DIRECTORY "${LIB_STM32L4_WSL}")
-        set(FOUND_STM32L4_LIB true)
-        message(STATUS "LIB_STM32L4_WSL found: ${LIB_STM32L4_WSL}")
-    endif()
-endif()
-
 # set(ARM_GCC_BIN "")
 
 
@@ -61,3 +61,5 @@ message(STATUS "config.defaults:")
 message(STATUS "-- HAL_DRV:       ${HAL_DRV}")
 message(STATUS "-- HAL_CMSIS_DEV: ${HAL_CMSIS_DEV}")
 message(STATUS "-- HAL_CMSIS_CORE:${HAL_CMSIS_CORE}")
+
+set(CONFIG_DEFAULTS_CMAKE_INCLUDED TRUE)

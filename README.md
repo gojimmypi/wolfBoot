@@ -3,16 +3,16 @@
 CMake Dev Status:
 
 |Status | Environment               | Test With
-|-------| ------------------------- | --------
+|-------| ------------------------- | -------- |
 |  ✅   | VS 2022                   | Right-Click on [CMakeLists.txt](./CMakeLists.txt), Build
 |  ✅   | WSL                       | [./my_test.sh](./my_test.sh)
 |  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
 |  ✅   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
 |  ✅   | DOS Prompt, Dev Prompt    | [my_test.bat](./my_test.bat)
 |  ✅   | PowerShell, Dev Prompt    | [.\my_test.bat](./my_test.bat)
-|  ❌   | DOS Prompt, direct launch | [my_test.bat](./my_test.bat)
-|  ❌   | PowerShell, direct launch | [my_test.bat](./my_test.bat)
-|  ❌   | VS Code, direct launch    | Click "build"
+|  ❌   | DOS Prompt, direct launch | [my_test.bat](./my_test.bat) (cmake missing from path)
+|  ❌   | PowerShell, direct launch | [my_test.bat](./my_test.bat) (cmake missing from path)
+|  ✅   | VS Code, direct launch    | Needs [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools). Click "build" after launching: <br/> `code wolfBoot.code-workspace`
 
 Make Dev Status:
 
@@ -930,7 +930,7 @@ sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.o
     * RP2350 (Raspberry Pi Pico 2, ARM Cortex-M33 with TrustZone)
     * NXP MCXA153
     * NXP MCXW716
-    * STM32F1 series (STM32F103 "Blue Pill"Ãƒâ€šÃ‚Âboard)
+    * STM32F1 series (STM32F103 "Blue Pill"Âboard)
   * Improvements to supported targets
     * Xilinx UltraScale+ (ZynqMP)
         * Added hardware-accelerated SHA3 hashing via the CSU engine

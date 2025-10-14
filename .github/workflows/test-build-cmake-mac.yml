@@ -23,7 +23,7 @@ jobs:
         with:
           submodules: true
 
-      - name: Cache Homebrew bottles # downloads (so retries donâ€™t redownload)
+      - name: Cache Homebrew bottles # downloads (so retries don't redownload)
         uses: actions/cache@v4
         with:
           path: |

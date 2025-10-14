@@ -20,17 +20,31 @@
 #
 
 # If not found:
-#   The CubeIDE
-#   VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32
+#   1) The CubeIDE
+#   2) VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32
+#   3) User-specified
 #
-# ... then download HAL files as needed
+# ... then download HAL files as needed:
 
-if(NOT functions_cmake_loaded)
+# Ensure this file is only included and initialized once
+if(CMAKE_VERSION VERSION_LESS 3.10)
+    # Fallback path for older CMake, and anything else that wants to detect is loaded
+    if(DEFINED STM32_HAL_DOWNLOAD_CMAKE_INCLUDED)
+        return()
+    endif()
+else()
+    include_guard(GLOBAL)
+endif()
+
+
+if(ENABLE_HAL_DOWNLOAD) # Entire file wrapper
+
+if(NOT FUNCTIONS_CMAKE_INCLUDED)
     include(cmake/functions.cmake)
 endif()
 
 if(WOLFBOOT_TARGET STREQUAL "stm32l4")
-    if(FOUND_STM32L4_LIB)
+    if(FOUND_HAL_BASE)
         message(STATUS "stm32_hal_download.cmake skipped, already found STM32 HAL lib.")
     else()
         include(FetchContent)
@@ -78,3 +92,7 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
         set_and_echo_dir(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")            # core
     endif()
 endif()
+
+endif() #ENABLE_HAL_DOWNLOAD
+
+set(STM32_HAL_DOWNLOAD_CMAKE_INCLUDED true)
