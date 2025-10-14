@@ -48,8 +48,9 @@ jobs:
           sleep "$throttle_delay"
           brew install --force-bottle ninja
 
+          # Use cask to include headers such as <stdlib.h>
           sleep "$throttle_delay"
-          brew install --force-bottle arm-none-eabi-gcc
+          brew install --cask arm-none-eabi-gcc
 
       - name: Probe ARM GCC (paths + smoke build)
         run: |
