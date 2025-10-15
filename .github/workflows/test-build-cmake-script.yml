@@ -65,8 +65,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi gcc-powerpc-linux-gnu cmake
 
-      - name: Run wolfbuild script
+      - name: Run wolfboot_build script
         run: |
           rm -rf ./build
-          ./wolfbuild.sh --CLEAN  "stm32l4"
-          ./wolfbuild.sh --target "stm32l4"
+          ./scripts/wolfbuild.sh --CLEAN  "stm32l4"
+          ./scripts/wolfbuild.sh --target "stm32l4"
