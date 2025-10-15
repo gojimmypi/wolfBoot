@@ -58,9 +58,9 @@ jobs:
       - name: Build via cmd inline
         shell: cmd
         run: |
-          if exist build-windows-stm32l4 rmdir /s /q build-windows-stm32l4
-          cmake --preset windows-stm32l4
-          cmake --build --preset windows-stm32l4 --parallel %NUMBER_OF_PROCESSORS%
+          if exist build-stm32l4 rmdir /s /q build-stm32l4
+          cmake --preset stm32l4
+          cmake --build --preset stm32l4 --parallel %NUMBER_OF_PROCESSORS%
 
       - name: Build via batch (cmd)
         shell: cmd
