@@ -8,7 +8,7 @@ on:
 
 jobs:
   windows-cmake:
-    name: Build on Windows (CMake + Ninja)
+    name: Build on Windows
     runs-on: windows-latest
     timeout-minutes: 20
 
@@ -55,7 +55,7 @@ jobs:
           echo "MSVC (via vswhere):"
           cmd.exe /c "\"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe\" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion"
 
-      - name: Configure (CMake + Ninja)
+      - name: Configure Preset "${{ matrix.target }}"
         shell: bash
         run: |
           # cmake runs in git bash
@@ -63,7 +63,7 @@ jobs:
           cmake --preset "${{ matrix.target }}"
           echo "Configured: ${{ matrix.target }}"
 
-      - name: Build
+      - name: Build "${{ matrix.target }}"
         shell: bash
         run: |
           # cmake runs in git bash
