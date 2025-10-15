@@ -36,7 +36,7 @@ jobs:
       - name: Set up ARM none-eabi GCC 14.x
         uses: carlosperate/arm-none-eabi-gcc-action@v1
         with:
-          version: "14.2.Rel1" # <-- use 'release', not 'version'
+          release: "14.2.1" # <-- use 'release', not 'version'
           path-env-var: ARM_NONE_EABI_GCC_PATH
 
       # CMake + Ninja are preinstalled on windows-latest, but verify & print versions
@@ -55,45 +55,20 @@ jobs:
           echo "MSVC (via vswhere):"
           cmd.exe /c "\"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe\" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion"
 
-      - name: Build via cmd inline
-        shell: cmd
-        run: |
-          if exist build-stm32l4 rmdir /s /q build-stm32l4
-          cmake --preset stm32l4
-          cmake --build --preset stm32l4 --parallel %NUMBER_OF_PROCESSORS%
-
-      - name: Build via batch (cmd)
-        shell: cmd
-        run: |
-          :: # Call my_test.bat
-
-          call my_test.bat
-
       - name: Configure (CMake + Ninja)
         shell: bash
         run: |
           # cmake runs in git bash
 
-          BUILD_DIR="build-${{ matrix.target }}"
-          cmake -S . -B "$BUILD_DIR" -G Ninja \
-            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain_arm-none-eabi.cmake \
-            -DWOLFBOOT_CONFIG_MODE=preset                              \
-            -DWOLFBOOT_TARGET=${{ matrix.target }}                     \
-            -DBUILD_TEST_APPS=ON                                       \
-            -DWOLFBOOT_PARTITION_BOOT_ADDRESS=0x8020000                \
-            -DWOLFBOOT_SECTOR_SIZE=0x20000                             \
-            -DWOLFBOOT_PARTITION_SIZE=0xD0000                          \
-            -DWOLFBOOT_PARTITION_UPDATE_ADDRESS=0x80F0000              \
-            -DWOLFBOOT_PARTITION_SWAP_ADDRESS=0x81C0000                \
-            ${{ matrix.extra_cache }}
-          echo "Configured: $BUILD_DIR"
+          cmake --preset "${{ matrix.target }}"
+          echo "Configured: ${{ matrix.target }}"
 
       - name: Build
         shell: bash
         run: |
           # cmake runs in git bash
           BUILD_DIR="build-${{ matrix.target }}"
-          cmake --build "$BUILD_DIR" --parallel
+          cmake --build "build-${{ matrix.target }}" --parallel
 
       # Optional: show interesting artifacts
       - name: List build outputs
