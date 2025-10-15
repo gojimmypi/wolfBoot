@@ -99,8 +99,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32l4",
       "cacheVariables": {
-        "ST_HAL_TAG": "v1.13.5",
-        "ST_CMSIS_TAG": "v1.7.4",
+        "WOLFBOOT_DOWNLOADS_CMAKE": "${sourceDir}/cmake/downloads/stm32l4.cmake",
         "WOLFBOOT_CONFIG_MODE": "preset",
         "WOLFBOOT_TARGET": "stm32l4",
         "STM32L4_PART": "STM32L475xx",

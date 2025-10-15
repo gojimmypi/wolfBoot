@@ -1,6 +1,6 @@
 # wolfboot/cmake/config_defaults.cmake
 #
-# Copyright (C) 2022 wolfSSL Inc.
+# Copyright (C) 2025 wolfSSL Inc.
 #
 # This file is part of wolfBoot.
 #
@@ -34,15 +34,18 @@ endif()
 
 
 # Environments are detected in this order:
-set(DETECT_VISUALGDB false)
+set(DETECT_VISUALGDB true)
 set(DETECT_CUBEIDE true)
 set(DETECT_VS2022 true)
 
+# Enable HAL download only implemented for TMS devices at this time.
+# See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
+# and [WOLFBOOT_ROOT]/cmake/download/wolfboot/cmake/stm32_hal_download.cmake
 set(ENABLE_HAL_DOWNLOAD true)
-
-
-set(USE_DOT_CONFIG false) # optionally use .config files; See CMakePresets.json
 set(FOUND_HAL_BASE false)
+
+# optionally use .config files; See CMakePresets.json instead
+set(USE_DOT_CONFIG false)
 
 include(cmake/current_user.cmake)
 

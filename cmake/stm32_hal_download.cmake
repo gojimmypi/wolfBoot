@@ -38,79 +38,159 @@ endif()
 
 
 if(ENABLE_HAL_DOWNLOAD) # Entire file wrapper
+    include(FetchContent)
 
-if(NOT FUNCTIONS_CMAKE_INCLUDED)
-    include(cmake/functions.cmake)
-endif()
 
-# WOLFBOOT_TARGET is expected to be all lower case, e.g. "stm32l4"
-if(WOLFBOOT_TARGET STREQUAL "stm32l4")
-# TODO if(WOLFBOOT_TARGET MATCHES "^stm32")
-    if(FOUND_HAL_BASE)
-        message(STATUS "stm32_hal_download.cmake skipped, already found STM32 HAL lib.")
-    else()
-        set(_in "${WOLFBOOT_TARGET}")
-        if(_in MATCHES "^stm32")
-            string(SUBSTRING "${_in}" 5 -1 WOLFBOOT_TARGET_FAMILY)   #  => "l4"
-        else()
-            message(FATAL_ERROR "Expected value to start with stm32")
-        endif()
-
-        if("${ST_HAL_TAG}" STREQUAL "")
-            set(ST_HAL_TAG "main")
-        endif()
-        if("${ST_CMSIS_TAG}" STREQUAL "")
-            set(ST_CMSIS_TAG "main")
-        endif()
-        if("${ST_CMSIS_CORE_TAG}" STREQUAL "")
-            set(ST_CMSIS_CORE_TAG "master")
-        endif()
-
-        include(FetchContent)
-        # TIP: Always pin a real tag/commit; avoid main/master.
-
-        # Make behavior explicit & chatty while debugging
-        set(FETCHCONTENT_QUIET OFF)
-        set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/_deps")
-
-        # HAL driver
-        message(STATUS "Fetching https://github.com/STMicroelectronics/${WOLFBOOT_TARGET}xx_hal_driver.git")
-        FetchContent_Declare(st_hal
-          GIT_REPOSITORY https://github.com/STMicroelectronics/${WOLFBOOT_TARGET}xx_hal_driver.git
-          # Pick a tag you want to lock to; a value MUST be provided
-          GIT_TAG        "${ST_HAL_TAG}" # see CMakePresets.json, device-specific
-          GIT_SHALLOW    TRUE
-          GIT_PROGRESS   FALSE
-        )
-
-        # CMSIS device headers for L4
-        message(STATUS "Fetching https://github.com/STMicroelectronics/cmsis_device_${WOLFBOOT_TARGET_FAMILY}.git")
-        FetchContent_Declare(cmsis_dev
-          GIT_REPOSITORY https://github.com/STMicroelectronics/cmsis_device_${WOLFBOOT_TARGET_FAMILY}.git
-          GIT_TAG        "${ST_CMSIS_TAG}" # ee CMakePresets.json, device-family-specific
-          GIT_SHALLOW    TRUE
-          GIT_PROGRESS   FALSE
-        )
-
-        # CMSIS Core headers
-        message(STATUS "Fetching https://github.com/ARM-software/CMSIS_5.git")
-        FetchContent_Declare(cmsis_core
-          GIT_REPOSITORY https://github.com/ARM-software/CMSIS_5.git
-          GIT_TAG        "${ST_CMSIS_CORE_TAG}"
-          GIT_SHALLOW    TRUE
-          GIT_PROGRESS   FALSE
-        )
-
-        FetchContent_MakeAvailable(st_hal cmsis_dev cmsis_core)
-
-        # Map to the include structures of the fetched repos
-        message("stm32_hal_download.cmake setting hal directories:")
-        set_and_echo_dir(HAL_BASE       "${st_hal_SOURCE_DIR}")
-        set_and_echo_dir(HAL_DRV        "${st_hal_SOURCE_DIR}")                                   # Inc/, Src/
-        set_and_echo_dir(HAL_CMSIS_DEV  "${cmsis_dev_SOURCE_DIR}/Include")                        # device
-        set_and_echo_dir(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")            # core
+    if(NOT FUNCTIONS_CMAKE_INCLUDED)
+        include(cmake/functions.cmake)
     endif()
-endif()
+
+    # Accumulators for the DSL
+    set(_DL_NAMES)
+    set(_DL_URLS)
+    set(_DL_TAGS)
+
+    # Mini DSL
+    function(add_download)
+        cmake_parse_arguments(AD "" "" "NAME;URL;TAG" ${ARGN})
+        if(NOT AD_NAME)
+            message(FATAL_ERROR "add_download requires NAME")
+        endif()
+        if(NOT AD_URL)
+            message(FATAL_ERROR "add_download requires URL")
+        endif()
+        if(NOT AD_TAG)
+            set(AD_TAG "master")
+        endif()
+
+        list(APPEND _DL_NAMES "${AD_NAME}")
+        list(APPEND _DL_URLS  "${AD_URL}")
+        list(APPEND _DL_TAGS  "${AD_TAG}")
+
+        set(_DL_NAMES "${_DL_NAMES}" PARENT_SCOPE)
+        set(_DL_URLS  "${_DL_URLS}"  PARENT_SCOPE)
+        set(_DL_TAGS  "${_DL_TAGS}"  PARENT_SCOPE)
+    endfunction()
+
+    set(DOWNLOADS_FOUND false)
+    # If a downloads list is provided, include it
+    if(DEFINED WOLFBOOT_DOWNLOADS_CMAKE)
+        if(EXISTS "${WOLFBOOT_DOWNLOADS_CMAKE}")
+            message(STATUS "Including downloads list: ${WOLFBOOT_DOWNLOADS_CMAKE}")
+            include("${WOLFBOOT_DOWNLOADS_CMAKE}")
+            set(DOWNLOADS_FOUND true)
+        else()
+            # If there's a defined download, the file specified needs to exist!
+            message(FATAL_ERROR "WOLFBOOT_DOWNLOADS_CMAKE enabled but file now found: ${WOLFBOOT_DOWNLOADS_CMAKE}")
+        endif()
+    else()
+        message(STATUS "No WOLFBOOT_DOWNLOADS_CMAKE and no builtin defaults for target: ${WOLFBOOT_TARGET}. Skipping auto downloads.")
+    endif() # WOLFBOOT_DOWNLOADS_CMAKE
+
+    # Fallback: The stm32l4 trio is known to be needed, so hard-coded here:
+    if(WOLFBOOT_TARGET STREQUAL "stm32l4" AND (NOT DOWNLOADS_FOUND))
+        message(STATUS "WARNING not downloads found for known target needing them: stm32l4" )
+
+        add_download(
+            NAME st_hal
+            URL  https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git
+            TAG  v1.13.5
+        )
+        add_download(
+            NAME cmsis_dev
+            URL  https://github.com/STMicroelectronics/cmsis_device_l4.git
+            TAG  v1.7.4
+        )
+        add_download(
+            NAME cmsis_core
+            URL  https://github.com/ARM-software/CMSIS_5.git
+            TAG  5.9.0
+        )
+    endif()
+
+
+    # Validate lists are aligned
+    list(LENGTH _DL_NAMES _n1)
+    list(LENGTH _DL_URLS  _n2)
+    list(LENGTH _DL_TAGS  _n3)
+    if(NOT (_n1 EQUAL _n2 AND _n1 EQUAL _n3))
+        message(FATAL_ERROR "add_download internal list length mismatch: names=${_n1} urls=${_n2} tags=${_n3}")
+    endif()
+
+    # Nothing to do
+    if(_n1 EQUAL 0)
+        set(STM32_HAL_DOWNLOAD_CMAKE_INCLUDED TRUE)
+        #---------------------------------------------------------------------------------------------
+        message(STATUS "No files found needing to be downloaded. If needed, configure WOLFBOOT_DOWNLOADS_CMAKE")
+        return()
+        #---------------------------------------------------------------------------------------------
+    endif()
+
+    # Fetch loop
+    set(FETCHCONTENT_QUIET OFF)
+    set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/_deps")
+
+    set(_ALL_NAMES)
+    math(EXPR _last "${_n1} - 1")
+    foreach(i RANGE 0 ${_last})
+        list(GET _DL_NAMES ${i} _name)
+        list(GET _DL_URLS  ${i} _url)
+        list(GET _DL_TAGS  ${i} _tag)
+
+        message(STATUS "Fetching ${_url} (tag ${_tag})")
+        FetchContent_Declare(${_name}
+            GIT_REPOSITORY "${_url}"
+            GIT_TAG        "${_tag}"
+            GIT_SHALLOW    TRUE
+            GIT_PROGRESS   FALSE
+        )
+        list(APPEND _ALL_NAMES "${_name}")
+    endforeach()
+
+    if(_ALL_NAMES)
+        FetchContent_MakeAvailable(${_ALL_NAMES})
+    endif()
+
+    # st_hal
+    FetchContent_GetProperties(st_hal)  # ensures *_SOURCE_DIR vars are available
+    if(DEFINED st_hal_SOURCE_DIR AND EXISTS "${st_hal_SOURCE_DIR}")
+        set_and_echo_dir(HAL_BASE "${st_hal_SOURCE_DIR}")
+        set_and_echo_dir(HAL_DRV  "${st_hal_SOURCE_DIR}")
+    else()
+        message(FATAL_ERROR "st_hal source dir not found; expected after FetchContent.")
+    endif()
+
+    # cmsis_dev
+    FetchContent_GetProperties(cmsis_dev)
+    if(DEFINED cmsis_dev_SOURCE_DIR AND EXISTS "${cmsis_dev_SOURCE_DIR}")
+        set_and_echo_dir(HAL_CMSIS_DEV "${cmsis_dev_SOURCE_DIR}/Include")
+    else()
+        message(FATAL_ERROR "cmsis_dev source dir not found.")
+    endif()
+
+    # cmsis_core
+    FetchContent_GetProperties(cmsis_core)
+    if(DEFINED cmsis_core_SOURCE_DIR AND EXISTS "${cmsis_core_SOURCE_DIR}")
+        set_and_echo_dir(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")
+    else()
+        message(FATAL_ERROR "cmsis_core source dir not found.")
+    endif()
+
+
+    # Map include directories when known names are fetched
+    # Adjust or extend this block if you add more components
+    if(TARGET st_hal)
+        set_and_echo_dir(HAL_BASE "${st_hal_SOURCE_DIR}")
+        set_and_echo_dir(HAL_DRV  "${st_hal_SOURCE_DIR}")
+    endif()
+
+    if(TARGET cmsis_dev)
+        set_and_echo_dir(HAL_CMSIS_DEV  "${cmsis_dev_SOURCE_DIR}/Include")
+    endif()
+
+    if(TARGET cmsis_core)
+        set_and_echo_dir(HAL_CMSIS_CORE "${cmsis_core_SOURCE_DIR}/CMSIS/Core/Include")
+    endif()
 
 endif() #ENABLE_HAL_DOWNLOAD
 
