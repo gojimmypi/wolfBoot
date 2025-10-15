@@ -1,5 +1,7 @@
 ﻿# wolfBoot
 
+This commit is passing all tests, working well
+
 Some interim notes on progress in various environments:
 
 ## CMake Dev Status:
