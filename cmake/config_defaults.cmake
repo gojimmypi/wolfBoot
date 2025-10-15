@@ -34,7 +34,7 @@ endif()
 
 
 # Environments are detected in this order:
-set(DETECT_VISUALGDB true)
+set(DETECT_VISUALGDB false)
 set(DETECT_CUBEIDE true)
 set(DETECT_VS2022 true)
 
