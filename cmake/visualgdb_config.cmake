@@ -73,7 +73,7 @@ if(DETECT_VISUALGDB)
             endif()
         endif()
 
-        if(HAL_BASE STREQUAL "")
+        if(${HAL_BASE} STREQUAL "")
             message(STATUS "VisualGDB detection could not set HAL_BASE")
         else()
             # VisualGDB
