@@ -44,7 +44,8 @@ if(NOT FUNCTIONS_CMAKE_INCLUDED)
 endif()
 
 # WOLFBOOT_TARGET is expected to be all lower case, e.g. "stm32l4"
-if(WOLFBOOT_TARGET MATCHES "^stm32")
+if(WOLFBOOT_TARGET STREQUAL "stm32l4")
+# TODO if(WOLFBOOT_TARGET MATCHES "^stm32")
     if(FOUND_HAL_BASE)
         message(STATUS "stm32_hal_download.cmake skipped, already found STM32 HAL lib.")
     else()
