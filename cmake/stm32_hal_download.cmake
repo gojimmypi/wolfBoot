@@ -55,6 +55,16 @@ if(WOLFBOOT_TARGET MATCHES "^stm32")
             message(FATAL_ERROR "Expected value to start with stm32")
         endif()
 
+        if("${ST_HAL_TAG}" STREQUAL "")
+            set(ST_HAL_TAG "main")
+        endif()
+        if("${ST_CMSIS_TAG}" STREQUAL "")
+            set(ST_CMSIS_TAG "main")
+        endif()
+        if("${ST_CMSIS_CORE_TAG}" STREQUAL "")
+            set(ST_CMSIS_CORE_TAG "main")
+        endif()
+
         include(FetchContent)
         # TIP: Always pin a real tag/commit; avoid main/master.
 
@@ -85,7 +95,7 @@ if(WOLFBOOT_TARGET MATCHES "^stm32")
         message(STATUS "Fetching https://github.com/ARM-software/CMSIS_5.git")
         FetchContent_Declare(cmsis_core
           GIT_REPOSITORY https://github.com/ARM-software/CMSIS_5.git
-          GIT_TAG        "${ST_CMSIS_CORE_TAG}" 
+          GIT_TAG        "${ST_CMSIS_CORE_TAG}"
           GIT_SHALLOW    TRUE
           GIT_PROGRESS   FALSE
         )
