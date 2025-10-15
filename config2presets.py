@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+
+# Adds .config file to CmakePresets.json
+#
+# Example:
+#   python3 config2presets.py ./config/examples/stm32h7.config
+
 import argparse, json, os, re, sys
 from collections import OrderedDict
 
@@ -59,7 +65,8 @@ def ensure_base_vars(cache, toolchain_path):
     return cache
 
 def make_preset_name(target):
-    return f"linux-{target}"
+    # Previously we set prefix here: linux-{target}
+    return f"{target}"
 
 def make_binary_dir(source_dir, target):
     return os.path.join(source_dir, f"build-{target}")
@@ -125,7 +132,11 @@ def main():
     bld_preset = OrderedDict([
         ("name", preset_name),
         ("configurePreset", preset_name),
-        ("jobs", 0),
+        ("jobs", 4),
+        ("verbose", True),
+        ("targets", [
+             "all"
+        ])
     ])
 
     # Ensure schema v3 unless existing file says otherwise
