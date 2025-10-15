@@ -43,10 +43,18 @@ if(NOT FUNCTIONS_CMAKE_INCLUDED)
     include(cmake/functions.cmake)
 endif()
 
-if(WOLFBOOT_TARGET STREQUAL "stm32l4")
+# WOLFBOOT_TARGET is expected to be all lower case, e.g. "stm32l4"
+if(WOLFBOOT_TARGET MATCHES "^stm32")
     if(FOUND_HAL_BASE)
         message(STATUS "stm32_hal_download.cmake skipped, already found STM32 HAL lib.")
     else()
+        set(_in "${WOLFBOOT_TARGET}")
+        if(_in MATCHES "^stm32")
+            string(SUBSTRING "${_in}" 5 -1 WOLFBOOT_TARGET_FAMILY)   #  => "l4"
+        else()
+            message(FATAL_ERROR "Expected value to start with stm32")
+        endif()
+
         include(FetchContent)
         # TIP: Always pin a real tag/commit; avoid main/master.
 
@@ -55,20 +63,20 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
         set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/_deps")
 
         # HAL driver
-        message(STATUS "Fetching https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git")
+        message(STATUS "Fetching https://github.com/STMicroelectronics/${WOLFBOOT_TARGET}xx_hal_driver.git")
         FetchContent_Declare(st_hal
-          GIT_REPOSITORY https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git
-          # Pick a tag you want to lock to:
-          GIT_TAG        v1.13.5
+          GIT_REPOSITORY https://github.com/STMicroelectronics/${WOLFBOOT_TARGET}xx_hal_driver.git
+          # Pick a tag you want to lock to; a value MUST be provided
+          GIT_TAG        "${ST_HAL_TAG}" # see CMakePresets.json, device-specific
           GIT_SHALLOW    TRUE
           GIT_PROGRESS   FALSE
         )
 
         # CMSIS device headers for L4
-        message(STATUS "Fetching https://github.com/STMicroelectronics/cmsis_device_l4.git")
+        message(STATUS "Fetching https://github.com/STMicroelectronics/cmsis_device_${WOLFBOOT_TARGET_FAMILY}.git")
         FetchContent_Declare(cmsis_dev
-          GIT_REPOSITORY https://github.com/STMicroelectronics/cmsis_device_l4.git
-          GIT_TAG        v1.7.4
+          GIT_REPOSITORY https://github.com/STMicroelectronics/cmsis_device_${WOLFBOOT_TARGET_FAMILY}.git
+          GIT_TAG        "${ST_CMSIS_TAG}" # ee CMakePresets.json, device-family-specific
           GIT_SHALLOW    TRUE
           GIT_PROGRESS   FALSE
         )
@@ -77,7 +85,7 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
         message(STATUS "Fetching https://github.com/ARM-software/CMSIS_5.git")
         FetchContent_Declare(cmsis_core
           GIT_REPOSITORY https://github.com/ARM-software/CMSIS_5.git
-          GIT_TAG        5.9.0
+          GIT_TAG        "${ST_CMSIS_CORE_TAG}" 
           GIT_SHALLOW    TRUE
           GIT_PROGRESS   FALSE
         )

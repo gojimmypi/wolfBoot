@@ -12,6 +12,13 @@
       "binaryDir": "${sourceDir}/build-${presetName}"
     },
     {
+      "name": "stm32",
+      "hidden": true,
+      "cacheVariables": {
+        "ST_CMSIS_CORE_TAG": "5.9.0"
+      }
+    },
+    {
       "name": "_template-target",
       "displayName": "_sample - target - template",
       "hidden": true,
@@ -46,7 +53,8 @@
       "name": "stm32h7",
       "displayName": "STM32H7",
       "inherits": [
-        "base"
+        "base",
+        "stm32"
       ],
       "generator": "Ninja",
       "cacheVariables": {
@@ -83,11 +91,14 @@
       "name": "stm32l4",
       "displayName": "STM32L4",
       "inherits": [
-        "base"
+        "base",
+        "stm32"
       ],
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32l4",
       "cacheVariables": {
+        "ST_HAL_TAG": "v1.13.5",
+        "ST_CMSIS_TAG": "v1.7.4",
         "WOLFBOOT_CONFIG_MODE": "preset",
         "WOLFBOOT_TARGET": "stm32l4",
         "STM32L4_PART": "STM32L475xx",
@@ -121,10 +132,16 @@
     },
     {
       "name": "stm32c0",
-      "displayName": "Linux/WSL ARM (stm32c0)",
+      "displayName": "STM32C0",
+      "inherits": [
+        "base",
+        "stm32"
+      ],
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32c0",
       "cacheVariables": {
+        "ST_HAL_TAG": "v1.4.0",
+        "ST_CMSIS_TAG": "v1.3.0",
         "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32c0",
         "SIGN": "ED25519",

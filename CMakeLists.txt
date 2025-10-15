@@ -83,7 +83,7 @@ endif()
 
 # If still not found, download:
 if(NOT FOUND_HAL_BASE AND ENABLE_HAL_DOWNLOAD)
-    if(WOLFBOOT_TARGET STREQUAL "stm32l4")
+    if(WOLFBOOT_TARGET MATCHES "^stm32")
         include(cmake/stm32_hal_download.cmake)
     else()
         message(STATUS "WARNING: HAL not found and download not available for ${WOLFBOOT_TARGET}")
