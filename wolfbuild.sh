@@ -71,7 +71,7 @@ if [ $# -gt 0 ]; then
     if [ "$THIS_OPERATION" = "--flash" ]; then
         CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI.exe"
 
-        WOLFBOOT_BIN="build-linux-stm32l4/test-app/wolfboot_stm32l4.bin"
+        WOLFBOOT_BIN="build-stm32l4/test-app/wolfboot_stm32l4.bin"
         if [ ! -f "$WOLFBOOT_BIN" ]; then
             echo "Missing: $WOLFBOOT_BIN  (build first: cmake --build --preset \"$TARGET\")"
             exit 2
