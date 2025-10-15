@@ -145,7 +145,7 @@
         "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32c0",
         "SIGN": "ED25519",
-        "HASH": "SHA384",
+        "HASH": "SHA256",
         "DEBUG": "OFF",
         "VTOR": "ON",
         "CORTEX_M0": "ON",
