@@ -62,7 +62,7 @@ if(WOLFBOOT_TARGET MATCHES "^stm32")
             set(ST_CMSIS_TAG "main")
         endif()
         if("${ST_CMSIS_CORE_TAG}" STREQUAL "")
-            set(ST_CMSIS_CORE_TAG "main")
+            set(ST_CMSIS_CORE_TAG "master")
         endif()
 
         include(FetchContent)
