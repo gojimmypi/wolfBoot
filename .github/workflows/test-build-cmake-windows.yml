@@ -36,7 +36,7 @@ jobs:
       - name: Set up ARM none-eabi GCC 14.x
         uses: carlosperate/arm-none-eabi-gcc-action@v1
         with:
-          release: "14.2.1" # <-- use 'release', not 'version'
+          release: "14.2.Rel1" # <-- use 'release', not 'version'
           path-env-var: ARM_NONE_EABI_GCC_PATH
 
       # CMake + Ninja are preinstalled on windows-latest, but verify & print versions
