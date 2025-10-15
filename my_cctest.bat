@@ -3,11 +3,11 @@ set "INCLUDE=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\M
 set "LIB=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\ATLMFC\lib\x86;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\lib\x86;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\lib\um\x86;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x86;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x86"
 
 
-rmdir /s /q build-windows-stm32l4
+rmdir /s /q build-stm32l4
 
-cmake --preset windows-stm32l4
+cmake --preset stm32l4
 
 
 :: cmake --build --preset windows-stm32l4 --parallel 4 -v
 
-cmake --build --preset windows-stm32l4
+cmake --build --preset stm32l4

@@ -37,7 +37,7 @@ set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES ARM_GCC_BIN WOLFBOOT_TARGET)
 
 # There needs to be a default platform or the `project()` command will fail.
 if(NOT DEFINED WOLFBOOT_TARGET)
-    message(STATUS "Select a target, e.g. 'cmake --preset linux-stm32l4'")
+    message(STATUS "Select a target, e.g. 'cmake --preset stm32l4'")
     message(FATAL_ERROR "WOLFBOOT_TARGET not set")
     # set(WOLFBOOT_TARGET "stm32h7")
 endif()

@@ -4,28 +4,28 @@ CMake Dev Status:
 
 |Status | Environment               | Test With
 |-------| ------------------------- | -------- |
-|  ✅   | VS 2022                   | Right-Click on [CMakeLists.txt](./CMakeLists.txt), Build
-|  ✅   | WSL                       | [./my_test.sh](./my_test.sh)
-|  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
-|  ✅   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
-|  ✅   | DOS Prompt, Dev Prompt    | [my_test.bat](./my_test.bat)
-|  ✅   | PowerShell, Dev Prompt    | [.\my_test.bat](./my_test.bat)
-|  ❌   | DOS Prompt, direct launch | [my_test.bat](./my_test.bat) (cmake missing from path)
-|  ❌   | PowerShell, direct launch | [my_test.bat](./my_test.bat) (cmake missing from path)
-|  ✅   | VS Code, direct launch    | Needs [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools). Click "build" after launching: <br/> `code wolfBoot.code-workspace`
+|  âœ…   | VS 2022                   | Right-Click on [CMakeLists.txt](./CMakeLists.txt), Build
+|  âœ…   | WSL                       | [./my_test.sh](./my_test.sh)
+|  âš ï¸   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
+|  âœ…   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
+|  âœ…   | DOS Prompt, Dev Prompt    | [my_test.bat](./my_test.bat)
+|  âœ…   | PowerShell, Dev Prompt    | [.\my_test.bat](./my_test.bat)
+|  âŒ   | DOS Prompt, direct launch | [my_test.bat](./my_test.bat) (cmake missing from path)
+|  âŒ   | PowerShell, direct launch | [my_test.bat](./my_test.bat) (cmake missing from path)
+|  âœ…   | VS Code, direct launch    | Needs [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools). Click "build" after launching: <br/> `code wolfBoot.code-workspace`
 
 Make Dev Status:
 
 |Status | Environment               | Test With
 |-------| ------------------------- | --------
 |   ?   | VS 2022                   | N/A (?)
-|  ✅  | WSL                       | `./wolfbuild.sh --target stm32l4`
-|  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
+|  âœ…  | WSL                       | `./wolfbuild.sh --target stm32l4`
+|  âš ï¸   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
 |   ?   | VS Code, Dev Prompt       | N/A (?)
-|  ❌    | DOS Prompt, Dev Prompt    |
-|  ❌   | PowerShell, Dev Prompt    |
-|  ❌   | DOS Prompt, direct launch |
-|  ❌    | PowerShell, direct launch |
+|  âŒ    | DOS Prompt, Dev Prompt    |
+|  âŒ   | PowerShell, Dev Prompt    |
+|  âŒ   | DOS Prompt, direct launch |
+|  âŒ    | PowerShell, direct launch |
 |   ?    | VS Code, direct launch    | N/A (?)
 
 ---
@@ -158,13 +158,13 @@ Select `View` - `Terminal` from the menu bar.
 
 ```bash
 # delete build directory
-rmdir /s /q build-windows-stm32l4
+rmdir /s /q build-stm32l4
 
 # configure
-cmake --preset windows-stm32l4
+cmake --preset stm32l4
 
 # build
-cmake --build --preset windows-stm32l4
+cmake --build --preset stm32l4
 ```
 
 If there are no devices listed in the `Manage Configurations` drop-down, ensure the `CMakePresets.json` is valid.
@@ -180,7 +180,7 @@ Create a `CMakeUserPresets.json` (ignored by git, rename `CMakeUserPresets.json.
   "configurePresets": [
     {
       "name": "my-arm-bin",
-      "inherits": "windows-stm32l4",
+      "inherits": "stm32l4",
       "cacheVariables": {
         "ARM_GCC_BIN": "C:/Tools/arm-none-eabi-14.2/bin"
       }
@@ -930,7 +930,7 @@ sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.o
     * RP2350 (Raspberry Pi Pico 2, ARM Cortex-M33 with TrustZone)
     * NXP MCXA153
     * NXP MCXW716
-    * STM32F1 series (STM32F103 "Blue Pill"Âboard)
+    * STM32F1 series (STM32F103 "Blue Pill"Ã‚Âboard)
   * Improvements to supported targets
     * Xilinx UltraScale+ (ZynqMP)
         * Added hardware-accelerated SHA3 hashing via the CSU engine
