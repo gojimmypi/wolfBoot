@@ -59,6 +59,8 @@
       "generator": "Ninja",
       "cacheVariables": {
         "WOLFBOOT_CONFIG_MODE": "preset",
+        "ST_HAL_TAG": "v1.10.6",
+        "ST_CMSIS_TAG": "v1.7.4",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
         "WOLFBOOT_TARGET": "stm32h7",
         "BUILD_TEST_APPS": "yes",
