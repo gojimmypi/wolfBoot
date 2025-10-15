@@ -36,7 +36,8 @@ jobs:
           submodules: true
 
       # Lock down network/runner
-      - uses: step-security/harden-runner@<SHA>
+      # See https://github.com/step-security/harden-runner/releases
+      - uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a
         with:
           egress-policy: block
           allowed-endpoints: >
