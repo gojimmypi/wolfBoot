@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "*" ]
 
+permissions:
+  contents: read
+
 jobs:
   windows-cmake:
     name: Build on Windows
@@ -32,6 +35,15 @@ jobs:
         with:
           submodules: true
 
+      # Lock down network/runner
+      - uses: step-security/harden-runner@<SHA>
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            developer.arm.com,
+            armkeil.blob.core.windows.net,
+            github.com, objects.githubusercontent.com, api.github.com
+
       # ARM GCC toolchain (adds the bin dir to PATH)
       - name: Set up ARM none-eabi GCC 14.x
         uses: carlosperate/arm-none-eabi-gcc-action@v1
@@ -43,6 +55,8 @@ jobs:
       - name: Tool versions
         shell: bash
         run: |
+          # Show some key toolchain versions
+
           echo "Compiler versions:"
           arm-none-eabi-gcc --version
           echo
@@ -54,6 +68,13 @@ jobs:
           echo
           echo "MSVC (via vswhere):"
           cmd.exe /c "\"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe\" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion"
+
+      - name: List Presets
+        shell: bash
+        run: |
+          # Check available presets in CMakePresets.json
+
+          cmake -S . -B build-list --list-presets=configure
 
       - name: Configure Preset "${{ matrix.target }}"
         shell: bash
