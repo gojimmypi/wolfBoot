@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ '*' ]
 jobs:
-  wolfbuild_script_test:
+  wolfboot_build_script_test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -68,5 +68,5 @@ jobs:
       - name: Run wolfboot_build script
         run: |
           rm -rf ./build
-          ./scripts/wolfbuild.sh --CLEAN  "stm32l4"
-          ./scripts/wolfbuild.sh --target "stm32l4"
+          ./scripts/wolfboot_build.sh --CLEAN  "stm32l4"
+          ./scripts/wolfboot_build.sh --target "stm32l4"

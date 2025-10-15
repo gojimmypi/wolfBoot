@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Reminder for WSL:
-# git update-index --chmod=+x wolfbuild.sh
-# git commit -m "Make wolfbuild.sh executable"
+# git update-index --chmod=+x wolfboot_build.sh
+# git commit -m "Make wolfboot_build.sh executable"
 # git push
 
 # Specify the executable shell checker you want to use:
