@@ -84,9 +84,11 @@ jobs:
 
             echo "Clean"
             rm -rf ./build-stm32h7
+
+            # Here we should see the .config file values read and displayed:
             cmake -S . -B build-stm32h7 \
               -DUSE_DOT_CONFIG=ON       \
-              -DWOLFBOOT_TARGET=stm32h7 2>&1 | tee "$LOG_FILE" >/dev/tty
+              -DWOLFBOOT_TARGET=stm32h7 2>&1 | tee "$LOG_FILE"
 
             # Config dot-config mode
             if grep -q -- "$KEYWORD" "$LOG_FILE"; then
