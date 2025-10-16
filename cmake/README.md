@@ -84,6 +84,68 @@ checked in. For example, if a project is using Git, `CMakePresets.json` may be t
 
 ## CMake Logic Flow
 
+Simplified Diagram:
+
+```mermaid
+flowchart TD
+
+S[Start] --> B0{In-source build?}
+B0 -- yes --> BX[FATAL_ERROR no in-source builds]
+B0 -- no --> T0{Toolchain file set?}
+T0 -- no --> T1{Target set and not x86_64_efi or sim?}
+T1 -- yes --> T2[Set toolchain arm-none-eabi]
+T1 -- no --> PRJ[project wolfBoot]
+T0 -- yes --> PRJ
+
+PRJ --> CFG{Config source}
+CFG -- dot --> C1[load dotconfig]
+CFG -- preset --> C2[use presets]
+CFG -- neither --> C3[use cache or CLI]
+
+C1 --> TA
+C2 --> TA
+C3 --> TA
+TA{Target and sector size set?}
+TA -- no --> TEe[FATAL_ERROR required vars]
+TA -- yes --> ARCH{Resolve ARCH}
+
+ARCH --> PART{Need partition vars?}
+PART -- yes --> PV{All partition vars set?}
+PV -- no --> PVe[FATAL_ERROR partition vars]
+PV -- yes --> OK1[OK]
+PART -- no --> OK1
+
+OK1 --> HOST[Detect host compiler and flags]
+HOST --> TOOLS[Build sign keygen bin-assemble]
+TOOLS --> X0{Cross compiler set?}
+X0 -- no --> XSEL{ARCH}
+XSEL -- ARM --> XARM[include ARM toolchain]
+XSEL -- AARCH64 --> XA64[include AARCH64 toolchain]
+XSEL -- x86_64 or sim --> XNONE[no cross include]
+X0 -- yes --> XNONE
+
+XNONE --> SIGN{SIGN algorithm}
+SIGN --> S1[Apply sign options header size stack]
+S1 --> FEAT{Feature flags}
+FEAT --> HASH{HASH}
+HASH --> HAL[Select drivers]
+HAL --> MATH{Math options}
+MATH --> LIBS[Build hal and wolfcrypt]
+LIBS --> IMG{Build image or tests?}
+IMG -- yes --> TAPP[add test app]
+IMG -- no --> VARS[configure target header]
+TAPP --> VARS
+VARS --> KEY{SIGN not none?}
+KEY -- yes --> KEYGEN[keystore and public key]
+KEY -- no --> WL
+KEYGEN --> WL
+WL[Build wolfboot and link] --> DONE((Done))
+
+```
+
+
+In more detail:
+
 ```mermaid
 flowchart TD
   %% wolfBoot CMake Build Logic Flow (conservative syntax for VS 2022)
