@@ -34,7 +34,7 @@ Centralizes toolchain paths, target names, build directories, and key cache vari
 Maps Visual Studio configurations (Debug, Release) to existing CMake presets.
 Controls IntelliSense, environment variables, and the preset shown in the VS CMake toolbar.
 
-- [CMakeUserPresets.json.sample](./CMakeUserPresets.json.sample) - Example local overrides for user-specific paths and options. Copy to CMakeUserPresets.json and customize. Not committed. Copy to `WOLFBOOT_ROOT` and remove the `.sample` suffix.
+- [CMakeUserPresets.json.sample](./CMakeUserPresets.json.sample) - Example local overrides for user-specific paths and options. Copy to `CMakeUserPresets.json` in the `WOLFBOOT_ROOT` directory and customize. Not committed. Copy to `WOLFBOOT_ROOT` and remove the `.sample` suffix.
 
 - [config_defaults.cmake](./config_defaults.cmake) - Default cache values and feature toggles used when presets or .config do not provide them.
 

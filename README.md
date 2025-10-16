@@ -204,6 +204,10 @@ select the preset from the status bar or CMake menu, then build.
 
 For further details, see the [cmake/README](./cmake/README.md)
 
+### CMake - Read .config file
+
+See [cmake/README](./cmake/README.md#build-with-cmake-using-config-files).
+
 ### CMake - Command-line Settings
 
 To build using CMake, create a `build` directory and run `cmake` with the target platform as well as values for the partition
