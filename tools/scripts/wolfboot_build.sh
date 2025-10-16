@@ -2,6 +2,13 @@
 
 # wolfboot_build.sh
 #
+#   ./tools/scripts/wolfboot_build.sh --CLEAN --target [your target]
+#   ./tools/scripts/wolfboot_build.sh --target [your target]
+#   ./tools/scripts/wolfboot_build.sh --flash [your target]
+#
+# Options:
+#   Set WOLFBOOT_CLEAN_STRICT=1 to error is any other build directories found
+#
 # Reminder for WSL:
 # git update-index --chmod=+x wolfboot_build.sh
 # git commit -m "Make wolfboot_build.sh executable"
@@ -48,7 +55,7 @@ echo "Starting $0 from $(pwd -P)"
 
 # End common dir init
 
-if [ $# -gt 0 ]; then
+ if [ $# -gt 0 ]; then
     THIS_OPERATION="$1"
 
     TARGET="$2"
@@ -60,25 +67,41 @@ if [ $# -gt 0 ]; then
         if [ "$TARGET" = "" ]; then
             echo "Clean... (build)"
             rm -rf ./build
+            if [ -e ./build ]; then
+                echo "ERROR: ./build still exists after rm -rf" >&2
+                exit 1
+            fi
         else
             echo "Clean... (build-$TARGET)"
             rm -rf "./build-$TARGET"
+            if [ -e "./build-$TARGET" ]; then
+                echo "ERROR: ./build-$TARGET still exists after rm -rf" >&2
+                exit 1
+            fi
         fi
 
         # Any other build directories?
+        # Warn if others remain, but don't fail unless strict is requested
         shopt -s nullglob
-        dirs=(build-*/)
-        if ((${#dirs[@]})); then
-          printf 'Warning: Found %d other build directory target(s):\n' "${#dirs[@]}"
-          printf '\n'
-          printf '%s\n' "${dirs[@]%/}"
-          printf '\n'
-          echo "Try:  $0 --CLEAN [target]"
-          exit 1
+        others=()
+        for d in build-*; do
+            # skip generic build dir (if any) and the one we just removed
+            [ "$d" = "build" ] && continue
+            [ "$d" = "build-$TARGET" ] && continue
+            others+=("$d")
+        done
+
+        if ((${#others[@]})); then
+            printf 'Note: Found %d other build directory target(s):\n' "${#others[@]}"
+            printf '%s\n' "${others[@]}"
+            if [ -n "$WOLFBOOT_CLEAN_STRICT" ]; then
+                echo "Failing because WOLFBOOT_CLEAN_STRICT is set."
+                exit 1
+            fi
         else
-          echo 'Success: No other build-[target] directories found.'
-          exit 0
+            echo 'Success: No other build-[target] directories found.'
         fi
+        exit 0
     fi
 
     if [ "$THIS_OPERATION" = "--target" ]; then
@@ -89,7 +112,13 @@ if [ $# -gt 0 ]; then
     if [ "$THIS_OPERATION" = "--stlink-upgrade" ]; then
         echo "ST-Link upgrade!"
         CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STLinkUpgrade.exe"
+        if [ ! -f "$CLI" ]; then
+            echo "CLI=$CLI"
+            echo "STLinkUpgrade.exe not found, exiting"
+            exit 2
+        fi
 
+        # Run STLinkUpgrade.exe
         "$CLI"
         status=$?
         if [ "$status" -eq 0 ]; then
@@ -101,9 +130,16 @@ if [ $# -gt 0 ]; then
     fi
 
     if [ "$THIS_OPERATION" = "--flash" ]; then
+        echo "Flash Target=$TARGET"
         CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI.exe"
+        if [ ! -f "$CLI" ]; then
+            echo "CLI=$CLI"
+            echo "STM32_Programmer_CLI.exe not found, exiting"
+            exit 2
+        fi
 
-        WOLFBOOT_BIN="build-stm32l4/test-app/wolfboot_stm32l4.bin"
+        WOLFBOOT_BIN="build-$TARGET/test-app/wolfboot_$TARGET.bin"
+        echo Checking "WOLFBOOT_BIN=$WOLFBOOT_BIN"
         if [ ! -f "$WOLFBOOT_BIN" ]; then
             echo "Missing: $WOLFBOOT_BIN  (build first: cmake --build --preset \"$TARGET\")"
             exit 2
@@ -112,6 +148,7 @@ if [ $# -gt 0 ]; then
         "$CLI" -c port=SWD mode=UR freq=400 -w "$IMAGE_WOLFBOOT" 0x08000000 -v
 
         SIGNED="build-$TARGET/test-app/image_v1_signed.bin"
+        echo "Checking SIGNED=$SIGNED"
         if [ ! -f "$SIGNED" ]; then
             echo "Missing: $SIGNED  (try: cmake --build --preset \"$TARGET\" --target test-app)"
             exit 2
