@@ -7,13 +7,13 @@ Some interim notes on progress in various environments:
 |Status | Environment               | Test With
 |-------| ------------------------- | --------
 |  ✅   | VS 2022                   | Right-Click on [CMakeLists.txt](./CMakeLists.txt), Build
-|  ✅   | WSL                       | [./my_test.sh](./my_test.sh)
-|  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
+|  ✅   | WSL                       | [./tools/scripts/cmake_test.sh](./tools/scripts/cmake_test.sh)
+|  ✅   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
 |  ✅   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
-|  ✅   | DOS Prompt, Dev Prompt    | [./scripts/my_test.bat](./scripts/my_test.bat)
-|  ✅   | PowerShell, Dev Prompt    | [.\scripts\my_test.bat](./scripts/my_test.bat)
-|  ❌   | DOS Prompt, direct launch | [.\scripts\my_test.bat](./scripts/my_test.bat)
-|  ❌   | PowerShell, direct launch | [.\scripts\my_test.bat](./scripts/my_test.bat)
+|  ✅   | DOS Prompt, Dev Prompt    | [.\tools\scripts\cmake_dev_prompt_test.bat](./tools/scripts/cmake_dev_prompt_test.bat)
+|  ✅   | PowerShell, Dev Prompt    | [.\tools\scripts\cmake_dev_prompt_test.bat](./tools/scripts/cmake_dev_prompt_test.bat)
+|  ✅   | DOS Prompt, direct launch | [.\tools\scripts\cmake_test.bat](./tools/scripts/cmake_test.bat) (needs toolchain path)
+|  ✅   | PowerShell, direct launch | [.\tools\scripts\cmake_test.bat](./tools/scripts/cmake_test.bat) (needs toolchain path)
 |  ✅   | VS Code, direct launch    | Click "build"
 
 ## Make Dev Status:
@@ -21,18 +21,18 @@ Some interim notes on progress in various environments:
 |Status | Environment               | Test With
 |-------| ------------------------- | --------
 |   ?   | VS 2022                   | N/A (?)
-|  ✅  | WSL                        | `./scripts/wolfboot_build.sh --target stm32l4`
+|  ✅   | WSL                       | `./tools/scripts/wolfboot_build.sh --target stm32l4`
 |  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
 |   ?   | VS Code, Dev Prompt       | N/A (?)
-|  ❌    | DOS Prompt, Dev Prompt   |
+|  ❌   | DOS Prompt, Dev Prompt    |
 |  ❌   | PowerShell, Dev Prompt    |
 |  ❌   | DOS Prompt, direct launch |
-|  ❌    | PowerShell, direct launch|
-|   ?    | VS Code, direct launch    | N/A (?)
+|  ❌   | PowerShell, direct launch |
+|   ?   | VS Code, direct launch    | N/A (?)
 
 ---
 
-wolfSSL Secure Bootloader ([Home page](https://www.wolfssl.com/products/wolfboot/))
+wolfSSL Secure Bootloader ([Home page](https://www.wolfssl.com/products/wolfboot/), [Manual](https://www.wolfssl.com/documentation/manuals/wolfboot/), [wolfBoot-examples](https://github.com/wolfSSL/wolfBoot-examples))
 
 wolfBoot is a portable, OS-agnostic, secure bootloader solution for 32-bit microcontrollers,
 relying on wolfCrypt for firmware authentication, providing firmware update mechanisms.
