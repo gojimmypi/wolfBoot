@@ -57,7 +57,7 @@ See also: CMake: Delete Cache and Reconfigure
 
 #### Launch VS Code from VS 2022 Command prompt.
 
-Delete any existing `build` or `build-[os]-[target]` directories as needed.
+Delete any existing `build` or `build-[target]` directories as needed.
 
 Open a VS 2022 Developer command prompt.
 
