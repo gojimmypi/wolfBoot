@@ -2,9 +2,9 @@
 
 # wolfboot_build.sh
 #
-#   ./tools/scripts/wolfboot_build.sh --CLEAN --target [your target]
+#   ./tools/scripts/wolfboot_build.sh --CLEAN  [your target]
 #   ./tools/scripts/wolfboot_build.sh --target [your target]
-#   ./tools/scripts/wolfboot_build.sh --flash [your target]
+#   ./tools/scripts/wolfboot_build.sh --flash  [your target]
 #
 # Options:
 #   Set WOLFBOOT_CLEAN_STRICT=1 to error is any other build directories found
@@ -55,7 +55,115 @@ echo "Starting $0 from $(pwd -P)"
 
 # End common dir init
 
- if [ $# -gt 0 ]; then
+# find_stm32_tool: locate STM32CubeProgrammer tools (e.g., STM32_Programmer_CLI, STLinkUpgrade)
+# Usage:
+#   find_stm32_tool STM32_Programmer_CLI            # prints full path, returns 0 if found
+#   find_stm32_tool STLinkUpgrade                   # finds .exe on WSL/Windows or .jar on macOS/Linux
+#   find_stm32_tool STM32_Programmer_CLI STLink_CLI # tries each name until one is found
+#
+# Optional environment override:
+#   export STM32CUBE_PROGRAMMER_ROOT="/path/to/STM32CubeProgrammer"
+#   # (either the install root or its bin/ directory)
+#
+# ---------- Examples ----------
+# Find the CLI on any platform:
+# cli_path="$(find_stm32_tool STM32_Programmer_CLI)" || { echo "CLI not found"; exit 1; }
+# echo "CLI: $cli_path"
+
+# Find the STLink upgrader (exe on WSL/Windows, jar on macOS/Linux):
+# upg_path="$(find_stm32_tool STLinkUpgrade STLinkUpgrade.jar)" || { echo "Upgrader not found"; exit 1; }
+# echo "Upgrader: $upg_path"
+
+find_stm32_tool() {
+    if [ "$#" -lt 1 ]; then
+        echo "Usage: find_stm32_tool <name> [alt_name ...]" >&2
+        return 2
+    fi
+
+    # Build candidate bin directories (order matters)
+    _bins=()
+
+    # 1) User override
+    if [ -n "$STM32CUBE_PROGRAMMER_ROOT" ]; then
+        if [ -d "$STM32CUBE_PROGRAMMER_ROOT/bin" ]; then
+            _bins+=("$STM32CUBE_PROGRAMMER_ROOT/bin")
+        fi
+        if [ -d "$STM32CUBE_PROGRAMMER_ROOT" ] && { [ -x "$STM32CUBE_PROGRAMMER_ROOT/STM32_Programmer_CLI" ] || [ -x "$STM32CUBE_PROGRAMMER_ROOT/STM32_Programmer_CLI.exe" ]; }; then
+            _bins+=("$STM32CUBE_PROGRAMMER_ROOT")
+        fi
+    fi
+
+    # 2) WSL/Windows (common default)
+    if [ -d "/mnt/c" ]; then
+        _bins+=(
+            "/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"
+            "/mnt/c/Program Files (x86)/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"
+        )
+    fi
+
+    # 3) macOS .app bundle paths
+    _mac_app="/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app"
+    if [ -d "$_mac_app" ]; then
+        # Most recent distributions place binaries here:
+        _bins+=("$_mac_app/Contents/Resources/bin")
+        # Some older guides/installers used this:
+        _bins+=("$_mac_app/Contents/MacOs/bin")
+    fi
+
+    # 4) Linux / macOS common install locations
+    _bins+=(
+        "$HOME/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"
+        "/usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"
+        "/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"
+    )
+
+    # Deduplicate while preserving order
+    _uniq_bins=()
+    for d in "${_bins[@]}"; do
+        _seen=0
+        for u in "${_uniq_bins[@]}"; do
+            [ "$u" = "$d" ] && _seen=1 && break
+        done
+        [ "$_seen" -eq 0 ] && _uniq_bins+=("$d")
+    done
+
+    # Try each requested name across all candidate directories.
+    for name in "$@"; do
+        for dir in "${_uniq_bins[@]}"; do
+            [ -d "$dir" ] || continue
+
+            # Candidates to test (with and without .exe)
+            cand1="$dir/$name"
+            cand2="$dir/$name.exe"
+
+            # Special-case: STLinkUpgrade may be shipped as a .jar on macOS/Linux
+            cand3="$dir/${name%.jar}.jar"
+
+            # Prefer native executable if present
+            if [ -x "$cand1" ]; then
+                printf "%s\n" "$cand1"
+                return 0
+            fi
+            if [ -x "$cand2" ]; then
+                printf "%s\n" "$cand2"
+                return 0
+            fi
+            # Jar isn't -x by default; accept it if it exists and is readable
+            if [ -r "$cand3" ] && { [ "${name%.jar}" = "STLinkUpgrade" ] || [ "$name" = "STLinkUpgrade.jar" ]; }; then
+                printf "%s\n" "$cand3"
+                return 0
+            fi
+        done
+    done
+
+    # Not found
+    return 1
+}
+
+#---------------------------------------------------------------------------------------------
+#
+#---------------------------------------------------------------------------------------------
+if [ $# -gt 0 ]; then
     THIS_OPERATION="$1"
 
     TARGET="$2"
@@ -111,8 +219,10 @@ echo "Starting $0 from $(pwd -P)"
 
     if [ "$THIS_OPERATION" = "--stlink-upgrade" ]; then
         echo "ST-Link upgrade!"
-        CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STLinkUpgrade.exe"
-        if [ ! -f "$CLI" ]; then
+        CLI="$(find_stm32_tool STLinkUpgrade)" || { echo "CLI not found"; exit 1; }
+        if [ -f "$CLI" ]; then
+            echo "Found stlink upgrade tool: $CLI"
+        else
             echo "CLI=$CLI"
             echo "STLinkUpgrade.exe not found, exiting"
             exit 2
@@ -131,8 +241,10 @@ echo "Starting $0 from $(pwd -P)"
 
     if [ "$THIS_OPERATION" = "--flash" ]; then
         echo "Flash Target=$TARGET"
-        CLI="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI.exe"
-        if [ ! -f "$CLI" ]; then
+        CLI="$(find_stm32_tool STM32_Programmer_CLI)" || { echo "CLI not found"; exit 1; }
+        if [ -f "$CLI" ]; then
+            echo "Found STM32 flasher: $CLI"
+        else
             echo "CLI=$CLI"
             echo "STM32_Programmer_CLI.exe not found, exiting"
             exit 2
@@ -173,7 +285,9 @@ fi
 if [ "$TARGET" = "" ]; then
     echo "Please specify a target."
     echo ""
+    echo "  $0 --CLEAN  [your target]"
     echo "  $0 --target [your target]"
+    echo "  $0 --flash  [your target]"
     echo ""
     cmake -S . -B build --list-presets=configure
     exit 1
