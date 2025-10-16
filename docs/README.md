@@ -1,4 +1,7 @@
-﻿## wolfBoot docs
+﻿## wolfBoot Docs and Platform-Specific Details
+
+See also: [wolfBoot Product Overview](https://www.wolfssl.com/products/wolfboot/) and [wolfBoot Manual](https://www.wolfssl.com/documentation/manuals/wolfboot/).
+
 
 - [**API.md**](./API.md) - Overview of wolfBoot public APIs and how to use them.
 - [**ata_security.md**](./ata_security.md) - ATA security features (lock/unlock, passwords) and wolfBoot integration.
@@ -26,3 +29,5 @@
 - [**Targets.md**](./Targets.md) - Supported targets and platform-specific configuration.
 - [**TPM.md**](./TPM.md) - TPM integration, measured boot, and attestation flows.
 - [**wolfHSM.md**](./wolfHSM.md) - Integrating wolfHSM with wolfBoot for secure key operations.
+
+
