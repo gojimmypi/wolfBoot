@@ -1,4 +1,4 @@
-# Config Example Files
+﻿# Config Example Files
 
 This directory contains example `.config` presets for various target devices.
 
@@ -13,5 +13,5 @@ See the [CMakePresets.json](../../CMakePresets.json) file.
 Config files can be added or updated to the `CMakePresets.json` like this:
 
 ```bash
-python3 config2presets.py ./config/examples/stm32h7.config
+python3 ./tools/scripts/config2presets.py ./config/examples/stm32h7.config
 ```
