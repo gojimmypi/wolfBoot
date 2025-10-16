@@ -9,7 +9,7 @@ See also:
 
 # Example
 
-See the [WOLFBOOT_ROOT/scripts/tools/cmake_test.bat](../../scripts/tools/cmake_test.bat) using cmake:
+See the [WOLFBOOT_ROOT/tools/scripts/cmake_test.bat](../../tools/scripts/cmake_test.bat) using cmake:
 
 ```dos
 rmdir /s /q build-stm32l4
