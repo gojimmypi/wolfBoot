@@ -21,12 +21,15 @@ jobs:
         target:
           - stm32l4
           - stm32h7
+          - stm32g0
         include:
           # Optional per-target cache variables you might want to pass later.
           # Keep empty for now to avoid guessing addresses.
           - target: stm32l4
             extra_cache: ""
           - target: stm32h7
+            extra_cache: ""
+          - target: stm32g0
             extra_cache: ""
 
     steps:
