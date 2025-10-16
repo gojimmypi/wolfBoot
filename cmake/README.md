@@ -107,39 +107,62 @@ C2 --> TA
 C3 --> TA
 TA{Target and sector size set?}
 TA -- no --> TEe[FATAL_ERROR required vars]
-TA -- yes --> ARCH{Resolve ARCH}
+TA -- yes --> AR{Resolve ARCH}
 
-ARCH --> PART{Need partition vars?}
-PART -- yes --> PV{All partition vars set?}
+AR --> PARTQ{Need partition vars}
+PARTQ --> PART{not PULL_LINKER_DEFINES and not BUILD_TEST_APPS}
+PART -- yes --> PV{All partition vars set}
 PV -- no --> PVe[FATAL_ERROR partition vars]
 PV -- yes --> OK1[OK]
 PART -- no --> OK1
 
 OK1 --> HOST[Detect host compiler and flags]
 HOST --> TOOLS[Build sign keygen bin-assemble]
-TOOLS --> X0{Cross compiler set?}
+TOOLS --> X0{Cross compiler set}
 X0 -- no --> XSEL{ARCH}
 XSEL -- ARM --> XARM[include ARM toolchain]
 XSEL -- AARCH64 --> XA64[include AARCH64 toolchain]
 XSEL -- x86_64 or sim --> XNONE[no cross include]
 X0 -- yes --> XNONE
 
-XNONE --> SIGN{SIGN algorithm}
+XNONE --> A0{ARCH specifics}
+A0 -- ARM --> A1[boot_arm freestanding stm32 tweaks]
+A0 -- x86_64 --> A2[boot_x86_64]
+A0 -- AARCH64 --> A3[aarch64 sources and defs]
+
+A0 --> EFIQ{Target is x86_64_efi}
+EFIQ -- yes --> EFI[GNU EFI settings update via RAM]
+EFIQ -- no --> UDF[Default update via flash]
+
+UDF --> SIGN{SIGN algorithm}
+EFI --> SIGN
 SIGN --> S1[Apply sign options header size stack]
 S1 --> FEAT{Feature flags}
-FEAT --> HASH{HASH}
-HASH --> HAL[Select drivers]
+FEAT --> FLASH[EXT SPI QSPI UART]
+FEAT --> ENC[AES128 AES256 CHACHA]
+FEAT --> MISC[ALLOW_DOWNGRADE NO_MPU FLAGS_HOME FLAGS_INVERT]
+FEAT --> DELTA[DELTA_UPDATES optional]
+FEAT --> ARMOR[ARMORED optional]
+
+ARMOR --> HASH{HASH}
+DELTA --> HASH
+MISC --> HASH
+ENC --> HASH
+FLASH --> HASH
+HASH --> H1[Add hash defs and keytool flags]
+
+H1 --> HAL[Select SPI UART drivers DEBUG_UART]
 HAL --> MATH{Math options}
-MATH --> LIBS[Build hal and wolfcrypt]
-LIBS --> IMG{Build image or tests?}
+MATH --> LIBS[Build user_settings wolfboothal wolfcrypt]
+LIBS --> IMG{Build image or tests}
 IMG -- yes --> TAPP[add test app]
-IMG -- no --> VARS[configure target header]
+IMG -- no --> VARS[configure target header cache vars]
 TAPP --> VARS
-VARS --> KEY{SIGN not none?}
+VARS --> KEY{SIGN not none}
 KEY -- yes --> KEYGEN[keystore and public key]
 KEY -- no --> WL
 KEYGEN --> WL
-WL[Build wolfboot and link] --> DONE((Done))
+WL[Build wolfboot and link] --> DONE[Done]
 
 ```
 
