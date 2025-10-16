@@ -170,6 +170,30 @@
         "BUILD_TEST_APPS": "ON",
         "WOLFBOOT_CONFIG_MODE": "preset"
       }
+    },
+    {
+      "name": "stm32f1",
+      "displayName": "Linux/WSL ARM (stm32f1)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32f1",
+      "cacheVariables": {
+        "ARCH": "ARM",
+        "WOLFBOOT_TARGET": "stm32f1",
+        "SIGN": "ED25519",
+        "HASH": "SHA256",
+        "VTOR": "OFF",
+        "SPMATH": "ON",
+        "DISABLE_BACKUP": "OFF",
+        "NVM_FLASH_WRITEONCE": "ON",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08003000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08009400",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0800F800",
+        "WOLFBOOT_PARTITION_SIZE": "0x6400",
+        "WOLFBOOT_SECTOR_SIZE": "0x400",
+        "CMAKE_TOOLCHAIN_FILE": "/mnt/c/workspace/wolfBoot-gojimmypi/cmake/toolchain_arm-none-eabi.cmake",
+        "BUILD_TEST_APPS": "ON",
+        "WOLFBOOT_CONFIG_MODE": "preset"
+      }
     }
   ],
   "buildPresets": [
@@ -203,6 +227,15 @@
     {
       "name": "stm32c0",
       "configurePreset": "stm32c0",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32f1",
+      "configurePreset": "stm32f1",
       "jobs": 4,
       "verbose": true,
       "targets": [
