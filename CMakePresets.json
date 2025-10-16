@@ -240,24 +240,6 @@
       ]
     },
     {
-      "name": "stm32h7",
-      "configurePreset": "stm32h7",
-      "jobs": 4,
-      "verbose": true,
-      "targets": [
-        "all"
-      ]
-    },
-    {
-      "name": "stm32l4",
-      "configurePreset": "stm32l4",
-      "jobs": 4,
-      "verbose": true,
-      "targets": [
-        "all"
-      ]
-    },
-    {
       "name": "stm32c0",
       "configurePreset": "stm32c0",
       "jobs": 4,
@@ -278,6 +260,24 @@
     {
       "name": "stm32g0",
       "configurePreset": "stm32g0",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32h7",
+      "configurePreset": "stm32h7",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32l4",
+      "configurePreset": "stm32l4",
       "jobs": 4,
       "verbose": true,
       "targets": [

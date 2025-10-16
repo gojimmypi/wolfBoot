@@ -97,9 +97,11 @@ else()
     message(STATUS "No .config files will be read; USE_DOT_CONFIG is disabled")
 endif()
 
-
-
-# set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
+# Edit to stop CMake from appending any "standard" C include paths that it thinks your toolchain/platform needs
+# Brute force, not recommended, ymmv.
+if(false)
+    set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES "" CACHE STRING "" FORCE)
+endif()
 
 #------------------- Host compiler (for native tools only) -----------------------------------
 #---------------------------------------------------------------------------------------------

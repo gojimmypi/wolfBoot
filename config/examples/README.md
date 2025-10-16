@@ -19,3 +19,11 @@ python3 ./tools/scripts/config2presets.py ./config/examples/stm32h7.config
 
 ./tools/scripts/wolfboot_build.sh --target stm32h7
 ```
+
+## Troubleshooting
+
+The wrong toolchain is being used, or a target was not specified
+
+```
+Error: no such instruction: `isb'
+```
