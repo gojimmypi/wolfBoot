@@ -111,5 +111,5 @@ jobs:
       - name: Run wolfbuild script
         run: |
           rm -rf ./build
-          ./scripts/wolfboot_build.sh --CLEAN  "stm32l4"
-          ./scripts/wolfboot_build.sh --target "stm32l4"
+          ./tools/scripts/wolfboot_build.sh --CLEAN  "stm32l4"
+          ./tools/scripts/wolfboot_build.sh --target "stm32l4"
