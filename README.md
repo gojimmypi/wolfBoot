@@ -170,6 +170,8 @@ cmake --preset stm32l4
 cmake --build --preset stm32l4
 ```
 
+See the `WOLFBOOT_ROOT`/[config_defaults.cmake](./config_defaults.cmake) file.
+
 #### Convert existing `.config` to CMake Presets
 
 The [tools/scripts/config2presets.py](./tools/scripts/config2presets.py) script cam

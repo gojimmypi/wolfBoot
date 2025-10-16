@@ -40,7 +40,7 @@ set(DETECT_VS2022 true)
 
 # Enable HAL download only implemented for TMS devices at this time.
 # See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
-# and [WOLFBOOT_ROOT]/cmake/download/wolfboot/cmake/stm32_hal_download.cmake
+# and [WOLFBOOT_ROOT]/cmake/downloads/stm32_hal_download.cmake
 set(ENABLE_HAL_DOWNLOAD true)
 set(FOUND_HAL_BASE false)
 
