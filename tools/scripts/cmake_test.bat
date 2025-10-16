@@ -1,7 +1,7 @@
 ::!/cmd/batch
 
-:: We start in /scripts, but build one directory up: from wolfBoot root
-cd ..
+:: We must start in /tools/scripts, but build two directories up: from wolfBoot root
+cd ../../
 
 rmdir /s /q build-stm32l4
 

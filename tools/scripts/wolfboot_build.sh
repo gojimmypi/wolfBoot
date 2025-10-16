@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# wolfboot_build.sh
+#
 # Reminder for WSL:
 # git update-index --chmod=+x wolfboot_build.sh
 # git commit -m "Make wolfboot_build.sh executable"
@@ -16,11 +18,11 @@ else
     echo "$MY_SHELLCHECK is not installed. Please install it if changes to this script have been made."
 fi
 
-# Begin common dir init
+# Begin common dir init, for /tools/scripts
 # Resolve this script's absolute path and its directories
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "${BASH_SOURCE[0]}")"
-REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 
 # Normalize to physical paths (no symlinks, no trailing slashes)
 # SCRIPT_DIR_P="$(cd -- "$SCRIPT_DIR" && pwd -P)"
