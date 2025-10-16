@@ -112,18 +112,29 @@ def merge_preset(doc, cfg_preset, bld_preset):
 
 def main():
     ap = argparse.ArgumentParser(description="Generate or merge a CMakePresets.json from a .config file")
-    ap.add_argument("config", help="Path to .config (relative to your current directory if not absolute)")
-    ap.add_argument("--toolchain", default="cmake/toolchain_arm-none-eabi.cmake",
+    ap.add_argument("config",
+                    help="Path to .config (relative to your current directory if not absolute)")
+    ap.add_argument("--toolchain",
+                    default="cmake/toolchain_arm-none-eabi.cmake",
                     help="Path to toolchain file (relative to repo root if not absolute)")
-    ap.add_argument("--presets", default="CMakePresets.json",
+    ap.add_argument("--presets",
+                    default="CMakePresets.json",
                     help="Path to CMakePresets.json to create/merge (relative to repo root if not absolute)")
-    ap.add_argument("--generator", default="Ninja", help="CMake generator")
-    ap.add_argument("--preset-name", default=None, help="Override preset name")
-    ap.add_argument("--binary-dir", default=None, help="Override binaryDir")
-    ap.add_argument("--display-name", default=None, help="Override displayName")
+    ap.add_argument("--generator",
+                    default="Ninja",
+                    help="CMake generator")
+    ap.add_argument("--preset-name",
+                    default=None,
+                    help="Override preset name")
+    ap.add_argument("--binary-dir",
+                    default=None,
+                    help="Override binaryDir")
+    ap.add_argument("--display-name",
+                    default=None,
+                    help="Override displayName")
     args = ap.parse_args()
 
-    # â”€â”€ Begin common dir init, for /tools/scripts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # Begin common dir init, for /tools/scripts
     script_path = Path(__file__).resolve()
     script_dir = script_path.parent.resolve()
 
@@ -132,7 +143,7 @@ def main():
 
     caller_cwd = Path.cwd().resolve()
 
-    # Print only if caller's cwd is neither REPO_ROOT nor REPO_ROOT/tools/scripts
+    # Print only if caller's current working directory is neither REPO_ROOT nor REPO_ROOT/tools/scripts
     if caller_cwd != repo_root and caller_cwd != (repo_root / "tools" / "scripts"):
         print("Script paths:")
         print(f"-- SCRIPT_PATH = {script_path}")
@@ -146,11 +157,11 @@ def main():
         print(f"Failed to cd to: {repo_root}\n{e}", file=sys.stderr)
         sys.exit(1)
     print(f"Starting {script_path} from {Path.cwd().resolve()}")
-    # â”€â”€ End common dir init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # End common dir init
 
     # Resolve paths:
     # - config: relative to caller's CWD (so user can pass local relative paths naturally)
-    # - toolchain/presets: relative to repo root (we already chdirâ€™d there)
+    # - toolchain/presets: relative to repo root (we already chdir there)
     config_path = Path(args.config)
     if not config_path.is_absolute():
         config_path = (caller_cwd / config_path).resolve()

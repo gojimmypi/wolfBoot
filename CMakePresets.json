@@ -190,7 +190,7 @@
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0800F800",
         "WOLFBOOT_PARTITION_SIZE": "0x6400",
         "WOLFBOOT_SECTOR_SIZE": "0x400",
-        "CMAKE_TOOLCHAIN_FILE": "/mnt/c/workspace/wolfBoot-gojimmypi/cmake/toolchain_arm-none-eabi.cmake",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
         "BUILD_TEST_APPS": "ON",
         "WOLFBOOT_CONFIG_MODE": "preset"
       }
