@@ -14,4 +14,8 @@ Config files can be added or updated to the `CMakePresets.json` like this:
 
 ```bash
 python3 ./tools/scripts/config2presets.py ./config/examples/stm32h7.config
+
+# then test it:
+
+./tools/scripts/wolfboot_build.sh --target stm32h7
 ```
