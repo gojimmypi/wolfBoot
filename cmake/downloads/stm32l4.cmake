@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
 #
 
+# The STM32L4 is known to need additional HAL source files:
 add_download(
     NAME st_hal
     URL  https://github.com/STMicroelectronics/stm32l4xx_hal_driver.git
@@ -36,4 +37,3 @@ add_download(
     URL  https://github.com/ARM-software/CMSIS_5.git
     TAG  5.9.0
 )
-
