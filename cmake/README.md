@@ -70,7 +70,7 @@ Controls IntelliSense, environment variables, and the preset shown in the VS CMa
 
 ### Build with cmake using `.config` files
 
-Presets are preferred, see below.
+Presets are preferred instead of `.config`, see below.
 
 To use `.config` files instead of presets,
 
@@ -146,6 +146,43 @@ cmake --build --preset stm32l4
 
 cmake --preset stm32h7
 cmake --build --preset stm32h7
+```
+
+### CMake User Presets.
+
+See the [CMakeUserPresets.json.sample(./CMakeUserPresets.json.sample).
+Copy the file to `WOLFBOOT_ROOT` and remove the`.sample` suffix: `CMakeUserPresets.json`.
+
+It is critically important that none the names of a user preset do not conflict with regular presets.
+
+For instance, the sample extends and overrides some of the `stm32l4` settings,
+using LLVM clang on Windows, and prefixes ALL the names with `my-`:
+
+```json
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "my-stm32l4",
+      "displayName": "my STM32L4",
+      "inherits": [
+        "stm32l4"
+      ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-my-stm32l4",
+      "cacheVariables": {
+        "ARM_GCC_BIN": "C:/SysGCC/arm-eabi/bin",
+        "HOST_CC": "C:/Program Files/LLVM/bin/clang.exe"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "my-stm32l4",
+      "configurePreset": "my-stm32l4"
+    }
+  ]
+}
 ```
 
 

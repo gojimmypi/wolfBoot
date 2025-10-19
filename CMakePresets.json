@@ -7,9 +7,28 @@
   },
   "configurePresets": [
     {
-      "name": "base",
+      "name": "base_build",
+      "description": "Basic build directory",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build"
+    },
+    {
+      "name": "base_build_presetName",
+      "description": "Device specific build directory",
       "hidden": true,
       "binaryDir": "${sourceDir}/build-${presetName}"
+    },
+    {
+      "name": "base_build_env_presetName",
+      "description": "Device and environment specific build directory",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build-$env{TERM_PROGRAM}$env{VSCMD_VER}$env{WSL_DISTRO_NAME}-${presetName}"
+    },
+    {
+      "name": "base",
+      "description": "Edit the build directory inherits setting for all presets.",
+      "hidden": true,
+      "inherits": "base_build_presetName"
     },
     {
       "name": "stm32",
@@ -97,7 +116,7 @@
         "stm32"
       ],
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-stm32l4",
+      "environment": { "VSCMD_DEBUG": "3" },
       "cacheVariables": {
         "WOLFBOOT_DOWNLOADS_CMAKE": "${sourceDir}/cmake/downloads/stm32l4.cmake",
         "WOLFBOOT_CONFIG_MODE": "preset",
@@ -199,7 +218,6 @@
       "name": "stm32g0",
       "displayName": "stm32g0",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-stm32g0",
       "cacheVariables": {
         "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32g0",

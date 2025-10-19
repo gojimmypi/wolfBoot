@@ -6,15 +6,23 @@
     }
   ],
   "settings": {
-    // Drive CMake Tools from the repo root folder:
     "cmake.useCMakePresets": "always",
-    "cmake.sourceDirectory": "${workspaceFolder:wolfBoot}",
-    "cmake.buildDirectory": "${workspaceFolder:wolfBoot}/build-${buildPresetName}",
-
-    // Nice-to-haves:
-    "cmake.generator": "Ninja",
     "cmake.configureOnOpen": true,
+
+    "cmake.useConfigurePresets": "always",
+
+    // Default to a project preset that exists; users can switch to their user preset
+    "cmake.defaultConfigurePreset": "stm32l4",
+    "cmake.defaultBuildPreset": "stm32l4",
+
+    // Nice-to-haves
     "cmake.loggingLevel": "info",
+    "cmake.preferredGenerators": ["Visual Studio 17 2022", "Ninja"],
+    "cmake.sourceDirectory": "${workspaceFolder}",
+
+    // When presets are used, this is mostly ignored, but kept as a sensible fallback
+    "cmake.buildDirectory": "${workspaceFolder}/build-vsc-${buildPresetName}",
+
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.encoding": "utf8",
     "files.eol": "\n"
@@ -26,57 +34,77 @@
       "marus25.cortex-debug"
     ]
   },
-  "launch": {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "STM32L4 - OpenOCD",
-        "type": "cortex-debug",
-        "request": "launch",
-        "servertype": "openocd",
-        "cwd": "${workspaceFolder:wolfBoot}",
-        "executable": "${workspaceFolder:wolfBoot}/build-stm32l4/wolfboot.elf",
-        "device": "STM32L475VG",
-        "configFiles": [
-          "interface/stlink-dap.cfg",
-          "target/stm32l4x.cfg"
-        ],
-        "runToMain": true,
-        "svdFile": "${workspaceFolder:wolfBoot}/hal/stm32l4/STM32L4x.svd",
-        "preLaunchTask": "CMake: Build (stm32l4)"
-      }
-    ]
-  },
   "tasks": {
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "CMake: Configure (stm32l4)",
+        "label": "CMake: Configure (active)",
         "command": "cmake",
-        "args": ["--preset", "stm32l4"],
-        "options": { "cwd": "${workspaceFolder:wolfBoot}" },
+        "args": [
+          "--preset",
+          "${command:cmake.activeConfigurePresetName}"
+        ],
+        "options": { "cwd": "${workspaceFolder}" },
         "problemMatcher": []
       },
       {
-        "label": "CMake: Build (stm32l4)",
+        "label": "CMake: Build (active)",
         "command": "cmake",
-        "args": ["--build", "--preset", "stm32l4"],
-        "options": { "cwd": "${workspaceFolder:wolfBoot}" },
+        "args": [
+          "--build",
+          "--preset",
+          "${command:cmake.activeBuildPresetName}"
+        ],
+        "options": { "cwd": "${workspaceFolder}" },
         "group": "build",
         "problemMatcher": "$gcc"
       },
       {
-        "label": "OpenOCD: Flash wolfBoot (stm32l4)",
+        "label": "CMake: Clean (active)",
+        "command": "cmake",
+        "args": [
+          "--build",
+          "--preset",
+          "${command:cmake.activeBuildPresetName}",
+          "--target",
+          "clean"
+        ],
+        "options": { "cwd": "${workspaceFolder}" },
+        "problemMatcher": []
+      },
+      {
+        "label": "OpenOCD: Flash wolfBoot (active)",
         "type": "shell",
         "command": "openocd",
         "args": [
           "-f", "interface/stlink-dap.cfg",
           "-f", "target/stm32l4x.cfg",
           "-c",
-          "program ${workspaceFolder:wolfBoot}/build-stm32l4/wolfboot.elf verify reset exit"
+          "program ${command:cmake.buildDirectory}/wolfboot.elf verify reset exit"
         ],
-        "options": { "cwd": "${workspaceFolder:wolfBoot}" },
+        "options": { "cwd": "${workspaceFolder}" },
         "problemMatcher": []
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "STM32L4 - OpenOCD (active preset)",
+        "type": "cortex-debug",
+        "request": "launch",
+        "servertype": "openocd",
+        "cwd": "${workspaceFolder}",
+        "device": "STM32L475VG",
+        "svdFile": "${workspaceFolder}/hal/stm32l4/STM32L4x.svd",
+        "executable": "${command:cmake.buildDirectory}/wolfboot.elf",
+        "configFiles": [
+          "interface/stlink-dap.cfg",
+          "target/stm32l4x.cfg"
+        ],
+        "runToMain": true,
+        "preLaunchTask": "CMake: Build (active)"
       }
     ]
   }

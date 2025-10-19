@@ -58,11 +58,100 @@ message(STATUS "Current user detected: ${CURRENT_USER}")
 #   set(STM32CUBEIDE_DIR "/your/path")
 
 # set(ARM_GCC_BIN "")
+if (CMAKE_HOST_WIN32)
+    # Optional: derive MSVC bin dirs from environment (if a VS Dev Prompt was used)
+    set(_VC_HINTS "")
+    if(DEFINED ENV{VCToolsInstallDir})
+    list(APPEND _VC_HINTS "$ENV{VCToolsInstallDir}/bin/Hostx64/x64"
+                            "$ENV{VCToolsInstallDir}/bin/Hostx64/x86"
+                            "$ENV{VCToolsInstallDir}/bin/Hostx86/x64"
+                            "$ENV{VCToolsInstallDir}/bin/Hostx86/x86")
+    endif()
+    SET(HOST_CC_HINT_DIRECTORIES
 
+        # Visual Studio 2022 (all editions)
+        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+        "C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/bin/Hostx64/x64"
+        "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/bin/Hostx64/x64"
+        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/bin/Hostx64/x64"
+        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/bin/Hostx64/x64"
 
-message(STATUS "config.defaults:")
-message(STATUS "-- HAL_DRV:       ${HAL_DRV}")
-message(STATUS "-- HAL_CMSIS_DEV: ${HAL_CMSIS_DEV}")
-message(STATUS "-- HAL_CMSIS_CORE:${HAL_CMSIS_CORE}")
+        # VisualGDB / SysGCC MinGW (common system-wide)
+        "C:/SysGCC/mingw64/bin"
+        "C:/SysGCC/MinGW64/bin"
+        "C:/SysGCC/mingw32/bin"
+        "C:/SysGCC/MinGW32/bin"
+
+        # VisualGDB user-local toolchains
+        "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/mingw64/bin"
+        "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/MinGW64/bin"
+        "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/mingw32/bin"
+        "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/MinGW32/bin"
+
+        # LLVM
+        "C:/Program Files/LLVM/bin"
+
+        # Environment-derived VS bin dirs if present
+        ${_VC_HINTS}
+    )
+
+    # Prefer environment if available (works from VS Dev Prompt / VS CMake)
+    if (CMAKE_HOST_WIN32 AND DEFINED ENV{VCINSTALLDIR} AND DEFINED ENV{VCToolsVersion})
+      file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
+      set(_VCTOOLS "$_VCINSTALLDIR/Tools/MSVC/$ENV{VCToolsVersion}")
+      list(APPEND HOST_CC_HINT_DIRECTORIES
+        "${_VCTOOLS}/bin/Hostx64/x64"
+        "${_VCTOOLS}/bin/Hostx64/x86"
+        "${_VCTOOLS}/bin/Hostx86/x64"
+        "${_VCTOOLS}/bin/Hostx86/x86")
+    endif()
+
+    if (CMAKE_HOST_WIN32)
+      set(_VSWHERE "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
+      if (EXISTS "${_VSWHERE}")
+        execute_process(
+          COMMAND "${_VSWHERE}" -latest -requires Microsoft.Component.MSBuild -property installationPath
+          OUTPUT_VARIABLE _VS_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if (_VS_PATH)
+          # Find all versioned MSVC toolsets under this install, pick highest (natural sort)
+          file(GLOB _MSVC_DIRS LIST_DIRECTORIES TRUE "${_VS_PATH}/VC/Tools/MSVC/*")
+          list(SORT _MSVC_DIRS COMPARE NATURAL ORDER DESCENDING)
+          list(GET _MSVC_DIRS 0 _MSVC_TOOLS)
+          list(APPEND HOST_CC_HINT_DIRECTORIES
+            "${_MSVC_TOOLS}/bin/Hostx64/x64"
+            "${_MSVC_TOOLS}/bin/Hostx64/x86"
+            "${_MSVC_TOOLS}/bin/Hostx86/x64"
+            "${_MSVC_TOOLS}/bin/Hostx86/x86")
+        endif()
+      endif()
+    endif()
+
+    if (CMAKE_HOST_WIN32)
+      foreach(_root
+        "C:/Program Files/Microsoft Visual Studio/2022"
+        "C:/Program Files (x86)/Microsoft Visual Studio/2022")
+        file(GLOB _editions LIST_DIRECTORIES TRUE "${_root}/*")  # Enterprise/Professional/Community
+        foreach(_ed ${_editions})
+          file(GLOB _msvc LIST_DIRECTORIES TRUE "${_ed}/VC/Tools/MSVC/*")
+          list(SORT _msvc COMPARE NATURAL ORDER DESCENDING)
+          foreach(_ver ${_msvc})
+            list(APPEND HOST_CC_HINT_DIRECTORIES
+              "${_ver}/bin/Hostx64/x64"
+              "${_ver}/bin/Hostx64/x86"
+              "${_ver}/bin/Hostx86/x64"
+              "${_ver}/bin/Hostx86/x86")
+          endforeach()
+        endforeach()
+      endforeach()
+    endif()
+
+    message(STATUS "HOST_CC_HINT_DIRECTORIES=${HOST_CC_HINT_DIRECTORIES}")
+
+else()
+    message(STATUS "HOST_CC_HINT_DIRECTORIES not set, assuming tools in path. See wolfboot/cmake/config_defaults.cmake")
+    set(HOST_CC_HINT_DIRECTORIES "")
+endif()
 
 set(CONFIG_DEFAULTS_CMAKE_INCLUDED TRUE)

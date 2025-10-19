@@ -29,7 +29,13 @@
 #   -DWOLFBOOT_PARTITION_SWAP_ADDRESS=<swap_address> -DBUILD_TEST_APPS=yes ..
 # $ cmake --build .
 
+message(STATUS "CMake version: ${CMAKE_VERSION}")
+message(STATUS "Generator:     ${CMAKE_GENERATOR}")
+message(STATUS "Source dir:    ${CMAKE_SOURCE_DIR}")
+message(STATUS "Binary dir:    ${CMAKE_BINARY_DIR}")
+
 cmake_minimum_required(VERSION 3.16)
+
 include(cmake/config_defaults.cmake)
 
 #---------------------------------------------------------------------------------------------
@@ -109,8 +115,30 @@ endif()
 if (CMAKE_HOST_WIN32)
     # Prefer gcc/clang on Windows so POSIX-y headers (unistd.h) are available.
     message(STATUS "Tip: If find_program cannot find HOST_CC (not in path?), try launching from VS2022 dev prompt or edit path.")
-    find_program(HOST_CC NAMES gcc clang cl REQUIRED)
+    message(STATUS "ARM_GCC_BIN=${ARM_GCC_BIN}")
+    if(DEFINED HOST_CC AND EXISTS "${HOST_CC}")
+        message(STATUS "HOST_CC already defined, not using HOST_CC_HINT_DIRECTORIES")
+        message(STATUS "Using preset HOST_CC: ${HOST_CC}")
+    else()
+        unset(HOST_CC CACHE)
+        message(STATUS "HOST_CC not defined, will attempt to find...")
+        message(STATUS "HOST_CC_HINT_DIRECTORIES=${HOST_CC_HINT_DIRECTORIES}")
+        find_program(HOST_CC
+                     NAMES gcc clang cl REQUIRED
+                     HINTS
+#                        ${HOST_CC_HINT_DIRECTORIES}
+#                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+#                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+#                        "C:/Program Files/LLVM/bin"
+#                        "C:/mingw64/bin"
+#                        "C:/msys64/usr/bin"
+        )
+    endif()
+    message(STATUS "HOST_CC=${HOST_CC}")
+    message(STAUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 
+    # TODO
+    # if ((HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]]) OR true)
     if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]])
         message(STATUS "Found CMAKE_HOST_WIN32 and .exe in HOST_CC: Setting HOST_IS_MSVC")
         # Are we running in Visual Studio 2022 or VSCode from VS2022 command prompt?
@@ -161,6 +189,16 @@ endif()
 message(STATUS "Host CC: ${HOST_CC}")
 message(STATUS "Host compiler treated as MSVC: ${HOST_IS_MSVC}")
 
+# TODO
+if (false)
+# if (CMAKE_HOST_WIN32)
+  # Applies to both cl.exe and LLVM clang using MSVC/UCRT headers
+  list(APPEND HOST_DEFS ${HOST_D}_CRT_SECURE_NO_WARNINGS)
+  if (HOST_CC MATCHES "clang(\\.exe)?$" OR HOST_CC MATCHES "cl(\\.exe)?$")
+    list(APPEND HOST_WARN -Wno-error=deprecated-declarations)
+  endif()
+endif()
+
 #---------------------------------------------------------------------------------------------
 # Common includes/defines for host tools
 #---------------------------------------------------------------------------------------------
@@ -177,6 +215,8 @@ set(HOST_DEFS
 )
 
 # --- Windows unistd.h shim for MSVC host builds ---
+# TODO
+# if(CMAKE_HOST_WIN32 AND (HOST_IS_MSVC OR true))
 if(CMAKE_HOST_WIN32 AND HOST_IS_MSVC)
   set(HOST_SHIM_DIR "${CMAKE_CURRENT_BINARY_DIR}/host_shims")
   file(MAKE_DIRECTORY "${HOST_SHIM_DIR}")
