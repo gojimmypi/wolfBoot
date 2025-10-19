@@ -56,7 +56,7 @@ message(STATUS "Current user detected: ${CURRENT_USER}")
 # The ST CubeIDE location is searched in cmake/cube_ide_config.cmake
 # Want to specify your specific STCubeIDE? Uncomment and set it here:
 #   set(STM32CUBEIDE_DIR "/your/path")
-if(NOT WOLFBOOT_HAS_BASE_PRESET)
+if(NOT WOLFBOOT_HAS_BASE_PRESET AND (NOT "${WOLFBOOT_CONFIG_MODE}" STREQUAL "dot"))
     message(STATUS "See preset for wolfBoot target: ${WOLFBOOT_TARGET}")
     message(FATAL_ERROR "WOLFBOOT_HAS_BASE_PRESET not found. All presets must inherit base config.")
 endif()
