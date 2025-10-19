@@ -52,6 +52,39 @@ include(cmake/current_user.cmake)
 get_current_user(CURRENT_USER)
 message(STATUS "Current user detected: ${CURRENT_USER}")
 
+#---------------------------------------------------------------------------------------------
+# There are different configuration modes:
+#
+#   - Command-line options
+#   - Using a .config file. See load_dot_config()
+#   - Using CMake Presets. (preferred, use cacheVariables from CMakePresets.json)
+#---------------------------------------------------------------------------------------------
+
+# Where should configuration values come from?
+#   dot     : parse .config via load_dot_config()
+#   preset  : use cacheVariables from CMakePresets.json
+if( EXISTS "./.config")
+    message(STATUS "Found a .config file, will parse")
+    set(WOLFBOOT_CONFIG_MODE "dot" CACHE STRING "Config source: dot or preset")
+    set_property(CACHE WOLFBOOT_CONFIG_MODE PROPERTY STRINGS dot preset)
+else()
+    message(STATUS "No .config file found.")
+endif()
+
+if(WOLFBOOT_CONFIG_MODE STREQUAL "dot")
+    message(STATUS "Config mode: dot (.config cache)")
+    include(cmake/load_dot_config.cmake)
+    message(STATUS "Loading config from: ${CMAKE_SOURCE_DIR}")
+    load_dot_config("${CMAKE_SOURCE_DIR}/.config")
+
+elseif(WOLFBOOT_CONFIG_MODE STREQUAL "preset")
+    message(STATUS "Config mode: preset (using cacheVariables; skipping .config)")
+
+else()
+    message(STATUS "Not using .config nor CMakePresets.json for WOLFBOOT_CONFIG_MODE.")
+endif()
+
+
 
 # The ST CubeIDE location is searched in cmake/cube_ide_config.cmake
 # Want to specify your specific STCubeIDE? Uncomment and set it here:
