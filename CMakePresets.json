@@ -61,6 +61,7 @@
       "name": "vs-debug-trace",
       "displayName": "VS Debug Trace (STM32H7)",
       "inherits": [
+        "base"
         "stm32h7"
       ],
       "binaryDir": "${sourceDir}/out/build/${presetName}",
@@ -222,7 +223,7 @@
     },
     {
       "name": "stm32g0",
-      "displayName": "Linux/WSL ARM (stm32g0)",
+      "displayName": "stm32g0",
       "inherits": "base",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32g0",
