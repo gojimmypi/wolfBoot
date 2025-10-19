@@ -28,7 +28,10 @@
       "name": "base",
       "description": "Edit the build directory inherits setting for all presets.",
       "hidden": true,
-      "inherits": "base_build_presetName"
+      "inherits": "base_build_presetName",
+      "cacheVariables": {
+        "WOLFBOOT_HAS_BASE_PRESET": true
+      }
     },
     {
       "name": "stm32",
@@ -116,7 +119,9 @@
         "stm32"
       ],
       "generator": "Ninja",
-      "environment": { "VSCMD_DEBUG": "3" },
+      "environment": {
+        "VSCMD_DEBUG": "3"
+      },
       "cacheVariables": {
         "WOLFBOOT_DOWNLOADS_CMAKE": "${sourceDir}/cmake/downloads/stm32l4.cmake",
         "WOLFBOOT_CONFIG_MODE": "preset",
@@ -192,7 +197,8 @@
     },
     {
       "name": "stm32f1",
-      "displayName": "Linux/WSL ARM (stm32f1)",
+      "displayName": "stm32f1",
+      "inherits": "base",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32f1",
       "cacheVariables": {
@@ -216,8 +222,9 @@
     },
     {
       "name": "stm32g0",
-      "displayName": "stm32g0",
+      "inherits": "base",
       "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32g0",
       "cacheVariables": {
         "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32g0",
@@ -241,7 +248,7 @@
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08008000",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08013000",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0801E000",
-        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
+        "CMAKE_TOOLCHAIN_FILE": "/mnt/c/workspace/wolfBoot-gojimmypi/cmake/toolchain_arm-none-eabi.cmake",
         "BUILD_TEST_APPS": "ON",
         "WOLFBOOT_CONFIG_MODE": "preset"
       }
@@ -276,15 +283,6 @@
       ]
     },
     {
-      "name": "stm32g0",
-      "configurePreset": "stm32g0",
-      "jobs": 4,
-      "verbose": true,
-      "targets": [
-        "all"
-      ]
-    },
-    {
       "name": "stm32h7",
       "configurePreset": "stm32h7",
       "jobs": 4,
@@ -296,6 +294,15 @@
     {
       "name": "stm32l4",
       "configurePreset": "stm32l4",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32g0",
+      "configurePreset": "stm32g0",
       "jobs": 4,
       "verbose": true,
       "targets": [

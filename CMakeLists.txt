@@ -29,10 +29,11 @@
 #   -DWOLFBOOT_PARTITION_SWAP_ADDRESS=<swap_address> -DBUILD_TEST_APPS=yes ..
 # $ cmake --build .
 
-message(STATUS "CMake version: ${CMAKE_VERSION}")
-message(STATUS "Generator:     ${CMAKE_GENERATOR}")
-message(STATUS "Source dir:    ${CMAKE_SOURCE_DIR}")
-message(STATUS "Binary dir:    ${CMAKE_BINARY_DIR}")
+message(STATUS "wolfBoot target: ${WOLFBOOT_TARGET}")
+message(STATUS "CMake version:   ${CMAKE_VERSION}")
+message(STATUS "Generator:       ${CMAKE_GENERATOR}")
+message(STATUS "Source dir:      ${CMAKE_SOURCE_DIR}")
+message(STATUS "Binary dir:      ${CMAKE_BINARY_DIR}")
 
 cmake_minimum_required(VERSION 3.16)
 
