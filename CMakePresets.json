@@ -61,7 +61,7 @@
       "name": "vs-debug-trace",
       "displayName": "VS Debug Trace (STM32H7)",
       "inherits": [
-        "base"
+        "base",
         "stm32h7"
       ],
       "binaryDir": "${sourceDir}/out/build/${presetName}",
