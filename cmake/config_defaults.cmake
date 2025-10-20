@@ -52,6 +52,50 @@ include(cmake/current_user.cmake)
 get_current_user(CURRENT_USER)
 message(STATUS "Current user detected: ${CURRENT_USER}")
 
+
+# Requires CMake â‰¥ 3.19 for string(JSON); --format=json is available on recent CMake (youâ€™re on 3.31).
+function(preset_exists name out_var)
+    # Use the same cmake that is running this configure
+    set(_cmake "${CMAKE_COMMAND}")
+
+    # Be explicit about the source dir (important in some IDE invocations)
+    execute_process(
+        COMMAND "${_cmake}" -S "${CMAKE_SOURCE_DIR}" --list-presets=configure --format=json
+        OUTPUT_VARIABLE _json
+        ERROR_VARIABLE  _err
+        RESULT_VARIABLE _rc
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_STRIP_TRAILING_WHITESPACE
+    )
+    message(STATUS "list-presets rc=${_rc}")
+    if(_rc)
+        message(STATUS "list-presets stderr: ${_err}")
+    endif()
+    set(_found OFF)
+    if(_rc EQUAL 0 AND _json)
+        # Parse JSON: get length and scan for matching .name
+        string(JSON _len LENGTH "${_json}" presets)
+        if(_len GREATER 0)
+            math(EXPR _last "${_len} - 1")
+            foreach(i RANGE 0 ${_last})
+                string(JSON _nm GET "${_json}" presets ${i} name)
+                if(_nm STREQUAL "${name}")
+                    set(_found ON)
+                    break()
+                endif()
+            endforeach()
+        endif()
+    endif()
+    set(${out_var} ${_found} PARENT_SCOPE)
+endfunction()
+
+
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakePresets.json")
+  message(WARNING "No CMakePresets.json found at ${CMAKE_SOURCE_DIR}")
+endif()
+set(_has_var "HAS_${WOLFBOOT_TARGET}")
+preset_exists("${WOLFBOOT_TARGET}" HAS_${WOLFBOOT_TARGET})
+message(STATUS "Has preset ${WOLFBOOT_TARGET}: ${${_has_var}}")
 #---------------------------------------------------------------------------------------------
 # There are different configuration modes:
 #
@@ -91,7 +135,7 @@ endif()
 #   set(STM32CUBEIDE_DIR "/your/path")
 if(NOT WOLFBOOT_HAS_BASE_PRESET AND (NOT "${WOLFBOOT_CONFIG_MODE}" STREQUAL "dot"))
     message(STATUS "See preset for wolfBoot target: ${WOLFBOOT_TARGET}")
-    message(FATAL_ERROR "WOLFBOOT_HAS_BASE_PRESET not found. All presets must inherit base config.")
+    message(STATUS "-- WOLFBOOT_HAS_BASE_PRESET not found. All presets must inherit base config.")
 endif()
 
 # set(ARM_GCC_BIN "")

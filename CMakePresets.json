@@ -30,6 +30,7 @@
       "hidden": true,
       "inherits": "base_build_presetName",
       "cacheVariables": {
+        "WOLFBOOT_CONFIG_MODE": "preset",
         "WOLFBOOT_HAS_BASE_PRESET": true
       }
     },
@@ -66,7 +67,6 @@
       ],
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
-        "WOLFBOOT_CONFIG_MODE": "preset",
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_VERBOSE_MAKEFILE": "ON",
         "CMAKE_FIND_DEBUG_MODE": "ON"
@@ -81,7 +81,6 @@
       ],
       "generator": "Ninja",
       "cacheVariables": {
-        "WOLFBOOT_CONFIG_MODE": "preset",
         "ST_HAL_TAG": "v1.10.6",
         "ST_CMSIS_TAG": "v1.7.4",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
@@ -125,7 +124,6 @@
       },
       "cacheVariables": {
         "WOLFBOOT_DOWNLOADS_CMAKE": "${sourceDir}/cmake/downloads/stm32l4.cmake",
-        "WOLFBOOT_CONFIG_MODE": "preset",
         "WOLFBOOT_TARGET": "stm32l4",
         "STM32L4_PART": "STM32L475xx",
         "BOARD": "B-L475E-IOT01A",
@@ -192,14 +190,15 @@
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08005000",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x08007800",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
-        "BUILD_TEST_APPS": "ON",
-        "WOLFBOOT_CONFIG_MODE": "preset"
+        "BUILD_TEST_APPS": "ON"
       }
     },
     {
       "name": "stm32f1",
       "displayName": "stm32f1",
-      "inherits": "base",
+      "inherits": [
+        "base"
+      ],
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32f1",
       "cacheVariables": {
@@ -217,14 +216,15 @@
         "WOLFBOOT_PARTITION_SIZE": "0x6400",
         "WOLFBOOT_SECTOR_SIZE": "0x400",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
-        "BUILD_TEST_APPS": "ON",
-        "WOLFBOOT_CONFIG_MODE": "preset"
+        "BUILD_TEST_APPS": "ON"
       }
     },
     {
       "name": "stm32g0",
       "displayName": "stm32g0",
-      "inherits": "base",
+      "inherits": [
+        "base"
+      ],
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32g0",
       "cacheVariables": {
@@ -251,8 +251,7 @@
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08013000",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0801E000",
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
-        "BUILD_TEST_APPS": "ON",
-        "WOLFBOOT_CONFIG_MODE": "preset"
+        "BUILD_TEST_APPS": "ON"
       }
     }
   ],
