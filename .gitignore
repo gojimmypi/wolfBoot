@@ -268,14 +268,9 @@ language.settings.xml
 
 # Defaults are set in files otherwise excluded:
 !/.vs/README.md
-!/.vs/launch.vs.json
-!/.vs/ProjectSettings.json
-!/.vs/Tasks.vs.json
 !/.vs/VSWorkspaceState.json
 !/.vs/VSWorkspaceSettings.json
 
 # Any build directories
 /**/build
 /**/build-**
-
-
