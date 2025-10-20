@@ -58,7 +58,7 @@ get_current_user(CURRENT_USER)
 message(STATUS "Current user detected: ${CURRENT_USER}")
 
 
-# Requires CMake 3.19 (or newer for string(JSON); --format=json is available on recent CMake (youÃ¢â‚¬â„¢re on 3.31).
+# Requires CMake 3.19 (or newer for string(JSON); --format=json is available on recent CMake (youÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢re on 3.31).
 function(preset_exists name out_var)
     # Use the same cmake that is running this configure
     set(_cmake "${CMAKE_COMMAND}")
@@ -99,8 +99,8 @@ if(NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakePresets.json")
     message(WARNING "No CMakePresets.json found at ${CMAKE_SOURCE_DIR}")
 endif()
 set(_has_var "HAS_${WOLFBOOT_TARGET}")
-preset_exists("${WOLFBOOT_TARGET}" HAS_${WOLFBOOT_TARGET})
-message(STATUS "Has preset ${WOLFBOOT_TARGET}: ${${_has_var}}")
+# preset_exists("${WOLFBOOT_TARGET}" HAS_${WOLFBOOT_TARGET})
+# message(STATUS "Has preset ${WOLFBOOT_TARGET}: ${${_has_var}}")
 #---------------------------------------------------------------------------------------------
 # There are different configuration modes:
 #
