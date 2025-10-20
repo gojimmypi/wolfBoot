@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wolfBoot", "wolfBoot.vcxproj", "{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Debug|x64.ActiveCfg = Debug|x64
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Debug|x64.Build.0 = Debug|x64
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Debug|x86.ActiveCfg = Debug|Win32
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Debug|x86.Build.0 = Debug|Win32
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Release|x64.ActiveCfg = Release|x64
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Release|x64.Build.0 = Release|x64
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Release|x86.ActiveCfg = Release|Win32
+		{C2C5E39B-8155-4C17-975F-BBE74B67CD9F}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37F0F882-516E-479A-B633-E0616A80DA50}
+	EndGlobalSection
+EndGlobal

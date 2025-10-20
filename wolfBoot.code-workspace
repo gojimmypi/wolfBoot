@@ -17,7 +17,9 @@
 
     // Nice-to-haves
     "cmake.loggingLevel": "info",
-    "cmake.preferredGenerators": ["Visual Studio 17 2022", "Ninja"],
+
+    // Fallback. Only when no preset/kit specifies a generator will CMake Tools consult:
+    "cmake.preferredGenerators": ["Ninja", "Ninja Multi-Config", "Unix Makefiles", "Visual Studio 17 2022"],
     "cmake.sourceDirectory": "${workspaceFolder}",
 
     // When presets are used, this is mostly ignored, but kept as a sensible fallback

@@ -4,10 +4,10 @@
       "name": "No-CMake",
       "description": "Default",
       "generator": "Ninja",
-      "buildCommandArgs": "echo 'No build command'",
-      "buildRoot": "",
-      "installRoot": "",
+      "buildRoot": "${projectDir}\\build-${name}",
+      "installRoot": "${projectDir}\\install-${name}",
       "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
       "ctestCommandArgs": ""
     }
   ]

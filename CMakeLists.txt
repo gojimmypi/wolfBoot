@@ -193,11 +193,11 @@ message(STATUS "Host compiler treated as MSVC: ${HOST_IS_MSVC}")
 # TODO
 if (false)
 # if (CMAKE_HOST_WIN32)
-  # Applies to both cl.exe and LLVM clang using MSVC/UCRT headers
-  list(APPEND HOST_DEFS ${HOST_D}_CRT_SECURE_NO_WARNINGS)
-  if (HOST_CC MATCHES "clang(\\.exe)?$" OR HOST_CC MATCHES "cl(\\.exe)?$")
-    list(APPEND HOST_WARN -Wno-error=deprecated-declarations)
-  endif()
+    # Applies to both cl.exe and LLVM clang using MSVC/UCRT headers
+    list(APPEND HOST_DEFS ${HOST_D}_CRT_SECURE_NO_WARNINGS)
+    if (HOST_CC MATCHES "clang(\\.exe)?$" OR HOST_CC MATCHES "cl(\\.exe)?$")
+        list(APPEND HOST_WARN -Wno-error=deprecated-declarations)
+    endif()
 endif()
 
 #---------------------------------------------------------------------------------------------
@@ -219,11 +219,11 @@ set(HOST_DEFS
 # TODO
 # if(CMAKE_HOST_WIN32 AND (HOST_IS_MSVC OR true))
 if(CMAKE_HOST_WIN32 AND HOST_IS_MSVC)
-  set(HOST_SHIM_DIR "${CMAKE_CURRENT_BINARY_DIR}/host_shims")
-  file(MAKE_DIRECTORY "${HOST_SHIM_DIR}")
+    set(HOST_SHIM_DIR "${CMAKE_CURRENT_BINARY_DIR}/host_shims")
+    file(MAKE_DIRECTORY "${HOST_SHIM_DIR}")
 
-  # Minimal shims; extend if bin-assemble needs more.
-  file(WRITE "${HOST_SHIM_DIR}/unistd.h" [=[
+    # Minimal shims; extend if bin-assemble needs more.
+    file(WRITE "${HOST_SHIM_DIR}/unistd.h" [=[
 #ifndef _WIN32
 #  error "This shim is for Windows/MSVC only"
 #endif
@@ -257,8 +257,8 @@ if(CMAKE_HOST_WIN32 AND HOST_IS_MSVC)
 #endif
 ]=])
 
-  # Prepend shim include so it is found first
-  list(INSERT HOST_INCLUDES 0 ${HOST_I}$<SHELL_PATH:${HOST_SHIM_DIR}>)
+    # Prepend shim include so it is found first
+    list(INSERT HOST_INCLUDES 0 ${HOST_I}$<SHELL_PATH:${HOST_SHIM_DIR}>)
 endif() # Windows Host Shim
 
 include_directories(include)

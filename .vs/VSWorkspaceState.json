@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    ""
+  ],
+  "PreviewInSolutionExplorer": false,
+  "OutputFoldersPerTargetSystem": {
+    "Local Machine": [
+      "build-stm32l4"
+    ]
+  }
+}

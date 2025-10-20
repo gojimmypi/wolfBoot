@@ -37,6 +37,7 @@
     {
       "name": "stm32",
       "hidden": true,
+      "generator": "Ninja",
       "cacheVariables": {
         "ST_CMSIS_CORE_TAG": "5.9.0"
       }
@@ -118,13 +119,12 @@
         "base",
         "stm32"
       ],
-      "generator": "Ninja",
       "environment": {
         "VSCMD_DEBUG": "3"
       },
       "cacheVariables": {
-        "WOLFBOOT_DOWNLOADS_CMAKE": "${sourceDir}/cmake/downloads/stm32l4.cmake",
         "WOLFBOOT_TARGET": "stm32l4",
+        "WOLFBOOT_DOWNLOADS_CMAKE": "${sourceDir}/cmake/downloads/stm32l4.cmake",
         "STM32L4_PART": "STM32L475xx",
         "BOARD": "B-L475E-IOT01A",
         "ARCH": "ARM",
@@ -161,13 +161,11 @@
         "base",
         "stm32"
       ],
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-stm32c0",
       "cacheVariables": {
+        "WOLFBOOT_TARGET": "stm32c0",
         "ST_HAL_TAG": "v1.4.0",
         "ST_CMSIS_TAG": "v1.3.0",
         "ARCH": "ARM",
-        "WOLFBOOT_TARGET": "stm32c0",
         "SIGN": "ED25519",
         "HASH": "SHA256",
         "DEBUG": "OFF",
@@ -197,13 +195,12 @@
       "name": "stm32f1",
       "displayName": "stm32f1",
       "inherits": [
-        "base"
+        "base",
+        "stm32"
       ],
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-stm32f1",
       "cacheVariables": {
-        "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32f1",
+        "ARCH": "ARM",
         "SIGN": "ED25519",
         "HASH": "SHA256",
         "VTOR": "OFF",
@@ -223,13 +220,12 @@
       "name": "stm32g0",
       "displayName": "stm32g0",
       "inherits": [
-        "base"
+        "base",
+        "stm32"
       ],
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-stm32g0",
       "cacheVariables": {
-        "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32g0",
+        "ARCH": "ARM",
         "SIGN": "ED25519",
         "HASH": "SHA256",
         "DEBUG": "OFF",
