@@ -1,11 +1,12 @@
 {
-  "ExpandedNodes": [
-    ""
-  ],
-  "PreviewInSolutionExplorer": false,
   "OutputFoldersPerTargetSystem": {
     "Local Machine": [
-      "build-stm32l4"
+      "build-stm32h7",
+      "out\\build\\vs-debug-trace",
+      "build-stm32l4",
+      "build-stm32c0",
+      "build-stm32f1",
+      "build-stm32g0"
     ]
   }
 }
