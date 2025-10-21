@@ -1,5 +1,11 @@
 ﻿# wolfBoot Cmake
 
+Review the [Keystore Docs](../docs/keystore.md) and [Signing Docs](../docs/Signing.md)
+regarding backup and storage of the generated `src/keystore.c` file. This file
+is excluded from source in `.gitignore`).
+
+**Save to a safe place outside of the wolfBoot tree.**
+
 See the local [config_defaults.cmake](./config_defaults.cmake) file. Of particular interest
 are some environment configuration settings:
 
@@ -19,7 +25,7 @@ set(FOUND_HAL_BASE false)
 set(USE_DOT_CONFIG false)
 ```
 
-## cmake directory overview
+## cmake Directory Overview
 
 - [`WOLFBOOT_ROOT`/CMakeLists.txt](../CMakeLists.txt) - Top-level CMake entry that configures the wolfBoot build.
 Used to initialize the project, include cmake/wolfboot.cmake, set options, and define targets.
