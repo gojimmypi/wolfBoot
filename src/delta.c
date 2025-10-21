@@ -22,10 +22,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <delta.h>
-#if defined(_MSC_VER)
-    #include <limits.h>     /* INT_MAX */
-    #include <inttypes.h>   /* PRIu32  */
-#endif
+#include <limits.h>     /* INT_MAX */
+#include <inttypes.h>   /* PRIu32  */
 
 #define ESC 0x7f
 
