@@ -63,12 +63,12 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 
-#if(NOT DEFINED PREFERRED_HOST_CC_NAME_LIST OR PREFERRED_HOST_CC_NAME_LIST STREQUAL "")
-#    set(PREFERRED_HOST_CC_NAME_LIST "gcc clang cl")
-#    message(STATUS "Setting preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
-#else()
-#    message(STATUS "Found preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
-#endif()
+if(NOT DEFINED PREFERRED_HOST_CC_NAME_LIST OR PREFERRED_HOST_CC_NAME_LIST STREQUAL "")
+    set(PREFERRED_HOST_CC_NAME_LIST "gcc clang cl")
+    message(STATUS "Setting preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
+else()
+    message(STATUS "Found preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
+endif()
 
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
@@ -142,12 +142,12 @@ if (CMAKE_HOST_WIN32)
         find_program(HOST_CC
                      NAMES gcc clang cl REQUIRED
                      HINTS
-#                        ${HOST_CC_HINT_DIRECTORIES}
-#                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-#                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-#                        "C:/Program Files/LLVM/bin"
-#                        "C:/mingw64/bin"
-#                        "C:/msys64/usr/bin"
+                        ${HOST_CC_HINT_DIRECTORIES}
+                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+                        "C:/Program Files/LLVM/bin"
+                        "C:/mingw64/bin"
+                        "C:/msys64/usr/bin"
         )
     endif()
     message(STATUS "HOST_CC=${HOST_CC}")
@@ -196,9 +196,9 @@ if (CMAKE_HOST_WIN32)
     set(HOST_EXE ".exe")
 else()
     # POSIX hosts
-        foreach(_hint_item IN LISTS HOST_CC_HINT_DIRECTORIES)
-            message("-- ${_hint_item}")
-        endforeach()
+    foreach(_hint_item IN LISTS HOST_CC_HINT_DIRECTORIES)
+        message("-- ${_hint_item}")
+    endforeach()
     message(STATUS "PREFERRED_HOST_CC_NAME_LIST=${PREFERRED_HOST_CC_NAME_LIST}")
     find_program(HOST_CC NAMES gcc clang cc REQUIRED)
     set(HOST_IS_MSVC FALSE)
