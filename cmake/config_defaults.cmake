@@ -58,7 +58,7 @@ get_current_user(CURRENT_USER)
 message(STATUS "Current user detected: ${CURRENT_USER}")
 
 
-# Requires CMake 3.19 (or newer for string(JSON); --format=json is available on recent CMake (youÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢re on 3.31).
+# Requires CMake 3.19 (or newer for string(JSON); --format=json is available on recent CMake (VS is 3.31).
 function(preset_exists name out_var)
     # Use the same cmake that is running this configure
     set(_cmake "${CMAKE_COMMAND}")
@@ -256,8 +256,16 @@ if (CMAKE_HOST_WIN32)
         endforeach()
     endif()
 
-    message(STATUS "HOST_CC_HINT_DIRECTORIES=${HOST_CC_HINT_DIRECTORIES}")
+    message(STATUS "Assembled HOST_CC_HINT_DIRECTORIES contents:")
+    foreach(_hint_item IN LISTS HOST_CC_HINT_DIRECTORIES)
+        if(IS_DIRECTORY "${_hint_item}")
+            set(_hint_status "(ok)")
+        else()
+            set(_hint_status "NOT FOUND:")
+        endif()
 
+        message("       ${_hint_status} ${_hint_item}")
+    endforeach()
 else()
     message(STATUS "HOST_CC_HINT_DIRECTORIES not set, assuming tools in path. See wolfboot/cmake/config_defaults.cmake")
     set(HOST_CC_HINT_DIRECTORIES "")

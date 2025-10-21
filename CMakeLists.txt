@@ -63,6 +63,13 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 
+#if(NOT DEFINED PREFERRED_HOST_CC_NAME_LIST OR PREFERRED_HOST_CC_NAME_LIST STREQUAL "")
+#    set(PREFERRED_HOST_CC_NAME_LIST "gcc clang cl")
+#    message(STATUS "Setting preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
+#else()
+#    message(STATUS "Found preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
+#endif()
+
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
 project(wolfBoot)
@@ -78,8 +85,8 @@ if(DETECT_VISUALGDB)
 endif()
 
 # Some OS-specific checks and configs
-if(CMAKE_HOST_WIN32 AND DETECT_VS2022 AND NOT FOUND_HAL_BASE)
-    message(STATUS "Visual Studio 2022 detection active: make/vs2022_config.cmakee")
+if(CMAKE_HOST_WIN32 AND DETECT_VS2022)
+    message(STATUS "Visual Studio 2022 detection active: make/vs2022_config.cmake")
     include(cmake/vs2022_config.cmake)
 endif()
 
@@ -123,24 +130,34 @@ if (CMAKE_HOST_WIN32)
     else()
         unset(HOST_CC CACHE)
         message(STATUS "HOST_CC not defined, will attempt to find...")
-        message(STATUS "HOST_CC_HINT_DIRECTORIES=${HOST_CC_HINT_DIRECTORIES}")
+        message(STATUS "HOST_CC_HINT_DIRECTORIES contents:")
+        foreach(_hint_item IN LISTS HOST_CC_HINT_DIRECTORIES)
+            if(IS_DIRECTORY "${_hint_item}")
+                set(_hint_status "(ok)")
+            else()
+                set(_hint_status "NOT FOUND:")
+            endif()
+            message("-- ${_hint_status} ${_hint_item}")
+        endforeach()
         find_program(HOST_CC
                      NAMES gcc clang cl REQUIRED
                      HINTS
-#                        ${HOST_CC_HINT_DIRECTORIES}
-#                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-#                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-#                        "C:/Program Files/LLVM/bin"
-#                        "C:/mingw64/bin"
-#                        "C:/msys64/usr/bin"
+                        ${HOST_CC_HINT_DIRECTORIES}
+                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+                        "C:/Program Files/LLVM/bin"
+                        "C:/mingw64/bin"
+                        "C:/msys64/usr/bin"
         )
     endif()
     message(STATUS "HOST_CC=${HOST_CC}")
-    message(STAUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
+    get_filename_component(_host_name "${HOST_CC}" NAME)
+    message(STATUS "Detected HOST_CC executable: ${_host_name}")
+    message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 
     # TODO
     # if ((HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]]) OR true)
-    if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]])
+    if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]] OR (HOST_CC MATCHES [[(^|[/\\])clang-cl(\.exe)?$]]))
         message(STATUS "Found CMAKE_HOST_WIN32 and .exe in HOST_CC: Setting HOST_IS_MSVC")
         # Are we running in Visual Studio 2022 or VSCode from VS2022 command prompt?
         print_env(VSCMD_VER)
@@ -150,32 +167,39 @@ if (CMAKE_HOST_WIN32)
         # DOS/Windows detected by ".exe" extension, not to be confused with WSL and/or WinGW
         set(HOST_IS_MSVC TRUE)
         set(HOST_EXE ".exe")
-        set(HOST_O2 /O2)
-        set(HOST_I /I)
-        set(HOST_D /D)
+        set(HOST_O2  /O2)
+        set(HOST_I   /I)
+        set(HOST_D   /D)
         set(HOST_OUT /Fe:)
         # Put .obj files in a private folder to avoid collisions & root litter:
-        set(HOST_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj")
+        set(HOST_OBJDIR     "${CMAKE_CURRENT_BINARY_DIR}/obj")
         file(MAKE_DIRECTORY "${HOST_OBJDIR}")
-        set(HOST_FO "/Fo$<SHELL_PATH:${HOST_OBJDIR}/>")
-        set(HOST_WARN "")   # MSVC warnings already noisy; keep simple
+        set(HOST_FO         "/Fo$<SHELL_PATH:${HOST_OBJDIR}/>")
+        set(HOST_WARN       "")   # MSVC warnings already noisy; keep simple
         # wolfSSL random on Windows needs Advapi32:
         set(HOST_LINK_LIBS Advapi32.lib)
     else()
         # gcc or clang
         set(HOST_IS_MSVC FALSE)
-        set(HOST_EXE "")
-        set(HOST_O2 -O2)
-        set(HOST_I -I)
-        set(HOST_D -D)
-        set(HOST_OUT -o)
-        set(HOST_FO "")     # gcc/clang handle objs internally here
+        set(HOST_EXE  "")
+        set(HOST_O2   -O2)
+        set(HOST_I    -I)
+        set(HOST_D    -D)
+        set(HOST_OUT  -o)
+        set(HOST_FO   "")     # gcc/clang handle objs internally here
         set(HOST_WARN -Wall -Wextra -Werror)
-        set(HOST_LINK_LIBS "")  # not needed with MinGW/clang on Windows
+        # set(HOST_LINK_LIBS "")  # not needed with MinGW/clang on Windows
+        set(HOST_LINK_LIBS -ladvapi32)
     endif()
+
+    # On Windows, binaries should end with .exe regardless of flag style
+    set(HOST_EXE ".exe")
 else()
     # POSIX hosts
-    find_program(HOST_CC NAMES gcc clang cc REQUIRED)
+        foreach(_hint_item IN LISTS HOST_CC_HINT_DIRECTORIES)
+            message("-- ${_hint_item}")
+        endforeach()
+    find_program(HOST_CC NAMES ${PREFERRED_HOST_CC_NAME_LIST} REQUIRED)
     set(HOST_IS_MSVC FALSE)
     set(HOST_EXE "")
     set(HOST_O2 -O2)
@@ -191,8 +215,8 @@ message(STATUS "Host CC: ${HOST_CC}")
 message(STATUS "Host compiler treated as MSVC: ${HOST_IS_MSVC}")
 
 # TODO
-if (false)
-# if (CMAKE_HOST_WIN32)
+#if (false)
+if (CMAKE_HOST_WIN32)
     # Applies to both cl.exe and LLVM clang using MSVC/UCRT headers
     list(APPEND HOST_DEFS ${HOST_D}_CRT_SECURE_NO_WARNINGS)
     if (HOST_CC MATCHES "clang(\\.exe)?$" OR HOST_CC MATCHES "cl(\\.exe)?$")
@@ -209,6 +233,11 @@ set(HOST_INCLUDES
     ${HOST_I}${CMAKE_SOURCE_DIR}/include
     ${HOST_I}${CMAKE_CURRENT_BINARY_DIR}
 )
+
+if(NOT DEFINED IMAGE_HEADER_SIZE)
+    set(IMAGE_HEADER_SIZE 256)
+endif()
+
 set(HOST_DEFS
     ${HOST_D}WOLFSSL_USER_SETTINGS
     ${HOST_D}IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
@@ -218,7 +247,7 @@ set(HOST_DEFS
 # --- Windows unistd.h shim for MSVC host builds ---
 # TODO
 # if(CMAKE_HOST_WIN32 AND (HOST_IS_MSVC OR true))
-if(CMAKE_HOST_WIN32 AND HOST_IS_MSVC)
+if(CMAKE_HOST_WIN32 AND  (HOST_IS_MSVC OR HOST_CC MATCHES [[(^|[/\\])clang(\.exe)?$]]))
     set(HOST_SHIM_DIR "${CMAKE_CURRENT_BINARY_DIR}/host_shims")
     file(MAKE_DIRECTORY "${HOST_SHIM_DIR}")
 
@@ -605,10 +634,6 @@ if(SIGN STREQUAL "NONE")
     list(APPEND SIGN_OPTIONS WOLFBOOT_NO_SIGN)
 else()
     set(WOLFBOOT_SIGNING_PRIVATE_KEY ${CMAKE_CURRENT_BINARY_DIR}/wolfboot_signing_private_key.der)
-endif()
-
-if(NOT DEFINED IMAGE_HEADER_SIZE)
-    set(IMAGE_HEADER_SIZE 256)
 endif()
 
 if(WOLFBOOT_SMALL_STACK)
@@ -1052,11 +1077,11 @@ list(APPEND  KEYTOOL_FLAGS
 #---------------------------------------------------------------------------------------------
 set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
 set(SIGN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_sign")
-if( "${HOST_EXE}" STREQUAL "")
-    set(HOST_FO_SIGN "") # No /Fo for most environments
-else()
+if(HOST_IS_MSVC)
     # isolate objs only for Windows (.exe)
     set(HOST_FO_SIGN "/Fo$<SHELL_PATH:${SIGN_OBJDIR}/>")
+else()
+    set(HOST_FO_SIGN "") # No /Fo for most environments
 endif()
 
     add_custom_command(
@@ -1064,7 +1089,7 @@ endif()
       COMMAND "${CMAKE_COMMAND}" -E make_directory ${SIGN_OBJDIR}
       COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
               ${HOST_INCLUDES} ${HOST_DEFS}
-              ${HOST_FO_SIGN} # /Fo$<SHELL_PATH:${SIGN_OBJDIR}/> # ${HOST_FO_SIGN}
+              ${HOST_FO_SIGN}
               $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
               ${KEYTOOL_SOURCES_ABS}
               ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
@@ -1081,13 +1106,11 @@ set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 #---------------------------------------------------------------------------------------------
 set(KEYGEN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/keygen${HOST_EXE})
 set(KEYGEN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_keygen")
-if( "${HOST_EXE}" STREQUAL "")
-    set(HOST_FO_KEYGEN "") # No /Fo for most environments
-else()
-    # isolate objs only for Windows (.exe)
+if (HOST_IS_MSVC)
     set(HOST_FO_KEYGEN "/Fo$<SHELL_PATH:${KEYGEN_OBJDIR}/>")
+else()
+    set(HOST_FO_KEYGEN "")
 endif()
-
 add_custom_command(
   OUTPUT ${KEYGEN_TOOL}
   COMMAND "${CMAKE_COMMAND}" -E make_directory ${KEYGEN_OBJDIR}

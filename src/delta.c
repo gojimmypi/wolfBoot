@@ -181,7 +181,14 @@ int wb_diff_get_sector_size(void)
 {
     uint32_t sec_sz = 0;
     char *env_sector_size = NULL;
+#ifdef _WIN32
+    size_t len = 0;
+    if (_dupenv_s(&env_sector_size, &len, "WOLFBOOT_SECTOR_SIZE") != 0) {
+        env_sector_size = NULL;  /* treat as not set */
+    }
+#else
     env_sector_size = getenv("WOLFBOOT_SECTOR_SIZE");
+#endif
     if (!env_sector_size) {
        fprintf(stderr, "Please set the WOLFBOOT_SECTOR_SIZE environment variable in\n"
                "order to sign a delta update.\n");

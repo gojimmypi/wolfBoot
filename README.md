@@ -12,9 +12,9 @@ Some interim notes on progress in various environments:
 |  ✅   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
 |  ✅   | DOS Prompt, Dev Prompt    | [.\tools\scripts\cmake_dev_prompt_test.bat](./tools/scripts/cmake_dev_prompt_test.bat)
 |  ✅   | PowerShell, Dev Prompt    | [.\tools\scripts\cmake_dev_prompt_test.bat](./tools/scripts/cmake_dev_prompt_test.bat)
-|  ✅   | DOS Prompt, direct launch | [.\tools\scripts\cmake_test.bat](./tools/scripts/cmake_test.bat) (needs toolchain path)
-|  ✅   | PowerShell, direct launch | [.\tools\scripts\cmake_test.bat](./tools/scripts/cmake_test.bat) (needs toolchain path)
-|  ✅   | VS Code, direct launch    | Click "build"
+|  ❌   | DOS Prompt, direct launch | [.\tools\scripts\cmake_test.bat](./tools/scripts/cmake_test.bat) (needs toolchain path)
+|  ❌   | PowerShell, direct launch | [.\tools\scripts\cmake_test.bat](./tools/scripts/cmake_test.bat) (needs toolchain path)
+|  ❌   | VS Code, direct launch    | Click "build"
 
 ## Make Dev Status:
 
