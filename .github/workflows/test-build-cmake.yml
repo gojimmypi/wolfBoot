@@ -1,6 +1,7 @@
 name: Wolfboot CMake Build (Ubuntu)
 on:
   push:
+    # TODO: branches: [ 'master', 'main', 'release/**' ]
     branches: [ '*' ]
   pull_request:
     branches: [ '*' ]

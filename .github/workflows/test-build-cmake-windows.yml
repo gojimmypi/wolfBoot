@@ -2,7 +2,8 @@ name: WolfBoot CMake Build (Windows)
 
 on:
   push:
-    branches: [ "*" ]
+    # TODO: branches: [ 'master', 'main', 'release/**' ]
+    branches: [ '*' ]
   pull_request:
     branches: [ "*" ]
 

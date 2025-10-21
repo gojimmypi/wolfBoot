@@ -1,6 +1,7 @@
 name: wolfboot CMake Script
 on:
   push:
+    # TODO: branches: [ 'master', 'main', 'release/**' ]
     branches: [ '*' ]
   pull_request:
     branches: [ '*' ]
