@@ -35,9 +35,9 @@ jobs:
         hash: [sha256, sha384, sha3]
 
         # See https://github.com/wolfSSL/wolfBoot/issues/614 regarding exclusions:
-        exclude:
-          - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
-          - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
+        # exclude:
+        #  - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
+        #  - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
 
     steps:
       - uses: actions/checkout@v4
@@ -77,6 +77,8 @@ jobs:
           # First attempt
           if build_once >build.out 2>build.err; then
             echo "Success on first attempt, WOLFBOOT_HUGE_STACK not applied."
+            cat build.out
+            cat build.err
             exit 0
           fi
 
@@ -91,12 +93,16 @@ jobs:
             build_once WOLFBOOT_HUGE_STACK=1
           else
             echo "Build failed for another reason:"
+            cat build.out
             cat build.err
             exit 1
           fi
 
       - name: Run test-lib
         run: |
+          # Check test_v1_signed.bin
+
+          echo "./test-lib test_v1_signed.bin"
           ./test-lib test_v1_signed.bin
           ./test-lib test_v1_signed.bin 2>&1 | grep "Firmware Valid"
 
