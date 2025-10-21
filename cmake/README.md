@@ -34,7 +34,7 @@ Centralizes toolchain paths, target names, build directories, and key cache vari
 Maps Visual Studio configurations (Debug, Release) to existing CMake presets.
 Controls IntelliSense, environment variables, and the preset shown in the VS CMake toolbar.
 
-- [CMakeUserPresets.json.sample](./CMakeUserPresets.json.sample) - Example local overrides for user-specific paths and options. Copy to `CMakeUserPresets.json` in the `WOLFBOOT_ROOT` directory and customize. Not committed. Copy to `WOLFBOOT_ROOT` and remove the `.sample` suffix.
+- [preset-examples/CMakeUserPresets.json.sample](./preset-examples/CMakeUserPresets.json.sample) - Example local overrides for user-specific paths and options. Copy to `CMakeUserPresets.json` in the `WOLFBOOT_ROOT` directory and customize. Not committed. Copy to `WOLFBOOT_ROOT` and remove the `.sample` suffix.
 
 - [config_defaults.cmake](./config_defaults.cmake) - Default cache values and feature toggles used when presets or .config do not provide them.
 
@@ -151,7 +151,7 @@ cmake --build --preset stm32h7
 
 ### CMake User Presets.
 
-See the [CMakeUserPresets.json.sample(./CMakeUserPresets.json.sample).
+See the [preset-examples/CMakeUserPresets.json.sample(./preset-examples/CMakeUserPresets.json.sample).
 Copy the file to `WOLFBOOT_ROOT` and remove the`.sample` suffix: `CMakeUserPresets.json`.
 
 It is critically important that none the names of a user preset do not conflict with regular presets.

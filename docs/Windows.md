@@ -28,7 +28,7 @@ Expected install directory is
 C:\Program Files\LLVM\bin
 ```
 
-Add a `HOST_CC` to the `configurePresets` - `cacheVariables` as is done in the [CMakeUserPresets.json.sample](../cmake/CMakeUserPresets.json.sample):
+Add a `HOST_CC` to the `configurePresets` - `cacheVariables` as is done in the [CMakeUserPresets.json.sample](../cmake/preset-examples/CMakeUserPresets.json.sample):
 
 ```
   "configurePresets": [
