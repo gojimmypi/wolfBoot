@@ -142,12 +142,12 @@ if (CMAKE_HOST_WIN32)
         find_program(HOST_CC
                      NAMES gcc clang cl REQUIRED
                      HINTS
-                        ${HOST_CC_HINT_DIRECTORIES}
-                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-                        "C:/Program Files/LLVM/bin"
-                        "C:/mingw64/bin"
-                        "C:/msys64/usr/bin"
+#                        ${HOST_CC_HINT_DIRECTORIES}
+#                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+#                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
+#                        "C:/Program Files/LLVM/bin"
+#                        "C:/mingw64/bin"
+#                        "C:/msys64/usr/bin"
         )
     endif()
     message(STATUS "HOST_CC=${HOST_CC}")
