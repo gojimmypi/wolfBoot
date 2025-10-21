@@ -175,6 +175,15 @@ if (CMAKE_HOST_WIN32)
         )
     endif()
 
+    # Regular MinGW (Non-VisualGDB)
+    if(DETECT_MINGW)
+        message(STATUS "Appending VisualGDB Hints")
+        list(APPEND HOST_CC_HINT_DIRECTORIES
+                    "C:/mingw64/bin"
+                    "C:/msys64/usr/bin"
+        )
+    endif()
+
     # Visual Studio hints
     if(DETECT_VS2022)
         message(STATUS "Appending Visual Studio 2022 Hints")
@@ -199,7 +208,7 @@ if (CMAKE_HOST_WIN32)
                     # LLVM
                     "C:/Program Files/LLVM/bin"
 
-                    # TODO code?
+                    # TODO include file code?
         )
     endif()
 
@@ -251,10 +260,10 @@ if (CMAKE_HOST_WIN32)
                                   "${_ver}/bin/Hostx64/x86"
                                   "${_ver}/bin/Hostx86/x64"
                                   "${_ver}/bin/Hostx86/x86")
-              endforeach()
-            endforeach()
-        endforeach()
-    endif()
+                endforeach() # version
+            endforeach() # edition
+        endforeach() # root
+    endif() # CMAKE_HOST_WIN32
 
     message(STATUS "Assembled HOST_CC_HINT_DIRECTORIES contents:")
     foreach(_hint_item IN LISTS HOST_CC_HINT_DIRECTORIES)
@@ -265,7 +274,7 @@ if (CMAKE_HOST_WIN32)
         endif()
 
         message("       ${_hint_status} ${_hint_item}")
-    endforeach()
+    endforeach() # Hint directory
 else()
     message(STATUS "HOST_CC_HINT_DIRECTORIES not set, assuming tools in path. See wolfboot/cmake/config_defaults.cmake")
     set(HOST_CC_HINT_DIRECTORIES "")

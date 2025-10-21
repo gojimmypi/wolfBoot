@@ -64,7 +64,7 @@ endif()
 
 
 if(NOT DEFINED PREFERRED_HOST_CC_NAME_LIST OR PREFERRED_HOST_CC_NAME_LIST STREQUAL "")
-    set(PREFERRED_HOST_CC_NAME_LIST "gcc clang cl")
+    set(PREFERRED_HOST_CC_NAME_LIST gcc clang cl)
     message(STATUS "Setting preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
 else()
     message(STATUS "Found preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
@@ -140,14 +140,8 @@ if (CMAKE_HOST_WIN32)
             message("-- ${_hint_status} ${_hint_item}")
         endforeach()
         find_program(HOST_CC
-                     NAMES gcc clang cl REQUIRED
-                     HINTS
-                        ${HOST_CC_HINT_DIRECTORIES}
-                        "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-                        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/bin/Hostx64/x64"
-                        "C:/Program Files/LLVM/bin"
-                        "C:/mingw64/bin"
-                        "C:/msys64/usr/bin"
+                     NAMES ${PREFERRED_HOST_CC_NAME_LIST} REQUIRED
+                     HINTS ${HOST_CC_HINT_DIRECTORIES}
         )
     endif()
     message(STATUS "HOST_CC=${HOST_CC}")
@@ -200,15 +194,15 @@ else()
         message("-- ${_hint_item}")
     endforeach()
     message(STATUS "PREFERRED_HOST_CC_NAME_LIST=${PREFERRED_HOST_CC_NAME_LIST}")
-    find_program(HOST_CC NAMES gcc clang cc REQUIRED)
+    find_program(HOST_CC NAMES ${PREFERRED_HOST_CC_NAME_LIST} REQUIRED)
     set(HOST_IS_MSVC FALSE)
-    set(HOST_EXE "")
-    set(HOST_O2 -O2)
-    set(HOST_I -I)
-    set(HOST_D -D)
-    set(HOST_OUT -o)
-    set(HOST_FO "")
-    set(HOST_WARN -Wall -Wextra -Werror)
+    set(HOST_EXE     "")
+    set(HOST_O2      -O2)
+    set(HOST_I       -I)
+    set(HOST_D       -D)
+    set(HOST_OUT     -o)
+    set(HOST_FO      "")
+    set(HOST_WARN   -Wall -Wextra -Werror)
     set(HOST_LINK_LIBS "")
 endif()
 
@@ -216,8 +210,8 @@ message(STATUS "Host CC: ${HOST_CC}")
 message(STATUS "Host compiler treated as MSVC: ${HOST_IS_MSVC}")
 
 # TODO
-#if (false)
-if (CMAKE_HOST_WIN32)
+if (false)
+#if (CMAKE_HOST_WIN32)
     # Applies to both cl.exe and LLVM clang using MSVC/UCRT headers
     list(APPEND HOST_DEFS ${HOST_D}_CRT_SECURE_NO_WARNINGS)
     if (HOST_CC MATCHES "clang(\\.exe)?$" OR HOST_CC MATCHES "cl(\\.exe)?$")
