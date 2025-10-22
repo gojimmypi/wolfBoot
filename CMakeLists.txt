@@ -1222,6 +1222,41 @@ if(NOT SIGN STREQUAL "NONE")
     target_link_libraries(public_key target)
 endif()
 
+
+if(true) # Some VS2022 helpers
+    add_executable(sign_host
+      tools/keytools/sign.c
+      ${KEYTOOL_SOURCES_ABS}    # or link to wolfcrypt instead (recommended)
+    )
+
+    target_include_directories(sign_host PRIVATE
+      ${CMAKE_SOURCE_DIR}/tools/keytools
+      ${CMAKE_SOURCE_DIR}/lib/wolfssl
+      ${CMAKE_SOURCE_DIR}/include
+      ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    target_link_libraries(sign_host PRIVATE user_settings)   # carries important defs
+    target_compile_definitions(sign_host PRIVATE
+      WOLFSSL_USER_SETTINGS
+      ${SIGN_OPTIONS}
+    )
+
+    if(MSVC)
+      target_compile_options(sign_host PRIVATE /Zi /W3)  # debug info
+      target_link_options(sign_host PRIVATE /DEBUG)
+    else()
+      target_compile_options(sign_host PRIVATE -g)
+    endif()
+
+    # Optional: run with args in F5
+    set_property(TARGET sign_host PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS
+      "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256")
+    set_property(TARGET sign_host PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
+      "${CMAKE_CURRENT_BINARY_DIR}")
+
+endif()
+
 # generate libwolfboot
 add_library(wolfboot)
 target_sources(wolfboot PRIVATE src/libwolfboot.c ${WOLFBOOT_FLASH_SOURCES})

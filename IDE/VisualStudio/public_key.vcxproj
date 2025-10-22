@@ -22,11 +22,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{132CC829-EC43-3F24-962C-51D02DB1CFFD}</ProjectGuid>
+    <ProjectGuid>{2C5965D9-696D-32EB-981B-3BE3D5ACD6F6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
-    <ProjectName>wolfboot</ProjectName>
+    <ProjectName>public_key</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -60,26 +60,25 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">wolfboot.dir\Debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">wolfboot</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">public_key.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">public_key</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">wolfboot.dir\Release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">wolfboot</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">public_key.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">public_key</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\MinSizeRel\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">wolfboot.dir\MinSizeRel\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">wolfboot</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">public_key.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">public_key</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\RelWithDebInfo\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">wolfboot.dir\RelWithDebInfo\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">wolfboot</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">public_key.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">public_key</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -92,16 +91,16 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -114,8 +113,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>
@@ -127,18 +125,18 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -151,8 +149,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>
@@ -164,18 +161,18 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -188,8 +185,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -202,16 +198,16 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -222,6 +218,158 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\CMakeFiles\040d5cd1ab56f725899908d8e0d9c3ae\keygen.exe.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building keygen tool</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E make_directory C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/obj_keygen
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\LLVM\bin\clang.exe" -O2 -Wall -Wextra -Werror -IC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\host_shims -IC:/workspace/wolfBoot-gojimmypi/tools/keytools -IC:/workspace/wolfBoot-gojimmypi/lib/wolfssl -IC:/workspace/wolfBoot-gojimmypi/include -IC:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio -DWOLFSSL_USER_SETTINGS -DIMAGE_HEADER_SIZE=256 -DDELTA_UPDATES C:\workspace\wolfBoot-gojimmypi\tools\keytools\keygen.c C:/workspace/wolfBoot-gojimmypi/src/delta.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/asn.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/aes.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ecc.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/coding.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/chacha.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed25519.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/hash.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/logging.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/memory.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/random.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/rsa.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_int.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c32.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c64.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha3.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha256.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha512.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/tfm.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_port.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wolfmath.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/dilithium.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms_impl.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss_impl.c -oC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe -ladvapi32
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building keygen tool</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E make_directory C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/obj_keygen
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\LLVM\bin\clang.exe" -O2 -Wall -Wextra -Werror -IC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\host_shims -IC:/workspace/wolfBoot-gojimmypi/tools/keytools -IC:/workspace/wolfBoot-gojimmypi/lib/wolfssl -IC:/workspace/wolfBoot-gojimmypi/include -IC:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio -DWOLFSSL_USER_SETTINGS -DIMAGE_HEADER_SIZE=256 -DDELTA_UPDATES C:\workspace\wolfBoot-gojimmypi\tools\keytools\keygen.c C:/workspace/wolfBoot-gojimmypi/src/delta.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/asn.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/aes.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ecc.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/coding.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/chacha.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed25519.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/hash.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/logging.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/memory.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/random.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/rsa.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_int.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c32.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c64.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha3.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha256.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha512.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/tfm.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_port.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wolfmath.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/dilithium.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms_impl.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss_impl.c -oC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe -ladvapi32
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building keygen tool</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E make_directory C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/obj_keygen
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\LLVM\bin\clang.exe" -O2 -Wall -Wextra -Werror -IC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\host_shims -IC:/workspace/wolfBoot-gojimmypi/tools/keytools -IC:/workspace/wolfBoot-gojimmypi/lib/wolfssl -IC:/workspace/wolfBoot-gojimmypi/include -IC:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio -DWOLFSSL_USER_SETTINGS -DIMAGE_HEADER_SIZE=256 -DDELTA_UPDATES C:\workspace\wolfBoot-gojimmypi\tools\keytools\keygen.c C:/workspace/wolfBoot-gojimmypi/src/delta.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/asn.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/aes.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ecc.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/coding.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/chacha.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed25519.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/hash.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/logging.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/memory.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/random.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/rsa.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_int.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c32.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c64.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha3.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha256.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha512.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/tfm.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_port.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wolfmath.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/dilithium.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms_impl.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss_impl.c -oC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe -ladvapi32
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building keygen tool</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E make_directory C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/obj_keygen
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\LLVM\bin\clang.exe" -O2 -Wall -Wextra -Werror -IC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\host_shims -IC:/workspace/wolfBoot-gojimmypi/tools/keytools -IC:/workspace/wolfBoot-gojimmypi/lib/wolfssl -IC:/workspace/wolfBoot-gojimmypi/include -IC:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio -DWOLFSSL_USER_SETTINGS -DIMAGE_HEADER_SIZE=256 -DDELTA_UPDATES C:\workspace\wolfBoot-gojimmypi\tools\keytools\keygen.c C:/workspace/wolfBoot-gojimmypi/src/delta.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/asn.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/aes.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ecc.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/coding.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/chacha.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed25519.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ed448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_operations.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/fe_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/ge_448.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/hash.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/logging.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/memory.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/random.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/rsa.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_int.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c32.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sp_c64.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha3.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha256.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/sha512.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/tfm.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_port.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wolfmath.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/dilithium.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_lms_impl.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss.c C:/workspace/wolfBoot-gojimmypi/lib/wolfssl/wolfcrypt/src/wc_xmss_impl.c -oC:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe -ladvapi32
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\CMakeFiles\040d5cd1ab56f725899908d8e0d9c3ae\keystore.c.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating keystore.c and signing private key</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe --ed25519 -g C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/wolfboot_signing_private_key.der -keystoreDir C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keystore.c;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\wolfboot_signing_private_key.der</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating keystore.c and signing private key</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe --ed25519 -g C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/wolfboot_signing_private_key.der -keystoreDir C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keystore.c;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\wolfboot_signing_private_key.der</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generating keystore.c and signing private key</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe --ed25519 -g C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/wolfboot_signing_private_key.der -keystoreDir C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keystore.c;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\wolfboot_signing_private_key.der</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generating keystore.c and signing private key</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+cd C:\workspace\wolfBoot-gojimmypi
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe --ed25519 -g C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio/wolfboot_signing_private_key.der -keystoreDir C:/workspace/wolfBoot-gojimmypi/IDE/VisualStudio
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keygen.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keystore.c;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\wolfboot_signing_private_key.der</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\workspace\wolfBoot-gojimmypi\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
@@ -280,7 +428,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\src\libwolfboot.c" />
+    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keystore.c" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -289,14 +437,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
-    <ProjectReference Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\wolfboothal.vcxproj">
-      <Project>{FFAF2242-7694-3E8C-808C-25862412C4AC}</Project>
-      <Name>wolfboothal</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\lib\wolfcrypt.vcxproj">
-      <Project>{4405074F-3304-35E0-AF5B-DF85A054F504}</Project>
-      <Name>wolfcrypt</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

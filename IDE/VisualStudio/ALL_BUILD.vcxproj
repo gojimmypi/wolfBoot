@@ -3,6 +3,9 @@
   <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -22,31 +25,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{132CC829-EC43-3F24-962C-51D02DB1CFFD}</ProjectGuid>
+    <ProjectGuid>{6776C8B8-BE8A-358E-B64D-F2E0E90B8F94}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
-    <ProjectName>wolfboot</ProjectName>
+    <ProjectName>ALL_BUILD</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Utility</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Utility</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Utility</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Utility</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -59,168 +62,50 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">wolfboot.dir\Debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">wolfboot</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">wolfboot.dir\Release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">wolfboot</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\MinSizeRel\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">wolfboot.dir\MinSizeRel\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">wolfboot</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\RelWithDebInfo\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">wolfboot.dir\RelWithDebInfo\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">wolfboot</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <MinimalRebuild></MinimalRebuild>
-      <Optimization>Disabled</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <SupportJustMyCode></SupportJustMyCode>
-      <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <Lib>
-      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <MinimalRebuild></MinimalRebuild>
-      <Optimization>MaxSpeed</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <SupportJustMyCode></SupportJustMyCode>
-      <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <Lib>
-      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <MinimalRebuild></MinimalRebuild>
-      <Optimization>MinSpace</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <SupportJustMyCode></SupportJustMyCode>
-      <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <Lib>
-      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused</AdditionalOptions>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <MinimalRebuild></MinimalRebuild>
-      <Optimization>MaxSpeed</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <SupportJustMyCode></SupportJustMyCode>
-      <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;XMALLOC_USER;IMAGE_HEADER_SIZE=256;WOLFBOOT_SIGN_ED25519;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;WOLFSSL_USER_SETTINGS;WOLFBOOT_SMALL_STACK;USE_FAST_MATH;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <Lib>
-      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="C:\workspace\wolfBoot-gojimmypi\CMakeLists.txt">
@@ -280,7 +165,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\src\libwolfboot.c" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -289,6 +173,20 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\keytools.vcxproj">
+      <Project>{66A41234-E606-3630-A79C-33D17F12CCDA}</Project>
+      <Name>keytools</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\public_key.vcxproj">
+      <Project>{2C5965D9-696D-32EB-981B-3BE3D5ACD6F6}</Project>
+      <Name>public_key</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\wolfboot.vcxproj">
+      <Project>{132CC829-EC43-3F24-962C-51D02DB1CFFD}</Project>
+      <Name>wolfboot</Name>
     </ProjectReference>
     <ProjectReference Include="C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio\wolfboothal.vcxproj">
       <Project>{FFAF2242-7694-3E8C-808C-25862412C4AC}</Project>
