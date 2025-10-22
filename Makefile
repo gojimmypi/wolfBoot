@@ -616,6 +616,9 @@ secondary: $(SECONDARY_PRIVATE_KEY)
 src/x86/fsp_s.o: $(FSP_S_BIN)
 	$(OBJCOPY) -I binary -O elf64-x86-64 -B i386 --rename-section .data=.fsp_s $^ $@
 
+print-%:
+	@echo '$*=$($*)'
+
 pico-sdk-info: FORCE
 	@echo "To complete the build, check IDE/pico-sdk/rp2350"
 
