@@ -1224,36 +1224,46 @@ endif()
 
 
 if(true) # Some VS2022 helpers
-    add_executable(sign_host
-      tools/keytools/sign.c
-      ${KEYTOOL_SOURCES_ABS}    # or link to wolfcrypt instead (recommended)
-    )
 
-    target_include_directories(sign_host PRIVATE
-      ${CMAKE_SOURCE_DIR}/tools/keytools
-      ${CMAKE_SOURCE_DIR}/lib/wolfssl
-      ${CMAKE_SOURCE_DIR}/include
-      ${CMAKE_CURRENT_BINARY_DIR}
-    )
+  # Build a simple host-side signer you can F5 in VS.
+  # We *link* wolfcrypt instead of compiling its sources again.
+  add_executable(sign_host
+    tools/keytools/sign.c
+  )
 
-    target_link_libraries(sign_host PRIVATE user_settings)   # carries important defs
-    target_compile_definitions(sign_host PRIVATE
-      WOLFSSL_USER_SETTINGS
-      ${SIGN_OPTIONS}
-    )
+  # Prefer to let the wolfcrypt target carry include dirs,
+  # but these are fine too and help IntelliSense:
+  target_include_directories(sign_host PRIVATE
+    ${CMAKE_SOURCE_DIR}/tools/keytools
+    ${CMAKE_SOURCE_DIR}/lib/wolfssl
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_BINARY_DIR}
+  )
 
-    if(MSVC)
-      target_compile_options(sign_host PRIVATE /Zi /W3)  # debug info
-      target_link_options(sign_host PRIVATE /DEBUG)
-    else()
-      target_compile_options(sign_host PRIVATE -g)
-    endif()
+  # Avoid Windows <windows.h> min/max macro collisions, trim Win headers.
+  target_compile_definitions(sign_host PRIVATE
+    WOLFSSL_USER_SETTINGS
+    NOMINMAX
+    WIN32_LEAN_AND_MEAN
+    ${SIGN_OPTIONS}
+  )
 
-    # Optional: run with args in F5
-    set_property(TARGET sign_host PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS
-      "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256")
-    set_property(TARGET sign_host PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
-      "${CMAKE_CURRENT_BINARY_DIR}")
+  # Link against the library produced by lib/CMakeLists.txt
+  target_link_libraries(sign_host PRIVATE wolfcrypt user_settings)
+
+  # Force C mode so MSVC doesn’t treat it as C++.
+  if(MSVC)
+    target_compile_options(sign_host PRIVATE /TC /Zi /W3)
+    target_link_options(sign_host PRIVATE /DEBUG)
+  else()
+    target_compile_options(sign_host PRIVATE -x c -std=c17 -g)
+  endif()
+
+  # Optional: F5 args in VS
+  set_property(TARGET sign_host PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS
+    "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256")
+  set_property(TARGET sign_host PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
+    "${CMAKE_CURRENT_BINARY_DIR}")
 
 endif()
 
