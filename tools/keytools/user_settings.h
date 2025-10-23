@@ -1,4 +1,4 @@
-/* user_settings.h
+/* wolfboot/tools/keytools/user_settings.h
  *
  * wolfCrypt build settings for signing tool
  * Enabled via WOLFSSL_USER_SETTINGS.

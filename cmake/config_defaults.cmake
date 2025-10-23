@@ -35,10 +35,10 @@ endif()
 # Environments are detected in this order:
 #---------------------------------------------------------------------------------------------
 set(DETECT_VISUALGDB true)
-set(DETECT_MINGW     true)
+set(DETECT_MINGW     false)
 set(DETECT_CUBEIDE   true)
 set(DETECT_VS2022    true)
-set(DETECT_LLVM      true)
+set(DETECT_LLVM      false)
 #---------------------------------------------------------------------------------------------
 
 # Enable HAL download only implemented for TMS devices at this time.
@@ -56,6 +56,14 @@ SET(HOST_CC_HINT_DIRECTORIES "")
 include(cmake/current_user.cmake)
 get_current_user(CURRENT_USER)
 message(STATUS "Current user detected: ${CURRENT_USER}")
+
+
+# We're in [WOLFBOOT_ROOT]/cmake for this file, ensure there are no stray target.h files
+if(EXISTS "../include/target.h")
+    message(FATAL_ERROR "unexpected include/target.h")
+else()
+    message(STATUS "Confirmed no stray include/target.h")
+endif()
 
 
 # Requires CMake 3.19 (or newer for string(JSON); --format=json is available on recent CMake (VS is 3.31).

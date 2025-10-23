@@ -79,7 +79,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused -Wno-array-bounds</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -91,13 +90,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
+      <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -115,7 +116,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused -Wno-array-bounds</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>
@@ -126,15 +126,17 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
+      <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -152,7 +154,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused -Wno-array-bounds</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <ExceptionHandling>
@@ -163,15 +164,17 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
+      <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -189,7 +192,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -Wno-unused -Wno-array-bounds</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -201,13 +203,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <SupportJustMyCode></SupportJustMyCode>
+      <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ED25519;WOLFBOOT_SMALL_STACK;XMALLOC_USER;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;WOLFBOOT_HASH_SHA256;TARGET_sim;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -280,13 +284,13 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\sha512.c" />
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\ed25519.c" />
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\ge_low_mem.c" />
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\hash.c" />
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
+    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\integer.c" />
+    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\tfm.c" />
+    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\ecc.c" />
+    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\memory.c" />
     <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\wc_port.c" />
-    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\fe_low_mem.c" />
+    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
+    <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\hash.c" />
     <ClCompile Include="C:\workspace\wolfBoot-gojimmypi\lib\wolfssl\wolfcrypt\src\sha256.c" />
   </ItemGroup>
   <ItemGroup />

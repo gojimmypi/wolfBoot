@@ -29,6 +29,8 @@
 #   -DWOLFBOOT_PARTITION_SWAP_ADDRESS=<swap_address> -DBUILD_TEST_APPS=yes ..
 # $ cmake --build .
 
+message(STATUS "Begin [WOLFBOOT_ROOT]/CmakeLists.txt")
+
 message(STATUS "wolfBoot target: ${WOLFBOOT_TARGET}")
 message(STATUS "CMake version:   ${CMAKE_VERSION}")
 message(STATUS "Generator:       ${CMAKE_GENERATOR}")
@@ -149,6 +151,7 @@ if (CMAKE_HOST_WIN32)
     message(STATUS "Detected HOST_CC executable: ${_host_name}")
     message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 
+    set(HOST_LINK_FLAG /link)
     # TODO
     # if ((HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]]) OR true)
     if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]] OR (HOST_CC MATCHES [[(^|[/\\])clang-cl(\.exe)?$]]))
@@ -203,6 +206,8 @@ else()
     set(HOST_OUT     -o)
     set(HOST_FO      "")
     set(HOST_WARN   -Wall -Wextra -Werror)
+
+    set(HOST_LINK_FLAG "")
     set(HOST_LINK_LIBS "")
 endif()
 
@@ -238,6 +243,13 @@ set(HOST_DEFS
     ${HOST_D}IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
     ${HOST_D}DELTA_UPDATES
 )
+
+# --- Hard-pin the algorithms the host tools must support (only for host tools) ---
+# This guarantees sign.c compiles with these on MSVC even if SIGN_OPTIONS plumbing misses.
+list(APPEND HOST_DEFS
+     ${HOST_D}WOLFBOOT_SIGN_ED25519
+     ${HOST_D}WOLFBOOT_HASH_SHA256)
+
 
 # --- Windows unistd.h shim for MSVC host builds ---
 # TODO
@@ -497,7 +509,7 @@ else()
                 ${HOST_FO} # /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
                 ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
                 $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
-                ${HOST_LINK_LIBS}
+                ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         COMMENT "Building bin-assemble tool"
     )
@@ -784,7 +796,20 @@ list(APPEND WOLFBOOT_DEFS IMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE})
 # Append sign options to compile definitions
 list(APPEND WOLFBOOT_DEFS ${SIGN_OPTIONS})
 
-list(APPEND WOLFBOOT_COMPILE_OPTIONS -Wstack-usage=${STACK_USAGE} -Wno-unused)
+# TODO clarify simplify
+# list(APPEND WOLFBOOT_COMPILE_OPTIONS -Wstack-usage=${STACK_USAGE} -Wno-unused)
+
+#list(APPEND WOLFBOOT_COMPILE_OPTIONS
+#  $<$<NOT:$<C_COMPILER_ID:MSVC>>:-Wstack-usage=${STACK_USAGE}>
+#  $<$<NOT:$<C_COMPILER_ID:MSVC>>:-Wno-unused>
+#  $<$<C_COMPILER_ID:MSVC>:/wd4100 /wd4101 /wd4189>
+#)
+
+# Turn SIGN_OPTIONS (plain symbols) into real compiler -D flags for host tools
+set(SIGN_DEFS "")
+foreach(_opt IN LISTS SIGN_OPTIONS)
+  list(APPEND SIGN_DEFS ${HOST_D}${_opt})
+endforeach()
 
 #---------------------------------------------------------------------------------------------
 #
@@ -884,16 +909,19 @@ list(TRANSFORM WOLFBOOT_SOURCES PREPEND ${WOLFBOOT_ROOT}/)
 #---------------------------------------------------------------------------------------------
 if(HASH STREQUAL "SHA256")
     list(APPEND WOLFBOOT_DEFS WOLFBOOT_HASH_SHA256)
+    list(APPEND SIGN_OPTIONS   WOLFBOOT_HASH_SHA256)
     message(STATUS "Using SHA256 hash")
 endif()
 
 if(HASH STREQUAL "SHA384")
     list(APPEND WOLFBOOT_DEFS WOLFBOOT_HASH_SHA384)
+    list(APPEND SIGN_OPTIONS   WOLFBOOT_HASH_SHA384)
     list(APPEND KEYTOOL_OPTIONS --sha384)
 endif()
 
 if(HASH STREQUAL "SHA3")
     list(APPEND WOLFBOOT_DEFS WOLFBOOT_HASH_SHA3_384)
+    list(APPEND SIGN_OPTIONS   WOLFBOOT_HASH_SHA3_384)
     list(APPEND KEYTOOL_OPTIONS --sha3)
 endif()
 
@@ -1079,16 +1107,24 @@ else()
     set(HOST_FO_SIGN "") # No /Fo for most environments
 endif()
 
+# After you set HOST_IS_MSVC / HOST_CC, add:
+if(true)
+    if (HOST_IS_MSVC)
+      set(HOST_UNDEF /Umin /Umax /USIGN /UHASH /TC)   # /TC = compile as C
+    else()
+      set(HOST_UNDEF -Umin -Umax -USIGN -UHASH -std=c11)
+    endif()
+endif()
     add_custom_command(
       OUTPUT ${SIGN_TOOL}
       COMMAND "${CMAKE_COMMAND}" -E make_directory ${SIGN_OBJDIR}
       COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
-              ${HOST_INCLUDES} ${HOST_DEFS}
+              ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
               ${HOST_FO_SIGN}
               $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
               ${KEYTOOL_SOURCES_ABS}
               ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
-              ${HOST_LINK_LIBS}
+              ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       COMMENT "Building signing tool"
     )
@@ -1110,12 +1146,12 @@ add_custom_command(
   OUTPUT ${KEYGEN_TOOL}
   COMMAND "${CMAKE_COMMAND}" -E make_directory ${KEYGEN_OBJDIR}
   COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
-          ${HOST_INCLUDES} ${HOST_DEFS}
+          ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
           ${HOST_FO_KEYGEN}
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
           ${KEYTOOL_SOURCES_ABS}
           ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
-          ${HOST_LINK_LIBS}
+          ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Building keygen tool"
 )
@@ -1132,7 +1168,48 @@ set(WOLFBOOT_LSCRIPT_TEMPLATE hal/${WOLFBOOT_TARGET}.ld)
 #---------------------------------------------------------------------------------------------
 # wolfcrypt
 #---------------------------------------------------------------------------------------------
+# ---- MUST be placed before add_subdirectory(lib) ----
+# Globally sanitize MSVC builds so wolfSSL sources don't inherit bad macros.
+# ---- MUST be placed before add_subdirectory(lib) ----
+# Make each option a SEPARATE list element; one genex per option.
+if (MSVC)
+  add_compile_options(
+    $<$<C_COMPILER_ID:MSVC>:/Zc:preprocessor>
+    $<$<C_COMPILER_ID:MSVC>:/Umin>
+    $<$<C_COMPILER_ID:MSVC>:/Umax>
+    $<$<C_COMPILER_ID:MSVC>:/USIGN>
+    $<$<C_COMPILER_ID:MSVC>:/UHASH>
+  )
+  add_compile_definitions(NOMINMAX WIN32_LEAN_AND_MEAN)
+endif()
+
+# ------------------------------------------------------
+
 add_subdirectory(lib)
+message(STATUS "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+if(true)
+    if (TARGET wolfcrypt)
+        set(WOLFSSL_TGT wolfcrypt)
+    elseif (TARGET wolfssl)
+        set(WOLFSSL_TGT wolfssl)
+    else()
+        message(FATAL_ERROR "wolfSSL submodule did not define a 'wolfcrypt' or 'wolfssl' target.")
+    endif()
+    message(STATUS "Using wolfSSL target: ${WOLFSSL_TGT}")
+
+
+    if (TARGET ${WOLFSSL_TGT})
+      target_compile_definitions(${WOLFSSL_TGT} PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+      target_compile_options(${WOLFSSL_TGT} PRIVATE
+        $<$<C_COMPILER_ID:MSVC>:/Umin>
+        $<$<C_COMPILER_ID:MSVC>:/Umax>
+        $<$<C_COMPILER_ID:MSVC>:/USIGN>
+        $<$<C_COMPILER_ID:MSVC>:/UHASH>
+        $<$<C_COMPILER_ID:MSVC>:/Zc:preprocessor>
+      )
+    endif()
+
+endif()
 
 if(BUILD_TEST_APPS OR BUILD_IMAGE)
     message(STATUS "Building wolfBoot image")
@@ -1223,57 +1300,110 @@ if(NOT SIGN STREQUAL "NONE")
 endif()
 
 
-if(true) # Some VS2022 helpers
-
-  # Build a simple host-side signer you can F5 in VS.
-  # We *link* wolfcrypt instead of compiling its sources again.
-  add_executable(sign_host
-    tools/keytools/sign.c
-  )
-
-  # Prefer to let the wolfcrypt target carry include dirs,
-  # but these are fine too and help IntelliSense:
-  target_include_directories(sign_host PRIVATE
-    ${CMAKE_SOURCE_DIR}/tools/keytools
-    ${CMAKE_SOURCE_DIR}/lib/wolfssl
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_BINARY_DIR}
-  )
-
-  # Avoid Windows <windows.h> min/max macro collisions, trim Win headers.
-  target_compile_definitions(sign_host PRIVATE
-    WOLFSSL_USER_SETTINGS
-    NOMINMAX
-    WIN32_LEAN_AND_MEAN
-    ${SIGN_OPTIONS}
-  )
-
-  # Link against the library produced by lib/CMakeLists.txt
-  target_link_libraries(sign_host PRIVATE wolfcrypt user_settings)
-
-  # Force C mode so MSVC doesn’t treat it as C++.
-  if(MSVC)
-    target_compile_options(sign_host PRIVATE /TC /Zi /W3)
-    target_link_options(sign_host PRIVATE /DEBUG)
-  else()
-    target_compile_options(sign_host PRIVATE -x c -std=c17 -g)
-  endif()
-
-  # Optional: F5 args in VS
-  set_property(TARGET sign_host PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS
-    "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256")
-  set_property(TARGET sign_host PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
-    "${CMAKE_CURRENT_BINARY_DIR}")
-
-endif()
-
 # generate libwolfboot
 add_library(wolfboot)
 target_sources(wolfboot PRIVATE src/libwolfboot.c ${WOLFBOOT_FLASH_SOURCES})
 target_compile_definitions(wolfboot PUBLIC ${WOLFBOOT_DEFS})
 target_compile_options(wolfboot PUBLIC ${EXTRA_COMPILE_OPTIONS})
 target_include_directories(wolfboot PUBLIC ${WOLFBOOT_INCLUDE_DIRS})
-target_link_libraries(wolfboot wolfboothal target wolfcrypt)
+target_link_libraries(wolfboot wolfboothal target ${WOLFSSL_TGT})
 
 # don't warn on unused code
-target_compile_options(wolfboot PRIVATE -Wno-unused ${SIM_COMPILE_OPTIONS})
+# target_compile_options(wolfboot PRIVATE -Wno-unused ${SIM_COMPILE_OPTIONS})
+message(STATUS "Ready for VS2022, HOST_IS_MSVC=${HOST_IS_MSVC}, CMAKE_CROSSCOMPILING=${CMAKE_CROSSCOMPILING}")
+if(HOST_IS_MSVC AND NOT CMAKE_CROSSCOMPILING) # Some VS2022 helpers
+
+    # optional: put archives under IDE/VisualStudio/lib/<cfg> for easy linking
+    foreach(_t IN ITEMS wolfssl wolfcrypt)
+      if (TARGET ${_t})
+        set_target_properties(${_t} PROPERTIES
+          ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+          ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib/Debug
+          ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib/Release
+          DEBUG_POSTFIX ""
+        )
+      endif()
+    endforeach()
+
+
+    # Build a simple host-side signer you can F5 in VS.
+    # We *link* wolfcrypt instead of compiling its sources again.
+    add_executable(sign_host
+                    tools/keytools/sign.c
+    )
+
+    # Prefer to let the wolfcrypt target carry include dirs,
+    # but these are fine too and help IntelliSense:
+    # Headers (user_settings.h is under include/)
+    target_include_directories(sign_host PRIVATE
+                                        ${CMAKE_SOURCE_DIR}/tools/keytools
+                                        ${CMAKE_SOURCE_DIR}/lib/wolfssl
+                                        ${CMAKE_SOURCE_DIR}/include
+                                        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    # Avoid Windows <windows.h> min/max macro collisions, trim Win headers.
+    target_compile_definitions(sign_host PRIVATE
+                                        WOLFSSL_USER_SETTINGS
+                                        NOMINMAX
+                                        WIN32_LEAN_AND_MEAN
+                                        ${SIGN_OPTIONS}
+    )
+
+    message(STATUS "WOLFSSL_TGT=${WOLFSSL_TGT}")
+    add_dependencies(sign_host ${WOLFSSL_TGT})
+
+
+    if(MSVC)
+        message(STATUS "Found MSVC")
+    else()
+        message(STATUS "Did not find MSVC")
+    endif()
+    message(STATUS "CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID}")
+    message(STATUS "CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}")
+    message(STATUS "CMAKE_C_COMPILER_FRONTEND_VARIANT=${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+    message(STATUS "CMAKE_CXX_COMPILER_FRONTEND_VARIANT=${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
+    message(STATUS "MSVC var = ${MSVC}")
+
+    # Link against the library produced by lib/CMakeLists.txt
+    # target_link_libraries(sign_host PRIVATE wolfssl user_settings)
+
+    # Force C mode so MSVC doesn't treat it as C++.
+    if(false)
+        #if(HOST_IS_MSVC)
+        #    target_link_libraries(sign_host PRIVATE wolfcrypt user_settings Advapi32)
+        #    target_compile_options(sign_host PRIVATE /TC /W3 /Zi)  # compile as C
+        #    target_link_options(sign_host PRIVATE /DEBUG)
+        #else()
+        #    target_link_libraries(sign_host PRIVATE wolfcrypt user_settings)
+        #    target_compile_options(sign_host PRIVATE -g)
+        #endif()
+    else()
+
+        # Force C mode so MSVC doesn't treat it as C++.
+        if(HOST_IS_MSVC)
+            target_link_libraries(sign_host PRIVATE ${WOLFSSL_TGT} user_settings Advapi32)
+            # target_compile_options(sign_host PRIVATE /TC /Zi /W3)
+            target_link_options(sign_host PRIVATE /DEBUG)
+        else()
+            target_link_libraries(sign_host PRIVATE ${WOLFSSL_TGT} user_settings)
+            target_compile_options(sign_host PRIVATE -x c -std=c17 -g)
+        endif()
+
+    endif()
+    # Optional: F5 args in VS
+
+    if (HOST_IS_MSVC)
+        target_compile_options(wolfboot PRIVATE  ${SIM_COMPILE_OPTIONS})
+    else()
+        message(FATAL_ERROR "Testing MSVC should not end up here")
+        target_compile_options(wolfboot PRIVATE -Wno-unused ${SIM_COMPILE_OPTIONS})
+    endif()
+
+    set_property(TARGET sign_host PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS
+    "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256")
+    set_property(TARGET sign_host PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
+    "${CMAKE_CURRENT_BINARY_DIR}")
+endif() # VS2022
+
+message(STATUS "End [WOLFBOOT_ROOT]/CmakeLists.txt")

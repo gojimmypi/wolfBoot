@@ -1,14 +1,32 @@
 {
+  "Description":  "Items to exclude from Debug Targets",
   "ExcludedItems": [
-    "IDE/VisualStudio/**",
     "lib/wolfssl/**",
     "lib/wolfssl/wrapper/CSharp/**",
-    "**/*.sln",
-    "**/*.vcxproj",
-    "**/*.vcxproj.filters",
-    "**/*.vcxproj.user",
-    "**/*.csproj",
-    "**/*.csproj.filters",
-    "**/*.csproj.user"
+    "lib/wolfssl/**/*.sln",
+    "lib/wolfssl/**/*.vcxproj",
+    "lib/wolfssl/**/*.vcxproj.filters",
+    "lib/wolfssl/**/*.vcxproj.user",
+    "lib/wolfssl/**/*.csproj",
+    "lib/wolfssl/**/*.csproj.filters",
+    "lib/wolfssl/**/*.csproj.user",
+
+    "lib/wolfssl/**/*.sln",
+    "lib/wolfssl/**/*.vcxproj",
+    "lib/wolfssl/**/*.vcxproj.filters",
+    "lib/wolfssl/**/*.vcxproj.user",
+    "lib/wolfssl/**/*.csproj",
+    "lib/wolfssl/**/*.csproj.filters",
+    "lib/wolfssl/**/*.csproj.user",
+
+    "lib/wolfssl/**/*.sln",
+    "lib/wolfssl/**/*.vcxproj*",
+    "lib/wolfssl/**/*.csproj*",
+
+    "lib/wolfPKCS11/**/*.sln",
+    "lib/wolfPKCS11/**/*.vcxproj*",
+
+    "lib/wolfTPM/**/*.sln",
+    "lib/wolfTPM/**/*.vcxproj*"
   ]
 }
