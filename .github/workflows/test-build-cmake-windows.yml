@@ -107,7 +107,7 @@ jobs:
       # Optional: show interesting artifacts
       - name: List build outputs
         if: always()
-        # shell: bash
+        shell: bash
         run: |
           BUILD_DIR="build-${{ matrix.target }}"
           echo "=== Artifacts in $BUILD_DIR ==="
