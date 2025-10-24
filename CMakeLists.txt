@@ -158,12 +158,8 @@ if (CMAKE_HOST_WIN32)
     message(STATUS "Detected HOST_CC executable: ${_host_name}")
     message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 
-    # Not with LLVM
-    if(DETECT_LLVM) # TODO and found
-        set(HOST_LINK_FLAG "")
-    else()
-        set(HOST_LINK_FLAG /link)
-    endif()
+    # Not with LLVM, nor GCC
+    set(HOST_LINK_FLAG "")
 
     # set(HOST_LINK_FLAG "") # TODO remove ?
     # TODO
@@ -237,6 +233,9 @@ if (CMAKE_HOST_WIN32)
 
         # Prefer dynamic CRT explicitly (avoid stale tool defaults)
         set(HOST_RUNTIME_FLAG /MD)   # or /MT if you want static CRT
+
+        # Set link flag only for Microsoft compilers
+        set(HOST_LINK_FLAG /link)
 
         # wolfSSL random on Windows needs Advapi32:
         set(HOST_LINK_LIBS Advapi32.lib)

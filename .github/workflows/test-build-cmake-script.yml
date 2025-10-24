@@ -2,9 +2,9 @@ name: wolfboot CMake Script
 on:
   push:
     # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ 'disabled' ] # TODO
+    branches: [ '*' ]
   pull_request:
-    branches: [ 'disabled' ] # TODO
+    branches: [ '*' ]
 jobs:
   wolfboot_build_script_test:
     runs-on: ubuntu-latest

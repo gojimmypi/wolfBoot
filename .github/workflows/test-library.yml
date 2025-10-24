@@ -3,9 +3,9 @@ name: wolfBoot as Library test
 on:
   push:
     # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ 'disabled' ] # TODO
+    branches: [ '*' ]
   pull_request:
-    branches: [ 'disabled' ] # TODO
+    branches: [ '*' ]
 
 jobs:
   test-lib:
@@ -35,9 +35,10 @@ jobs:
         hash: [sha256, sha384, sha3]
 
         # See https://github.com/wolfSSL/wolfBoot/issues/614 regarding exclusions:
-        exclude:
-          - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
-          - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
+        # TODO disabled, expect failure until resolved:
+        # exclude:
+        #  - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
+        #  - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
 
     steps:
       - uses: actions/checkout@v4
