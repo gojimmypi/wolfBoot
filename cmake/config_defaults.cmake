@@ -204,15 +204,9 @@ if (CMAKE_HOST_WIN32)
     # Optional: derive MSVC bin dirs from environment (if a VS Dev Prompt was used)
     set(_VC_HINTS "")
 
-    if(USE_32BIT_LIBS AND DEFINED ENV{VCToolsInstallDir})
-        message(STATUS "Found VCToolsInstallDir=$ENV{VCToolsInstallDir}")
-        message(STATUS "Appending _VC_HINTS")
-        list(APPEND _VC_HINTS
-                    "$ENV{VCToolsInstallDir}/bin/Hostx64/x86"
-                    "$ENV{VCToolsInstallDir}/bin/Hostx86/x86"
-            )
-    endif()
-
+    #-----------------------------------------------------------------------------------------
+    # Always add 64 bit options first
+    #-----------------------------------------------------------------------------------------
     if(USE_64BIT_LIBS AND DEFINED ENV{VCToolsInstallDir})
         message(STATUS "Found VCToolsInstallDir=$ENV{VCToolsInstallDir}")
         message(STATUS "Appending _VC_HINTS")
@@ -220,20 +214,6 @@ if (CMAKE_HOST_WIN32)
                     "$ENV{VCToolsInstallDir}/bin/Hostx64/x64"
                     "$ENV{VCToolsInstallDir}/bin/Hostx86/x64"
             )
-    endif()
-
-    # Visual Studio VisualGDB + MinGW Hints, 32-Bit x86 only
-    if(DETECT_VISUALGDB AND DETECT_MINGW AND USE_32BIT_LIBS)
-        message(STATUS "Appending VisualGDB Hints")
-        list(APPEND HOST_CC_HINT_DIRECTORIES
-                    # VisualGDB / SysGCC MinGW (common system-wide)
-                    "C:/SysGCC/mingw32/bin"
-                    "C:/SysGCC/MinGW32/bin"
-
-                    # VisualGDB user-local toolchains
-                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/mingw32/bin"
-                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/MinGW32/bin"
-        )
     endif()
 
     # Visual Studio VisualGDB + MinGW Hints
@@ -259,6 +239,92 @@ if (CMAKE_HOST_WIN32)
         )
     endif()
 
+    # Prefer environment if available (works from VS Dev Prompt / VS CMake)
+    if (CMAKE_HOST_WIN32 AND DEFINED ENV{VCINSTALLDIR} AND DEFINED ENV{VCToolsVersion} AND USE_64BIT_LIBS)
+        file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
+        set(_VCTOOLS "$_VCINSTALLDIR/Tools/MSVC/$ENV{VCToolsVersion}")
+        list(APPEND HOST_CC_HINT_DIRECTORIES
+                    "${_VCTOOLS}/bin/Hostx64/x64"
+                    "${_VCTOOLS}/bin/Hostx86/x64"
+        )
+    endif()
+
+    set(_VSWHERE "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
+    if (EXISTS "${_VSWHERE}")
+        execute_process(COMMAND "${_VSWHERE}" -latest -requires Microsoft.Component.MSBuild -property installationPath
+                        OUTPUT_VARIABLE _VS_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if (_VS_PATH)
+            # Find all versioned MSVC toolsets under this install, pick highest (natural sort)
+            file(GLOB _MSVC_DIRS LIST_DIRECTORIES TRUE "${_VS_PATH}/VC/Tools/MSVC/*")
+            list(SORT _MSVC_DIRS COMPARE NATURAL ORDER DESCENDING)
+            list(GET _MSVC_DIRS 0 _MSVC_TOOLS)
+            if(USE_64BIT_LIBS)
+                list(APPEND HOST_CC_HINT_DIRECTORIES
+                            "${_MSVC_TOOLS}/bin/Hostx64/x64"
+                            "${_MSVC_TOOLS}/bin/Hostx86/x64"
+                    )
+            endif()
+        endif()
+    endif()
+
+    foreach(_root
+        "C:/Program Files/Microsoft Visual Studio/2022"
+        "C:/Program Files (x86)/Microsoft Visual Studio/2022")
+        file(GLOB _editions LIST_DIRECTORIES TRUE "${_root}/*")  # Enterprise/Professional/Community
+        foreach(_ed ${_editions})
+            message(STATUS "Found edition: ${_ed}")
+            file(GLOB _msvc LIST_DIRECTORIES TRUE "${_ed}/VC/Tools/MSVC/*")
+            list(SORT _msvc COMPARE NATURAL ORDER DESCENDING)
+            foreach(_ver ${_msvc})
+                message(STATUS "Appending Visual Studio Version ${_ver} hint files")
+                if(USE_64BIT_LIBS)
+                    list(APPEND HOST_CC_HINT_DIRECTORIES
+                                    "${_ver}/bin/Hostx64/x64"
+                                    "${_ver}/bin/Hostx86/x64"
+                        )
+                endif()
+            endforeach() # version
+        endforeach() # edition
+    endforeach() # root
+
+    # LLVM Hints (listed last in 64 bit section: 32 or 64 bit?)
+    if(DETECT_LLVM)
+        message(STATUS "Appending LLVM Hints")
+        list(APPEND HOST_CC_HINT_DIRECTORIES
+                    # LLVM
+                    "C:/Program Files/LLVM/bin"
+
+                    # TODO include file code?
+        )
+    endif()
+
+    #-----------------------------------------------------------------------------------------
+    # Next, add 32 bit
+    #-----------------------------------------------------------------------------------------
+    if(USE_32BIT_LIBS AND DEFINED ENV{VCToolsInstallDir})
+        message(STATUS "Found VCToolsInstallDir=$ENV{VCToolsInstallDir}")
+        message(STATUS "Appending _VC_HINTS")
+        list(APPEND _VC_HINTS
+                    "$ENV{VCToolsInstallDir}/bin/Hostx64/x86"
+                    "$ENV{VCToolsInstallDir}/bin/Hostx86/x86"
+            )
+    endif()
+
+    # Visual Studio VisualGDB + MinGW Hints, 32-Bit x86 only
+    if(DETECT_VISUALGDB AND DETECT_MINGW AND USE_32BIT_LIBS)
+        message(STATUS "Appending VisualGDB Hints")
+        list(APPEND HOST_CC_HINT_DIRECTORIES
+                    # VisualGDB / SysGCC MinGW (common system-wide)
+                    "C:/SysGCC/mingw32/bin"
+                    "C:/SysGCC/MinGW32/bin"
+
+                    # VisualGDB user-local toolchains
+                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/mingw32/bin"
+                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/MinGW32/bin"
+        )
+    endif()
+
     # Visual Studio hints
     if(DETECT_VS2022 AND USE_32BIT_LIBS)
         message(STATUS "Appending Visual Studio 2022 Hints")
@@ -276,17 +342,6 @@ if (CMAKE_HOST_WIN32)
         )
     endif()
 
-    # LLVM Hints
-    if(DETECT_LLVM)
-        message(STATUS "Appending LLVM Hints")
-        list(APPEND HOST_CC_HINT_DIRECTORIES
-                    # LLVM
-                    "C:/Program Files/LLVM/bin"
-
-                    # TODO include file code?
-        )
-    endif()
-
     # Prefer environment if available (works from VS Dev Prompt / VS CMake)
     if (CMAKE_HOST_WIN32 AND DEFINED ENV{VCINSTALLDIR} AND DEFINED ENV{VCToolsVersion} AND USE_32BIT_LIBS)
         file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
@@ -297,72 +352,48 @@ if (CMAKE_HOST_WIN32)
         )
     endif()
 
-    # Prefer environment if available (works from VS Dev Prompt / VS CMake)
-    if (CMAKE_HOST_WIN32 AND DEFINED ENV{VCINSTALLDIR} AND DEFINED ENV{VCToolsVersion} AND USE_64BIT_LIBS)
-        file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
-        set(_VCTOOLS "$_VCINSTALLDIR/Tools/MSVC/$ENV{VCToolsVersion}")
-        list(APPEND HOST_CC_HINT_DIRECTORIES
-                    "${_VCTOOLS}/bin/Hostx64/x64"
-                    "${_VCTOOLS}/bin/Hostx86/x64"
+    set(_VSWHERE "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
+    if (EXISTS "${_VSWHERE}")
+        execute_process(COMMAND "${_VSWHERE}" -latest -requires Microsoft.Component.MSBuild -property installationPath
+                        OUTPUT_VARIABLE _VS_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-    endif()
-
-    if (CMAKE_HOST_WIN32)
-        set(_VSWHERE "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
-        if (EXISTS "${_VSWHERE}")
-            execute_process(COMMAND "${_VSWHERE}" -latest -requires Microsoft.Component.MSBuild -property installationPath
-                            OUTPUT_VARIABLE _VS_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
-            )
-            if (_VS_PATH)
-              # Find all versioned MSVC toolsets under this install, pick highest (natural sort)
-                file(GLOB _MSVC_DIRS LIST_DIRECTORIES TRUE "${_VS_PATH}/VC/Tools/MSVC/*")
-                list(SORT _MSVC_DIRS COMPARE NATURAL ORDER DESCENDING)
-                list(GET _MSVC_DIRS 0 _MSVC_TOOLS)
-                if(USE_32BIT_LIBS)
-                    list(APPEND HOST_CC_HINT_DIRECTORIES
-                                "${_MSVC_TOOLS}/bin/Hostx64/x86"
-                                "${_MSVC_TOOLS}/bin/Hostx86/x86"
-                        )
-                endif()
-                if(USE_64BIT_LIBS)
-                    list(APPEND HOST_CC_HINT_DIRECTORIES
-                                "${_MSVC_TOOLS}/bin/Hostx64/x64"
-                                "${_MSVC_TOOLS}/bin/Hostx86/x64"
-                        )
-                endif()
+        if (_VS_PATH)
+            # Find all versioned MSVC toolsets under this install, pick highest (natural sort)
+            file(GLOB _MSVC_DIRS LIST_DIRECTORIES TRUE "${_VS_PATH}/VC/Tools/MSVC/*")
+            list(SORT _MSVC_DIRS COMPARE NATURAL ORDER DESCENDING)
+            list(GET _MSVC_DIRS 0 _MSVC_TOOLS)
+            if(USE_32BIT_LIBS)
+                list(APPEND HOST_CC_HINT_DIRECTORIES
+                            "${_MSVC_TOOLS}/bin/Hostx64/x86"
+                            "${_MSVC_TOOLS}/bin/Hostx86/x86"
+                    )
             endif()
         endif()
     endif()
 
-    if (CMAKE_HOST_WIN32)
-        foreach(_root
-            "C:/Program Files/Microsoft Visual Studio/2022"
-            "C:/Program Files (x86)/Microsoft Visual Studio/2022")
-            file(GLOB _editions LIST_DIRECTORIES TRUE "${_root}/*")  # Enterprise/Professional/Community
-            foreach(_ed ${_editions})
-                message(STATUS "Found edition: ${_ed}")
-                file(GLOB _msvc LIST_DIRECTORIES TRUE "${_ed}/VC/Tools/MSVC/*")
-                list(SORT _msvc COMPARE NATURAL ORDER DESCENDING)
-                foreach(_ver ${_msvc})
-                    message(STATUS "Appending Visual Studio Version ${_ver} hint files")
-                    if(USE_32BIT_LIBS)
-                        list(APPEND HOST_CC_HINT_DIRECTORIES
-                                      "${_ver}/bin/Hostx64/x86"
-                                      "${_ver}/bin/Hostx86/x86"
-                            )
-                    endif()
-                    if(USE_64BIT_LIBS)
-                        list(APPEND HOST_CC_HINT_DIRECTORIES
-                                      "${_ver}/bin/Hostx64/x64"
-                                      "${_ver}/bin/Hostx86/x64"
-                            )
-                    endif()
-                endforeach() # version
-            endforeach() # edition
-        endforeach() # root
-    endif() # CMAKE_HOST_WIN32
+    foreach(_root
+        "C:/Program Files/Microsoft Visual Studio/2022"
+        "C:/Program Files (x86)/Microsoft Visual Studio/2022")
+        file(GLOB _editions LIST_DIRECTORIES TRUE "${_root}/*")  # Enterprise/Professional/Community
+        foreach(_ed ${_editions})
+            message(STATUS "Found edition: ${_ed}")
+            file(GLOB _msvc LIST_DIRECTORIES TRUE "${_ed}/VC/Tools/MSVC/*")
+            list(SORT _msvc COMPARE NATURAL ORDER DESCENDING)
+            foreach(_ver ${_msvc})
+                message(STATUS "Appending Visual Studio Version ${_ver} hint files")
+                if(USE_32BIT_LIBS)
+                    list(APPEND HOST_CC_HINT_DIRECTORIES
+                                    "${_ver}/bin/Hostx64/x86"
+                                    "${_ver}/bin/Hostx86/x86"
+                        )
+                endif()
+            endforeach() # version
+        endforeach() # edition
+    endforeach() # root
 
+    #-----------------------------------------------------------------------------------------
     message(STATUS "Assembled HOST_CC_HINT_DIRECTORIES contents:")
+    #-----------------------------------------------------------------------------------------
     foreach(_hint_item IN LISTS HOST_CC_HINT_DIRECTORIES)
         if(IS_DIRECTORY "${_hint_item}")
             set(_hint_status "(ok)")
