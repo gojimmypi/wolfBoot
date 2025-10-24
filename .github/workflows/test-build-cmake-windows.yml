@@ -39,7 +39,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-          arch: x86
 
       # Lock down network/runner
       # See https://github.com/step-security/harden-runner/releases
@@ -51,6 +50,7 @@ jobs:
         with:
           release: "14.2.Rel1" # <-- use 'release', not 'version'
           path-env-var: ARM_NONE_EABI_GCC_PATH
+          arch: x86
 
       # CMake + Ninja are preinstalled on windows-latest, but verify & print versions
       - name: Tool versions
