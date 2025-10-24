@@ -413,6 +413,15 @@ Consider also deleting the entire build directory.
   724 |             address = (uint32_t)WOLFBOOT_PARTITION_BOOT_ADDRESS;
 ```
 
+6. 'stdint.h': No such file or directory
+
+Check the compiler order in `PREFERRED_HOST_CC_NAME_LIST`, See `HOST_CC` in the logs.
+
+For Visual Studio, the developer command prompt will need to be activated.
+
+```
+\wolfBoot\tools\keytools\sign.c(33): fatal error C1083: Cannot open include file: 'stdio.h': No such file or directory
+```
 
 ## Release Notes
 

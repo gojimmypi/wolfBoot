@@ -55,19 +55,19 @@ jobs:
       - name: Tool versions
         shell: cmd
         run: |
-          # Show some key toolchain versions
+          :: Show some key toolchain versions
 
           echo "Compiler versions:"
           arm-none-eabi-gcc --version
-          echo
+          echo ""
           echo "CMake:"
           cmake --version
           echo
           echo "Ninja:"
           ninja --version
           echo
-          #echo "MSVC (via vswhere):"
-          #"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion
+          ::echo "MSVC (via vswhere):"
+          ::"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion
           echo
           echo "VS2022 Properties"
           "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products *
@@ -82,9 +82,8 @@ jobs:
           # Get-ChildItem Env: | Sort-Object Name
           $env:path -split ";"
 
-          # c:
-          # cd \
-          # dir stdint.h /s
+          Get-ChildItem -Path 'C:\' -Filter stdint.h -Recurse -ErrorAction SilentlyContinue
+
 
       - name: List Presets
         shell: cmd
