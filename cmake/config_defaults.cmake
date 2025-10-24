@@ -49,9 +49,24 @@ else()
     set(DETECT_VS2022    false)
     set(DETECT_LLVM      false)
 
+    set(_host_arch "$ENV{VSCMD_ARG_HOST_ARCH}")
+    string(TOLOWER "${_host_arch}" _host_arch)
+    string(STRIP "${_host_arch}" _host_arch)
     # Although you CAN select both 32 and 64 bit, it is best to pick ONE:
-    set(USE_32BIT_LIBS   false)
-    set(USE_64BIT_LIBS   true)
+    if(_host_arch STREQUAL "x86")
+        message(STATUS "Detected x86 architecture for hints")
+        set(USE_32BIT_LIBS   true)
+        set(USE_64BIT_LIBS   false)
+    elseif(_host_arch STREQUAL "x64")
+        message(STATUS "Detected x64 architecture for hints")
+        set(USE_32BIT_LIBS   false)
+        set(USE_64BIT_LIBS   true)
+    else()
+        message(STATUS "Did not detect architecture for hints, assume x86")
+        # Likely a non-Microsoft environment, so not hints at all
+        set(USE_32BIT_LIBS   true)
+        set(USE_64BIT_LIBS   false)
+    endif()
     # Enable HAL download only implemented for STM devices at this time.
     # See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
     # and [WOLFBOOT_ROOT]/cmake/downloads/stm32_hal_download.cmake
