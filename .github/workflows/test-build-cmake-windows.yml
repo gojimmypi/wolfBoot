@@ -41,13 +41,7 @@ jobs:
 
       # Lock down network/runner
       # See https://github.com/step-security/harden-runner/releases
-      - uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a
-        with:
-          egress-policy: block
-          allowed-endpoints: >
-            developer.arm.com,
-            armkeil.blob.core.windows.net,
-            github.com, objects.githubusercontent.com, api.github.com
+      # Currently only supported on Ubuntu
 
       # ARM GCC toolchain (adds the bin dir to PATH)
       - name: Set up ARM none-eabi GCC 14.x
@@ -72,7 +66,18 @@ jobs:
           ninja --version
           echo
           echo "MSVC (via vswhere):"
-          cmd.exe /c "\"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe\" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion"
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion
+          echo
+          echo "VS2022 Properties"
+          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products *
+          echo
+
+      - name: List all environment variables
+        run: |
+          # Show environment settings
+
+          echo "All environment settings"
+          set
 
       - name: List Presets
         shell: bash
