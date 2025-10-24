@@ -64,8 +64,8 @@ else()
     else()
         message(STATUS "Did not detect architecture for hints, assume x86")
         # Likely a non-Microsoft environment, so not hints at all
-        set(USE_32BIT_LIBS   true)
-        set(USE_64BIT_LIBS   false)
+        set(USE_32BIT_LIBS   false)
+        set(USE_64BIT_LIBS   true)
     endif()
     # Enable HAL download only implemented for STM devices at this time.
     # See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake

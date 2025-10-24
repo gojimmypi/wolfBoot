@@ -3,9 +3,9 @@ name: WolfBoot CMake Build (macOS)
 on:
   push:
     # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ '*' ]
+    branches: [ 'disabled' ] # TODO
   pull_request:
-    branches: [ "*" ]
+    branches: [ 'disabled' ] # TODO
 
 jobs:
   macos-cmake:

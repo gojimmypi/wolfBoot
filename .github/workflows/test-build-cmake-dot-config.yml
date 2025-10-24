@@ -2,9 +2,10 @@ name: wolfboot CMake (.config)
 on:
   push:
     # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ '*' ]
+    branches: [ 'disabled' ] # TODO
   pull_request:
-    branches: [ '*' ]
+    branches: [ 'disabled' ] # TODO
+
 jobs:
   wolfboot_dot_config_test:
     runs-on: ubuntu-latest

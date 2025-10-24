@@ -50,7 +50,6 @@ jobs:
         with:
           release: "14.2.Rel1" # <-- use 'release', not 'version'
           path-env-var: ARM_NONE_EABI_GCC_PATH
-          arch: x86
 
       # CMake + Ninja are preinstalled on windows-latest, but verify & print versions
       - name: Tool versions
@@ -82,6 +81,10 @@ jobs:
           # set
           # Get-ChildItem Env: | Sort-Object Name
           $env:path -split ";"
+
+          c:
+          cd \
+          dir stdint.h /s
 
       - name: List Presets
         shell: cmd
