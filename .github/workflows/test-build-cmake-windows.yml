@@ -82,7 +82,7 @@ jobs:
           # Get-ChildItem Env: | Sort-Object Name
           $env:path -split ";"
 
-          Get-ChildItem -Path 'C:\' -Filter stdint.h -Recurse -ErrorAction SilentlyContinue
+          # Get-ChildItem -Path 'C:\' -Filter stdint.h -Recurse -ErrorAction SilentlyContinue
 
 
       - name: List Presets
