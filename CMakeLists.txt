@@ -1173,8 +1173,8 @@ if(true)
     else()
         # Optional strict mode (-std=c11) fails on WSL, missing include files
         # set(HOST_UNDEF -Umin -Umax -USIGN -UHASH -std=c11)
-
-        set(HOST_UNDEF -Umin -Umax -USIGN -UHASH)
+        message(STATUS "Setting -std=gnu11 for HOST_CC=${HOST_CC}")
+        set(HOST_UNDEF -Umin -Umax -USIGN -UHASH -std=gnu11)
     endif()
 endif()
     add_custom_command(

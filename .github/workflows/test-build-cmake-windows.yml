@@ -14,6 +14,7 @@ jobs:
   windows-cmake:
     name: Build on Windows
     runs-on: windows-latest
+        # Reminder default is PowerShell runner, not DOS, unless otherwise specified.
     timeout-minutes: 20
 
     strategy:
@@ -52,7 +53,7 @@ jobs:
 
       # CMake + Ninja are preinstalled on windows-latest, but verify & print versions
       - name: Tool versions
-        shell: bash
+        # shell: bash
         run: |
           # Show some key toolchain versions
 
@@ -77,17 +78,19 @@ jobs:
           # Show environment settings
 
           echo "All environment settings"
-          set
+          # set
+          # Get-ChildItem Env: | Sort-Object Name
+          $env:path -split ";"
 
       - name: List Presets
-        shell: bash
+        # shell: bash
         run: |
           # Check available presets in CMakePresets.json
 
           cmake -S . -B build-list --list-presets=configure
 
       - name: Configure Preset "${{ matrix.target }}"
-        shell: bash
+        # shell: bash
         run: |
           # cmake runs in git bash
 
@@ -95,16 +98,16 @@ jobs:
           echo "Configured: ${{ matrix.target }}"
 
       - name: Build "${{ matrix.target }}"
-        shell: bash
+        # shell: bash
         run: |
           # cmake runs in git bash
-          BUILD_DIR="build-${{ matrix.target }}"
+          # BUILD_DIR="build-${{ matrix.target }}"
           cmake --build "build-${{ matrix.target }}" --parallel
 
       # Optional: show interesting artifacts
       - name: List build outputs
         if: always()
-        shell: bash
+        # shell: bash
         run: |
           BUILD_DIR="build-${{ matrix.target }}"
           echo "=== Artifacts in $BUILD_DIR ==="

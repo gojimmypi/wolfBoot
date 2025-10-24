@@ -43,9 +43,9 @@ else()
     message(STATUS "Using standard config defaults: ${CMAKE_CURRENT_LIST_FILE}")
     message(STATUS "============================================================================")
     # Environments are detected in this order:
-    set(DETECT_VISUALGDB true)
+    set(DETECT_VISUALGDB false)
     set(DETECT_MINGW     false)
-    set(DETECT_CUBEIDE   true)
+    set(DETECT_CUBEIDE   false)
     set(DETECT_VS2022    true)
     set(DETECT_LLVM      false)
 
