@@ -400,6 +400,20 @@ sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.o
 unresolved external symbol __imp____acrt_iob_func referenced in function _main
 ```
 
+5. expected expression before ';' around WOLFBOOT_PARTITION_BOOT_ADDRESS
+
+Search for `#define WOLFBOOT_PARTITION_BOOT_ADDRESS` with no value.
+Sometimes a failed config will generate a bad file. (typically `target.h`)
+
+Rename the file with a `.bak` extension and let the build process generate a fresh one.
+Consider also deleting the entire build directory.
+
+```
+/src/libwolfboot.c:724:64: error: expected expression before ';' token
+  724 |             address = (uint32_t)WOLFBOOT_PARTITION_BOOT_ADDRESS;
+```
+
+
 ## Release Notes
 
 ### v1.0 (2018-12-04)

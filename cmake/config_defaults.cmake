@@ -46,7 +46,7 @@ else()
     set(DETECT_VISUALGDB true)
     set(DETECT_MINGW     false)
     set(DETECT_CUBEIDE   true)
-    set(DETECT_VS2022    false)
+    set(DETECT_VS2022    true)
     set(DETECT_LLVM      false)
 
     set(_host_arch "$ENV{VSCMD_ARG_HOST_ARCH}")
