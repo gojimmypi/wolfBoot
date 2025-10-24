@@ -35,7 +35,7 @@ jobs:
         hash: [sha256, sha384, sha3]
 
         # See https://github.com/wolfSSL/wolfBoot/issues/614 regarding exclusions:
-         exclude:
+        exclude:
           - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
           - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
 

@@ -66,8 +66,8 @@ jobs:
           echo "Ninja:"
           ninja --version
           echo
-          echo "MSVC (via vswhere):"
-          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion
+          #echo "MSVC (via vswhere):"
+          #"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion
           echo
           echo "VS2022 Properties"
           "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products *
