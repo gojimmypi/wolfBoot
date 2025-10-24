@@ -53,7 +53,7 @@ jobs:
 
       # CMake + Ninja are preinstalled on windows-latest, but verify & print versions
       - name: Tool versions
-        # shell: bash
+        shell: cmd
         run: |
           # Show some key toolchain versions
 
@@ -83,14 +83,14 @@ jobs:
           $env:path -split ";"
 
       - name: List Presets
-        # shell: bash
+        shell: cmd
         run: |
           # Check available presets in CMakePresets.json
 
           cmake -S . -B build-list --list-presets=configure
 
       - name: Configure Preset "${{ matrix.target }}"
-        # shell: bash
+        shell: cmd
         run: |
           # cmake runs in git bash
 
@@ -98,7 +98,7 @@ jobs:
           echo "Configured: ${{ matrix.target }}"
 
       - name: Build "${{ matrix.target }}"
-        # shell: bash
+        shell: cmd
         run: |
           # cmake runs in git bash
           # BUILD_DIR="build-${{ matrix.target }}"
