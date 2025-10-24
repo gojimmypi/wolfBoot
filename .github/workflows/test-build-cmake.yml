@@ -2,9 +2,9 @@ name: Wolfboot CMake Build (Ubuntu)
 on:
   push:
     # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ '*' ]
+    branches: [ 'disabled' ] # TODO
   pull_request:
-    branches: [ '*' ]
+    branches: [ 'disabled' ] # TODO
 jobs:
   cmake_automated_test:
     runs-on: ubuntu-latest

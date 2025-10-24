@@ -82,9 +82,9 @@ jobs:
           # Get-ChildItem Env: | Sort-Object Name
           $env:path -split ";"
 
-          c:
-          cd \
-          dir stdint.h /s
+          # c:
+          # cd \
+          # dir stdint.h /s
 
       - name: List Presets
         shell: cmd
