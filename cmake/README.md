@@ -213,12 +213,19 @@ checked in. For example, if a project is using Git, `CMakePresets.json` may be t
 
 ## Troubleshooting
 
-The wrong toolchain is being used, or a target was not specified
+The wrong toolchain is being used, or a target was not specified:
 
 ```
 Error: no such instruction: `isb'
 ```
 
+### Other log files
+
+Windows users may find cmake log files in this directory helpful:
+
+```
+C:\Users\%USERNAME%\AppData\Local\CMakeTools
+```
 
 ## CMake Logic Flow
 

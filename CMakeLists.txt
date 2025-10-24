@@ -28,6 +28,8 @@
 #   -DWOLFBOOT_PARTITION_SIZE=<size> -DWOLFBOOT_PARTITION_UPDATE_ADDRESS=<update_address>
 #   -DWOLFBOOT_PARTITION_SWAP_ADDRESS=<swap_address> -DBUILD_TEST_APPS=yes ..
 # $ cmake --build .
+#
+# Windows builds: Never use NODEFAULTLIB; problems with CRT auto-linking and cause mainCRTStartup to go missing.
 
 message(STATUS "Begin [WOLFBOOT_ROOT]/CmakeLists.txt")
 
@@ -66,7 +68,12 @@ endif()
 
 
 if(NOT DEFINED PREFERRED_HOST_CC_NAME_LIST OR PREFERRED_HOST_CC_NAME_LIST STREQUAL "")
-    set(PREFERRED_HOST_CC_NAME_LIST gcc clang cl)
+    # set(PREFERRED_HOST_CC_NAME_LIST gcc clang cl)
+    if(CMAKE_HOST_WIN32)
+        set(PREFERRED_HOST_CC_NAME_LIST cl clang gcc)
+    else()
+        set(PREFERRED_HOST_CC_NAME_LIST gcc clang cl)
+    endif()
     message(STATUS "Setting preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
 else()
     message(STATUS "Found preferred order for HOST_CC:${PREFERRED_HOST_CC_NAME_LIST}")
@@ -151,18 +158,27 @@ if (CMAKE_HOST_WIN32)
     message(STATUS "Detected HOST_CC executable: ${_host_name}")
     message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 
-    set(HOST_LINK_FLAG /link)
+    # Not with LLVM
+    if(DETECT_LLVM) # TODO and found
+        set(HOST_LINK_FLAG "")
+    else()
+        set(HOST_LINK_FLAG /link)
+    endif()
+
+    # set(HOST_LINK_FLAG "") # TODO remove ?
     # TODO
     # if ((HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]]) OR true)
     if (HOST_CC MATCHES [[(^|[/\\])cl(\.exe)?$]] OR (HOST_CC MATCHES [[(^|[/\\])clang-cl(\.exe)?$]]))
+        # DOS/Windows detected by ".exe" extension, not to be confused with WSL and/or WinGW
         message(STATUS "Found CMAKE_HOST_WIN32 and .exe in HOST_CC: Setting HOST_IS_MSVC")
+        #-------------------------------------------------------------------------------------
+        set(HOST_IS_MSVC TRUE)
+        #-------------------------------------------------------------------------------------
         # Are we running in Visual Studio 2022 or VSCode from VS2022 command prompt?
         print_env(VSCMD_VER)
         print_env(VCToolsInstallDir)
         print_env(VCINSTALLDIR)
         print_env(WindowsSdkDir)
-        # DOS/Windows detected by ".exe" extension, not to be confused with WSL and/or WinGW
-        set(HOST_IS_MSVC TRUE)
         set(HOST_EXE ".exe")
         set(HOST_O2  /O2)
         set(HOST_I   /I)
@@ -173,11 +189,52 @@ if (CMAKE_HOST_WIN32)
         file(MAKE_DIRECTORY "${HOST_OBJDIR}")
         set(HOST_FO         "/Fo$<SHELL_PATH:${HOST_OBJDIR}/>")
         set(HOST_WARN       "")   # MSVC warnings already noisy; keep simple
+        # Detect pointer size -> host arch name (x64/x86)
+        if (HOST_CC MATCHES [[Hostx64[/\\]x64]] OR CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "AMD64|x86_64")
+            set(HOST_ARCH x64)
+            set(HOST_MACHINE_FLAG /MACHINE:X64)
+        else()
+            set(HOST_ARCH x86)
+            set(HOST_MACHINE_FLAG /MACHINE:X86)
+        endif()
+        message(STATUS "HOST_CC suggests HOST_ARCH=${HOST_ARCH}")
+
+        # Gather Windows SDK & MSVC libpaths from env (vcvarsall sets these)
+        set(HOST_WINSDK_UCRT "")
+        set(HOST_WINSDK_UM   "")
+        set(HOST_MSVC_LIB    "")
+
+        if (DEFINED ENV{WindowsSdkDir} AND DEFINED ENV{WindowsSDKLibVersion})
+            set(HOST_WINSDK_UCRT "$ENV{WindowsSdkDir}/Lib/$ENV{WindowsSDKLibVersion}/ucrt/${HOST_ARCH}")
+            set(HOST_WINSDK_UM   "$ENV{WindowsSdkDir}/Lib/$ENV{WindowsSDKLibVersion}/um/${HOST_ARCH}")
+        endif()
+
+        if (DEFINED ENV{VCToolsInstallDir})
+            set(HOST_MSVC_LIB "$ENV{VCToolsInstallDir}/lib/${HOST_ARCH}")
+        endif()
+
+        # Build a reusable list of link options for add_custom_command invocations
+        # (Use $<SHELL_PATH:...> so backslashes don't confuse "cl /link")
+        #if (HOST_WINSDK_UCRT)
+        #    list(APPEND HOST_LINK_OPTS /LIBPATH:$<SHELL_PATH:${HOST_WINSDK_UCRT}>)
+        #endif()
+        #if (HOST_WINSDK_UM)
+        #    list(APPEND HOST_LINK_OPTS /LIBPATH:$<SHELL_PATH:${HOST_WINSDK_UM}>)
+        #endif()
+        #if (HOST_MSVC_LIB)
+        #    list(APPEND HOST_LINK_OPTS /LIBPATH:$<SHELL_PATH:${HOST_MSVC_LIB}>)
+        #endif()
+
+        # Prefer dynamic CRT explicitly (avoid stale tool defaults)
+        set(HOST_RUNTIME_FLAG /MD)   # or /MT if you want static CRT
+
         # wolfSSL random on Windows needs Advapi32:
         set(HOST_LINK_LIBS Advapi32.lib)
     else()
         # gcc or clang
+        #-------------------------------------------------------------------------------------
         set(HOST_IS_MSVC FALSE)
+        #-------------------------------------------------------------------------------------
         set(HOST_EXE  "")
         set(HOST_O2   -O2)
         set(HOST_I    -I)
@@ -187,6 +244,7 @@ if (CMAKE_HOST_WIN32)
         set(HOST_WARN -Wall -Wextra -Werror)
         # set(HOST_LINK_LIBS "")  # not needed with MinGW/clang on Windows
         set(HOST_LINK_LIBS -ladvapi32)
+        set(HOST_RUNTIME_FLAG "")
     endif()
 
     # On Windows, binaries should end with .exe regardless of flag style
@@ -209,6 +267,7 @@ else()
 
     set(HOST_LINK_FLAG "")
     set(HOST_LINK_LIBS "")
+    set(HOST_RUNTIME_FLAG "")
 endif()
 
 message(STATUS "Host CC: ${HOST_CC}")
@@ -504,7 +563,7 @@ else()
     add_custom_command(
         OUTPUT "${BINASSEMBLE}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory ${BINASSEMBLE_OBJDIR}
-        COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
+        COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
                 ${HOST_INCLUDES}            # <-- needed for unistd.h shim
                 ${HOST_FO} # /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
                 ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
@@ -1110,15 +1169,18 @@ endif()
 # After you set HOST_IS_MSVC / HOST_CC, add:
 if(true)
     if (HOST_IS_MSVC)
-      set(HOST_UNDEF /Umin /Umax /USIGN /UHASH /TC)   # /TC = compile as C
+        set(HOST_UNDEF /Umin /Umax /USIGN /UHASH /TC)   # /TC = compile as C
     else()
-      set(HOST_UNDEF -Umin -Umax -USIGN -UHASH -std=c11)
+        # Optional strict mode (-std=c11) fails on WSL, missing include files
+        # set(HOST_UNDEF -Umin -Umax -USIGN -UHASH -std=c11)
+
+        set(HOST_UNDEF -Umin -Umax -USIGN -UHASH)
     endif()
 endif()
     add_custom_command(
       OUTPUT ${SIGN_TOOL}
       COMMAND "${CMAKE_COMMAND}" -E make_directory ${SIGN_OBJDIR}
-      COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
+      COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
               ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
               ${HOST_FO_SIGN}
               $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
@@ -1145,7 +1207,7 @@ endif()
 add_custom_command(
   OUTPUT ${KEYGEN_TOOL}
   COMMAND "${CMAKE_COMMAND}" -E make_directory ${KEYGEN_OBJDIR}
-  COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN}
+  COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
           ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
           ${HOST_FO_KEYGEN}
           $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>

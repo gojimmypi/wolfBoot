@@ -31,27 +31,50 @@ else()
     include_guard(GLOBAL)
 endif()
 
-
-# Environments are detected in this order:
+# Config is either from config_defaults.cmake or optional config_defaults_user.cmake (if present)
+set(USER_CONFIG_FILE "${CMAKE_CURRENT_LIST_DIR}/config_defaults_user.cmake")
 #---------------------------------------------------------------------------------------------
-set(DETECT_VISUALGDB true)
-set(DETECT_MINGW     false)
-set(DETECT_CUBEIDE   true)
-set(DETECT_VS2022    true)
-set(DETECT_LLVM      false)
+message(STATUS "Looking for ${USER_CONFIG_FILE} file...")
+if(EXISTS  "${USER_CONFIG_FILE}")
+    # Excluded by default from wolfBoot .gitignore:
+    include(${USER_CONFIG_FILE})
+else()
+    message(STATUS "============================================================================")
+    message(STATUS "Using standard config defaults: ${CMAKE_CURRENT_LIST_FILE}")
+    message(STATUS "============================================================================")
+    # Environments are detected in this order:
+    set(DETECT_VISUALGDB true)
+    set(DETECT_MINGW     false)
+    set(DETECT_CUBEIDE   true)
+    set(DETECT_VS2022    false)
+    set(DETECT_LLVM      false)
+
+    # Although you CAN select both 32 and 64 bit, it is best to pick ONE:
+    set(USE_32BIT_LIBS   false)
+    set(USE_64BIT_LIBS   true)
+    # Enable HAL download only implemented for STM devices at this time.
+    # See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
+    # and [WOLFBOOT_ROOT]/cmake/downloads/stm32_hal_download.cmake
+    set(ENABLE_HAL_DOWNLOAD true)
+
+    # optionally use .config files; See CMakePresets.json instead
+    set(USE_DOT_CONFIG      false)
+endif()
+# Summary of user or standard config:
+message(STATUS "    DETECT_VISUALGDB: ${DETECT_VISUALGDB}")
+message(STATUS "    DETECT_MINGW:     ${DETECT_MINGW}")
+message(STATUS "    DETECT_CUBEIDE:   ${DETECT_CUBEIDE}")
+message(STATUS "    DETECT_VS2022:    ${DETECT_VS2022}")
+message(STATUS "    DETECT_LLVM:      ${DETECT_LLVM}")
+message(STATUS "    USE_32BIT_LIBS:   ${USE_32BIT_LIBS}")
+message(STATUS "    USE_64BIT_LIBS:   ${USE_64BIT_LIBS}")
+message(STATUS "    USE_DOT_CONFIG:   ${USE_DOT_CONFIG}")
 #---------------------------------------------------------------------------------------------
 
-# Enable HAL download only implemented for TMS devices at this time.
-# See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
-# and [WOLFBOOT_ROOT]/cmake/downloads/stm32_hal_download.cmake
-set(ENABLE_HAL_DOWNLOAD true)
-set(FOUND_HAL_BASE      false)
-
-# optionally use .config files; See CMakePresets.json instead
-set(USE_DOT_CONFIG      false)
 
 # Init
 SET(HOST_CC_HINT_DIRECTORIES "")
+set(FOUND_HAL_BASE      false) # init now, search later, see ENABLE_HAL_DOWNLOAD
 
 include(cmake/current_user.cmake)
 get_current_user(CURRENT_USER)
@@ -60,11 +83,36 @@ message(STATUS "Current user detected: ${CURRENT_USER}")
 
 # We're in [WOLFBOOT_ROOT]/cmake for this file, ensure there are no stray target.h files
 if(EXISTS "../include/target.h")
+    # This can really spoil the day, not very intuitive:
     message(FATAL_ERROR "unexpected include/target.h")
 else()
     message(STATUS "Confirmed no stray include/target.h")
 endif()
 
+
+if (true) # TODO detect MSVS, not defined until much later
+#    include(CheckIncludeFile)
+#    check_include_file(stdint.h HAVE_STDINT_H)
+#    if(NOT HAVE_STDINT_H)
+#        message(FATAL_ERROR
+#            "MSVC environment not initialized (stdint.h not found). "
+#            "Use a preset with environmentSetupScript or the VS generator, "
+#            "or launch VS Code from the x64 Native Tools prompt.")
+#    endif()
+
+    if (NOT HOST_WINSDK_UCRT OR NOT HOST_WINSDK_UM OR NOT HOST_MSVC_LIB)
+        message(WARNING
+                "MSVC host build: Windows SDK/MSVC libpaths not found. "
+                "Open an 'x64 Native Tools Command Prompt for VS 2022' (or run vcvarsall.bat) "
+                "so /LIBPATH points at the right ${HOST_ARCH} libraries.")
+    endif()
+endif()
+
+if(USE_32BIT_LIBS AND USE_64BIT_LIBS)
+    message(STATUS "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    message(STATUS "Warning: Both 32Bit and 64Bit libraries enabled.")
+    message(STATUS "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+endif()
 
 # Requires CMake 3.19 (or newer for string(JSON); --format=json is available on recent CMake (VS is 3.31).
 function(preset_exists name out_var)
@@ -155,36 +203,55 @@ endif()
 if (CMAKE_HOST_WIN32)
     # Optional: derive MSVC bin dirs from environment (if a VS Dev Prompt was used)
     set(_VC_HINTS "")
-    if(DEFINED ENV{VCToolsInstallDir})
+
+    if(USE_32BIT_LIBS AND DEFINED ENV{VCToolsInstallDir})
+        message(STATUS "Found VCToolsInstallDir=$ENV{VCToolsInstallDir}")
+        message(STATUS "Appending _VC_HINTS")
+        list(APPEND _VC_HINTS
+                    "$ENV{VCToolsInstallDir}/bin/Hostx64/x86"
+                    "$ENV{VCToolsInstallDir}/bin/Hostx86/x86"
+            )
+    endif()
+
+    if(USE_64BIT_LIBS AND DEFINED ENV{VCToolsInstallDir})
         message(STATUS "Found VCToolsInstallDir=$ENV{VCToolsInstallDir}")
         message(STATUS "Appending _VC_HINTS")
         list(APPEND _VC_HINTS
                     "$ENV{VCToolsInstallDir}/bin/Hostx64/x64"
-                    "$ENV{VCToolsInstallDir}/bin/Hostx64/x86"
                     "$ENV{VCToolsInstallDir}/bin/Hostx86/x64"
-                    "$ENV{VCToolsInstallDir}/bin/Hostx86/x86")
+            )
     endif()
 
-    # Visual Studio Hints
-    if(DETECT_VISUALGDB AND DETECT_MINGW)
+    # Visual Studio VisualGDB + MinGW Hints, 32-Bit x86 only
+    if(DETECT_VISUALGDB AND DETECT_MINGW AND USE_32BIT_LIBS)
         message(STATUS "Appending VisualGDB Hints")
         list(APPEND HOST_CC_HINT_DIRECTORIES
                     # VisualGDB / SysGCC MinGW (common system-wide)
-                    "C:/SysGCC/mingw64/bin"
-                    "C:/SysGCC/MinGW64/bin"
                     "C:/SysGCC/mingw32/bin"
                     "C:/SysGCC/MinGW32/bin"
 
                     # VisualGDB user-local toolchains
-                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/mingw64/bin"
-                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/MinGW64/bin"
                     "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/mingw32/bin"
                     "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/MinGW32/bin"
         )
     endif()
 
+    # Visual Studio VisualGDB + MinGW Hints
+    if(DETECT_VISUALGDB AND DETECT_MINGW AND USE_64BIT_LIBS)
+        message(STATUS "Appending VisualGDB Hints")
+        list(APPEND HOST_CC_HINT_DIRECTORIES
+                    # VisualGDB / SysGCC MinGW (common system-wide)
+                    "C:/SysGCC/mingw64/bin"
+                    "C:/SysGCC/MinGW64/bin"
+
+                    # VisualGDB user-local toolchains
+                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/mingw64/bin"
+                    "$ENV{LOCALAPPDATA}/VisualGDB/Toolchains/MinGW64/bin"
+        )
+    endif()
+
     # Regular MinGW (Non-VisualGDB)
-    if(DETECT_MINGW)
+    if(DETECT_MINGW AND USE_64BIT_LIBS)
         message(STATUS "Appending VisualGDB Hints")
         list(APPEND HOST_CC_HINT_DIRECTORIES
                     "C:/mingw64/bin"
@@ -193,7 +260,7 @@ if (CMAKE_HOST_WIN32)
     endif()
 
     # Visual Studio hints
-    if(DETECT_VS2022)
+    if(DETECT_VS2022 AND USE_32BIT_LIBS)
         message(STATUS "Appending Visual Studio 2022 Hints")
         list(APPEND HOST_CC_HINT_DIRECTORIES
                     # Environment-derived VS bin dirs if present
@@ -221,14 +288,22 @@ if (CMAKE_HOST_WIN32)
     endif()
 
     # Prefer environment if available (works from VS Dev Prompt / VS CMake)
-    if (CMAKE_HOST_WIN32 AND DEFINED ENV{VCINSTALLDIR} AND DEFINED ENV{VCToolsVersion})
+    if (CMAKE_HOST_WIN32 AND DEFINED ENV{VCINSTALLDIR} AND DEFINED ENV{VCToolsVersion} AND USE_32BIT_LIBS)
+        file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
+        set(_VCTOOLS "$_VCINSTALLDIR/Tools/MSVC/$ENV{VCToolsVersion}")
+        list(APPEND HOST_CC_HINT_DIRECTORIES
+                    "${_VCTOOLS}/bin/Hostx64/x86"
+                    "${_VCTOOLS}/bin/Hostx86/x86"
+        )
+    endif()
+
+    # Prefer environment if available (works from VS Dev Prompt / VS CMake)
+    if (CMAKE_HOST_WIN32 AND DEFINED ENV{VCINSTALLDIR} AND DEFINED ENV{VCToolsVersion} AND USE_64BIT_LIBS)
         file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
         set(_VCTOOLS "$_VCINSTALLDIR/Tools/MSVC/$ENV{VCToolsVersion}")
         list(APPEND HOST_CC_HINT_DIRECTORIES
                     "${_VCTOOLS}/bin/Hostx64/x64"
-                    "${_VCTOOLS}/bin/Hostx64/x86"
                     "${_VCTOOLS}/bin/Hostx86/x64"
-                    "${_VCTOOLS}/bin/Hostx86/x86"
         )
     endif()
 
@@ -243,11 +318,18 @@ if (CMAKE_HOST_WIN32)
                 file(GLOB _MSVC_DIRS LIST_DIRECTORIES TRUE "${_VS_PATH}/VC/Tools/MSVC/*")
                 list(SORT _MSVC_DIRS COMPARE NATURAL ORDER DESCENDING)
                 list(GET _MSVC_DIRS 0 _MSVC_TOOLS)
-                list(APPEND HOST_CC_HINT_DIRECTORIES
-                            "${_MSVC_TOOLS}/bin/Hostx64/x64"
-                            "${_MSVC_TOOLS}/bin/Hostx64/x86"
-                            "${_MSVC_TOOLS}/bin/Hostx86/x64"
-                            "${_MSVC_TOOLS}/bin/Hostx86/x86")
+                if(USE_32BIT_LIBS)
+                    list(APPEND HOST_CC_HINT_DIRECTORIES
+                                "${_MSVC_TOOLS}/bin/Hostx64/x86"
+                                "${_MSVC_TOOLS}/bin/Hostx86/x86"
+                        )
+                endif()
+                if(USE_64BIT_LIBS)
+                    list(APPEND HOST_CC_HINT_DIRECTORIES
+                                "${_MSVC_TOOLS}/bin/Hostx64/x64"
+                                "${_MSVC_TOOLS}/bin/Hostx86/x64"
+                        )
+                endif()
             endif()
         endif()
     endif()
@@ -263,11 +345,18 @@ if (CMAKE_HOST_WIN32)
                 list(SORT _msvc COMPARE NATURAL ORDER DESCENDING)
                 foreach(_ver ${_msvc})
                     message(STATUS "Appending Visual Studio Version ${_ver} hint files")
-                    list(APPEND HOST_CC_HINT_DIRECTORIES
-                                  "${_ver}/bin/Hostx64/x64"
-                                  "${_ver}/bin/Hostx64/x86"
-                                  "${_ver}/bin/Hostx86/x64"
-                                  "${_ver}/bin/Hostx86/x86")
+                    if(USE_32BIT_LIBS)
+                        list(APPEND HOST_CC_HINT_DIRECTORIES
+                                      "${_ver}/bin/Hostx64/x86"
+                                      "${_ver}/bin/Hostx86/x86"
+                            )
+                    endif()
+                    if(USE_64BIT_LIBS)
+                        list(APPEND HOST_CC_HINT_DIRECTORIES
+                                      "${_ver}/bin/Hostx64/x64"
+                                      "${_ver}/bin/Hostx86/x64"
+                            )
+                    endif()
                 endforeach() # version
             endforeach() # edition
         endforeach() # root

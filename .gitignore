@@ -274,3 +274,14 @@ language.settings.xml
 # Any build directories
 /**/build
 /**/build-**
+
+/IDE/VisualGDB
+/commit_squash.sh
+/evars.txt
+/evars_non_dev.txt
+/gpg_refresh.sh
+/IDE/VisualStudio/EmbeddedProject1
+/IDE/VisualStudio/wolfboot
+/IDE/CMakeProject
+
+/cmake/config_defaults_user.cmake

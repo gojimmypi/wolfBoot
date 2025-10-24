@@ -1,0 +1,31 @@
+# User defaults
+#
+# For available settings, see section in config_defaults.cmake
+
+message(STATUS "============================================================================")
+message(STATUS "Using custom user defaults: ${CMAKE_CURRENT_LIST_FILE}")
+message(STATUS "============================================================================")
+
+if(CONFIG_OVERRIDE)
+    # For CI/CD testing
+    message(STATUS "Config override: set all values from command-line")
+else()
+    # Unless otherwise set, the default found in CMakeLists.txt:
+    # set(PREFERRED_HOST_CC_NAME_LIST gcc clang cl)
+    set(DETECT_VISUALGDB true)
+    set(DETECT_MINGW     false)
+    set(DETECT_CUBEIDE   true)
+    set(DETECT_VS2022    false)
+    set(DETECT_LLVM      false)
+
+    # Although you CAN select both 32 and 64 bit, it is best to pick ONE:
+    set(USE_32BIT_LIBS   false)
+    set(USE_64BIT_LIBS   true)
+    # Enable HAL download only implemented for STM devices at this time.
+    # See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
+    # and [WOLFBOOT_ROOT]/cmake/downloads/stm32_hal_download.cmake
+    set(ENABLE_HAL_DOWNLOAD true)
+
+    # optionally use .config files; See CMakePresets.json instead
+    set(USE_DOT_CONFIG      false)
+endif()

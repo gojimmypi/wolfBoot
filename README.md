@@ -10,6 +10,7 @@ Some interim notes on progress in various environments:
 |  ✅   | WSL                       | [./tools/scripts/cmake_test.sh](./tools/scripts/cmake_test.sh)
 |  ✅   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
 |  ✅   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
+|  ✅   | VS Code, x64 Dev Prompt   | Click "build" on bottom toolbar ribbon
 |  ✅   | DOS Prompt, Dev Prompt    | [.\tools\scripts\cmake_dev_prompt_test.bat](./tools/scripts/cmake_dev_prompt_test.bat)
 |  ✅   | PowerShell, Dev Prompt    | [.\tools\scripts\cmake_dev_prompt_test.bat](./tools/scripts/cmake_dev_prompt_test.bat)
 |  ❌   | DOS Prompt, direct launch | [.\tools\scripts\cmake_test.bat](./tools/scripts/cmake_test.bat) (needs toolchain path)
@@ -386,10 +387,18 @@ Use `make keysclean` to delete keys and regenerate.
 
 3.  Cannot open compiler generated file ... Permission denied
 
+This may occur due to multiple environments being opened concurrently, or anti-virus software.
+Try manually deleting the respective build directories and/or restarting your IDE.
+
 ```text
 sp_c32.c : fatal error C1083: Cannot open compiler generated file: '... sp_c32.obj': Permission denied
 ```
 
+4. unresolved external symbol __imp____acrt_iob_fun
+
+```
+unresolved external symbol __imp____acrt_iob_func referenced in function _main
+```
 
 ## Release Notes
 

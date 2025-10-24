@@ -33,7 +33,7 @@ set(USE_DOT_CONFIG false)
 
 ### VS Code extensions
 
-- CMake Tools (ms-vscode.cmake-tools)
+- [CMake Tools (ms-vscode.cmake-tools)](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
 - C/C++ (ms-vscode.cpptools)
 - Cortex-Debug (marus25.cortex-debug)
 
