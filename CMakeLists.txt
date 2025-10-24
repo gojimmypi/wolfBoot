@@ -158,7 +158,7 @@ if (CMAKE_HOST_WIN32)
     message(STATUS "Detected HOST_CC executable: ${_host_name}")
     message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 
-    # Not with LLVM, nor GCC
+    # Not with LLVM, nor GCC:
     set(HOST_LINK_FLAG "")
 
     # set(HOST_LINK_FLAG "") # TODO remove ?
