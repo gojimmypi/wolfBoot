@@ -46,9 +46,15 @@ jobs:
           clean: true
           submodules: true
 
-      - name: make clean
+      - name: hard clean
         run: |
-          make keysclean && make -C tools/keytools clean && rm -f include/target.h
+          make clean || true
+          make keysclean || true
+          make -C tools/keytools clean || true
+          rm -rf build build-* test-app \
+                   build/vis_hal build/vis_cmsis \
+                   **/*.o **/*.d **/*.a \
+                   include/target.h
 
       - name: Build test-lib
         env:
@@ -60,6 +66,8 @@ jobs:
           # Sample build
           build_once() {
               # Convert asym and hash to upper case, optionally add additional param
+              echo "Build..."
+              echo "make -j test-lib SIGN=${ASYM^^} HASH=${HASH^^} ${MATH} \"$@\""
               make -j test-lib SIGN=${ASYM^^} HASH=${HASH^^} ${MATH} "$@"
           }
 
@@ -69,10 +77,14 @@ jobs:
           cp config/examples/library.config .config
 
           # Keytools
+          echo ""
+          echo "make keytools"
           make keytools
           ./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der
 
           # Sign
+          echo ""
+          echo "Sign test.bin"
           echo "Test" > test.bin
           ./tools/keytools/sign --${ASYM} --${HASH} test.bin wolfboot_signing_private_key.der 1
 
