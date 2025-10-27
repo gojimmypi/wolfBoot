@@ -64,9 +64,11 @@ else()
     else()
         message(STATUS "Did not detect architecture for hints, assume x86")
         # Likely a non-Microsoft environment, so no hints at all
-        set(USE_32BIT_LIBS   false)
-        set(USE_64BIT_LIBS   true)
+        set(USE_32BIT_LIBS   true)
+        set(USE_64BIT_LIBS   false)
     endif()
+
+    set(USE_64BIT_LIBS true)
     # Enable HAL download only implemented for STM devices at this time.
     # See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
     # and [WOLFBOOT_ROOT]/cmake/downloads/stm32_hal_download.cmake
@@ -105,7 +107,7 @@ else()
 endif()
 
 
-if (true) # TODO detect MSVS, not defined until much later
+if (false ) # TODO detect MSVS, not defined until much later
 #    include(CheckIncludeFile)
 #    check_include_file(stdint.h HAVE_STDINT_H)
 #    if(NOT HAVE_STDINT_H)
@@ -416,7 +418,7 @@ if (CMAKE_HOST_WIN32)
             set(_hint_status "NOT FOUND:")
         endif()
 
-        message("       ${_hint_status} ${_hint_item}")
+        message(STATUS "       ${_hint_status} ${_hint_item}")
     endforeach() # Hint directory
 else()
     message(STATUS "HOST_CC_HINT_DIRECTORIES not set, assuming tools in path. See wolfboot/cmake/config_defaults.cmake")

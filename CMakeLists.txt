@@ -500,7 +500,7 @@ if(NOT DEFINED PULL_LINKER_DEFINES AND NOT DEFINED BUILD_TEST_APPS)
         message(FATAL_ERROR "WOLFBOOT_PARTITION_SIZE must be defined")
     endif()
 
-    if(NOT DEFINED WOLFBOOT_PARTITION_BOOT_ADDRESS)
+    if((NOT DEFINED WOLFBOOT_PARTITION_BOOT_ADDRESS) OR ("${WOLFBOOT_PARTITION_BOOT_ADDRESS}" STREQUAL ""))
         message(FATAL_ERROR "WOLFBOOT_PARTITION_BOOT_ADDRESS must be defined")
     endif()
 
@@ -1167,6 +1167,21 @@ list(APPEND  KEYTOOL_FLAGS
 # sign tool
 #---------------------------------------------------------------------------------------------
 set(SIGN_TOOL ${CMAKE_CURRENT_BINARY_DIR}/sign${HOST_EXE})
+
+# Give VS a debuggable, runnable target that points to the produced exe
+add_executable(sign_host IMPORTED GLOBAL)
+set_target_properties(sign_host PROPERTIES
+    IMPORTED_LOCATION           "${SIGN_TOOL}"
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    # VS_DEBUGGER_COMMAND_ARGUMENTS "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256"
+)
+
+# Ensure the exe is (re)built before F5
+add_dependencies(sign_host keytools)
+
+# Optional: make F5 pick this by default
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT sign_host)
+
 set(SIGN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_sign")
 if(HOST_IS_MSVC)
     # isolate objs only for Windows (.exe)
@@ -1201,6 +1216,13 @@ endif()
     )
 
 add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
+
+set_target_properties(sign_host PROPERTIES
+    IMPORTED_LOCATION_DEBUG   "${SIGN_TOOL}"
+    IMPORTED_LOCATION_RELEASE "${SIGN_TOOL}"
+)
+
+
 set(SIGN_TOOL ${SIGN_TOOL} CACHE INTERNAL "")
 
 #---------------------------------------------------------------------------------------------
@@ -1348,8 +1370,12 @@ set(KEYSTORE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
 if(NOT SIGN STREQUAL "NONE")
     add_custom_target(keystore DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL} ${KEYSTORE})
 
-    # generate keystore if it does not already exist
+    # generate keystore.c if it does not already exist
     if(NOT EXISTS ${KEYSTORE})
+            message(STATUS "Will generate fresh: ${KEYSTORE}")
+            message(STATUS "  with KEYGEN_TOOL:  ${KEYGEN_TOOL}")
+            message(STATUS "  and options:       ${KEYTOOL_OPTIONS}")
+            message(STATUS "  with key file:     ")
         add_custom_command(
             OUTPUT ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
             COMMAND "${KEYGEN_TOOL}" ${KEYTOOL_OPTIONS} -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
@@ -1382,9 +1408,13 @@ target_link_libraries(wolfboot wolfboothal target ${WOLFSSL_TGT})
 # don't warn on unused code
 # target_compile_options(wolfboot PRIVATE -Wno-unused ${SIM_COMPILE_OPTIONS})
 message(STATUS "Ready for VS2022, HOST_IS_MSVC=${HOST_IS_MSVC}, CMAKE_CROSSCOMPILING=${CMAKE_CROSSCOMPILING}")
-if(HOST_IS_MSVC AND NOT CMAKE_CROSSCOMPILING) # Some VS2022 helpers
-
+# if(HOST_IS_MSVC AND NOT CMAKE_CROSSCOMPILING) # Some VS2022 helpers
+if(HOST_IS_MSVC) # Some VS2022 helpers
     # optional: put archives under IDE/VisualStudio/lib/<cfg> for easy linking
+
+    message(STATUS "==============================================================================")
+    message(STATUS "Begin sign host")
+    message(STATUS "==============================================================================")
     foreach(_t IN ITEMS wolfssl wolfcrypt)
       if (TARGET ${_t})
         set_target_properties(${_t} PROPERTIES
@@ -1399,31 +1429,31 @@ if(HOST_IS_MSVC AND NOT CMAKE_CROSSCOMPILING) # Some VS2022 helpers
 
     # Build a simple host-side signer you can F5 in VS.
     # We *link* wolfcrypt instead of compiling its sources again.
-    add_executable(sign_host
-                    tools/keytools/sign.c
-    )
+#    add_executable(sign_host
+#                    tools/keytools/sign.c
+#    )
 
     # Prefer to let the wolfcrypt target carry include dirs,
     # but these are fine too and help IntelliSense:
     # Headers (user_settings.h is under include/)
-    target_include_directories(sign_host PRIVATE
-                                        ${CMAKE_SOURCE_DIR}/tools/keytools
-                                        ${CMAKE_SOURCE_DIR}/lib/wolfssl
-                                        ${CMAKE_SOURCE_DIR}/include
-                                        ${CMAKE_CURRENT_BINARY_DIR}
-    )
+#    target_include_directories(sign_host PRIVATE
+#                                        ${CMAKE_SOURCE_DIR}/tools/keytools
+#                                        ${CMAKE_SOURCE_DIR}/lib/wolfssl
+#                                        ${CMAKE_SOURCE_DIR}/include
+#                                        ${CMAKE_CURRENT_BINARY_DIR}
+#    )
 
     # Avoid Windows <windows.h> min/max macro collisions, trim Win headers.
-    target_compile_definitions(sign_host PRIVATE
-                                        WOLFSSL_USER_SETTINGS
-                                        NOMINMAX
-                                        WIN32_LEAN_AND_MEAN
-                                        ${SIGN_OPTIONS}
-    )
+#    target_compile_definitions(sign_host PRIVATE
+#                                        WOLFSSL_USER_SETTINGS
+#                                        NOMINMAX
+#                                        WIN32_LEAN_AND_MEAN
+#                                        ${SIGN_OPTIONS}
+#    )
 
     message(STATUS "WOLFSSL_TGT=${WOLFSSL_TGT}")
     add_dependencies(sign_host ${WOLFSSL_TGT})
-
+    add_dependencies(sign_host keytools)
 
     if(MSVC)
         message(STATUS "Found MSVC")
@@ -1453,9 +1483,9 @@ if(HOST_IS_MSVC AND NOT CMAKE_CROSSCOMPILING) # Some VS2022 helpers
 
         # Force C mode so MSVC doesn't treat it as C++.
         if(HOST_IS_MSVC)
-            target_link_libraries(sign_host PRIVATE ${WOLFSSL_TGT} user_settings Advapi32)
+#            target_link_libraries(sign_host PRIVATE ${WOLFSSL_TGT} user_settings Advapi32)
             # target_compile_options(sign_host PRIVATE /TC /Zi /W3)
-            target_link_options(sign_host PRIVATE /DEBUG)
+#            target_link_options(sign_host PRIVATE /DEBUG)
         else()
             target_link_libraries(sign_host PRIVATE ${WOLFSSL_TGT} user_settings)
             target_compile_options(sign_host PRIVATE -x c -std=c17 -g)

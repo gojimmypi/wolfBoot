@@ -93,12 +93,12 @@
       <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -129,14 +129,14 @@
       <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -167,14 +167,14 @@
       <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -206,12 +206,12 @@
       <UndefinePreprocessorDefinitions>min;max;SIGN;HASH</UndefinePreprocessorDefinitions>
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;TARGET_sim;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WOLFSSL_USER_SETTINGS;USE_FAST_MATH;WOLFBOOT_SIGN_ECC256;WOLFBOOT_HASH_SHA256;WOLFBOOT_SMALL_STACK;XMALLOC_USER;NOMINMAX;WIN32_LEAN_AND_MEAN;__WOLFBOOT;ARCH_FLASH_OFFSET=0x0;IMAGE_HEADER_SIZE=256;WOLFBOOT_VERSION=1;DELTA_UPDATES;DELTA_BLOCK_SIZE=;TARGET_sim;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\workspace\wolfBoot-gojimmypi\include;C:\workspace\wolfBoot-gojimmypi\lib\wolfssl;C:\workspace\wolfBoot-gojimmypi\IDE\VisualStudio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
