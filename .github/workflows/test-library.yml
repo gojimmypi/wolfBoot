@@ -112,15 +112,16 @@ jobs:
 
           # Keytools
           echo ""
-          echo "make keytools"
-          make keytools SIGN="$SIGN" HASH="$HASH" $MATH
+          echo "make keytools SIGN=\"${ASYM}\" HASH=\"${HASH}\" $MATH"
+          make keytools SIGN="${ASYM}" HASH="${HASH}" $MATH
           ./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der
 
           # Sign
           echo ""
           echo "Sign test.bin"
+          echo "./tools/keytools/sign --${SIGN} --${HASH} test.bin wolfboot_signing_private_key.der 1"
           echo "Test" > test.bin
-          ./tools/keytools/sign --${ASYM} --${HASH} test.bin wolfboot_signing_private_key.der 1
+          ./tools/keytools/sign --${SIGN} --${HASH} test.bin wolfboot_signing_private_key.der 1
 
           # First attempt
           if build_once >build.out 2>build.err; then
