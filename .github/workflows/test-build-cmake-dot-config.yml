@@ -101,4 +101,4 @@ jobs:
             fi
 
             # Sample build
-            cmake --build build-stm32h7 --parallel 1
+            cmake --build build-stm32h7 --parallel 8
