@@ -17,6 +17,8 @@
 ::
 ::                Consider cmake presets or contact support
 ::
+:: See also working Linux / WSL:  cmake_dot_config.sh
+::
 :: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 @echo off
 setlocal enableextensions enabledelayedexpansion
@@ -99,11 +101,20 @@ if not exist "%DST%" (
     goto :err
 )
 
-
+echo( & rem blank line
+echo Current directory:
 pwd
-dir .config
-type .config
 
+echo( & rem blank line
+dir .config
+echo( & rem blank line
+echo .config contents:
+
+echo( & rem blank line
+type .config
+echo( & rem blank line
+
+echo Begin dot-config test
 
 cmake -S . -B build-stm32h7  -DUSE_DOT_CONFIG=ON  -DWOLFBOOT_TARGET=stm32h7
 
