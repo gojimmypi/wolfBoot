@@ -55,6 +55,7 @@ jobs:
                    build/vis_hal build/vis_cmsis \
                    **/*.o **/*.d **/*.a \
                    include/target.h
+                   src/keystore.c
 
       - name: Build test-lib
         env:
