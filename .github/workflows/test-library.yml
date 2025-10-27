@@ -48,14 +48,21 @@ jobs:
 
       - name: hard clean
         run: |
+          # Ensure parallel build did not leave behind any debris
           make clean || true
           make keysclean || true
           make -C tools/keytools clean || true
-          rm -rf build build-* test-app \
-                   build/vis_hal build/vis_cmsis \
-                   **/*.o **/*.d **/*.a \
-                   include/target.h
-                   src/keystore.c
+
+          # The brute-force clean:
+          rm -rf build build-*     \
+                 test-app          \
+                 build/vis_hal     \
+                 build/vis_cmsis   \
+                 **/*.o            \
+                 **/*.d            \
+                 **/*.a            \
+                 include/target.h  \
+                 src/keystore.c
 
       - name: Build test-lib
         env:
