@@ -97,8 +97,18 @@ jobs:
 
           # peek
           echo "Existing files?"
-          ls src/keystore.c
-          ls include/target.h
+          if [ -f "src/keystore.c" ]; then
+            echo "WARNING: Found unexpected src/keystore.c"
+          fi
+          if [ -f "include/target.h" ]; then
+            echo "WARNING: Found unexpected include/target.h"
+          fi
+          if [ -f "keystore.der" ]; then
+            echo "WARNING: Found unexpected keystore.der"
+          fi
+          if [ -f "wolfboot_signing_private_key.der" ]; then
+            echo "WARNING: Found unexpected wolfboot_signing_private_key.der"
+          fi
 
           # Keytools
           echo ""
