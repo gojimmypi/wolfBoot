@@ -71,6 +71,17 @@ jobs:
           HASH: ${{ matrix.hash }}
           MATH: ${{ matrix.math }}
         run: |
+          # Test various library parameters
+
+          export SIGN="${ASYM^^}"
+          export HASH="${HASH^^}"
+          export MATH='${{ matrix.math }}' # e.g., "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
+          export PRIVATE_KEY="wolfboot_signing_private_key.der"
+
+          echo "This SIGN=$SIGN"
+          echo "This HASH=$HASH"
+          echo "This MATH=$MATH"
+
           # Sample build
           build_once() {
               # Convert asym and hash to upper case, optionally add additional param
@@ -84,10 +95,15 @@ jobs:
           # Get the reference config
           cp config/examples/library.config .config
 
+          # peek
+          echo "Existing files?"
+          ls src/keystore.c
+          ls include/target.h
+
           # Keytools
           echo ""
           echo "make keytools"
-          make keytools
+          make keytools SIGN="$SIGN" HASH="$HASH" $MATH
           ./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der
 
           # Sign
