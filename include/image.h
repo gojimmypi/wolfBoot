@@ -133,9 +133,11 @@ int wolfBot_get_dts_size(void *dts_addr);
 #define wolfBoot_verify_signature_primary wolfBoot_verify_signature_ecc
 #endif
 #if defined(WOLFBOOT_SIGN_LMS)
+#undef  wolfBoot_verify_signature_primary
 #define wolfBoot_verify_signature_primary wolfBoot_verify_signature_lms
 #endif
 #if defined(WOLFBOOT_SIGN_XMSS )
+#undef  wolfBoot_verify_signature_primary
 #define wolfBoot_verify_signature_primary wolfBoot_verify_signature_xmss
 #endif
 #ifdef WOLFBOOT_SIGN_ML_DSA
