@@ -32,7 +32,7 @@ jobs:
           - "SPMATH=0 SPMATHALL=0 WOLFBOOT_SMALL_STACK=0"
           - "SPMATH=0 SPMATHALL=0 WOLFBOOT_SMALL_STACK=1"
         asym: [ed25519, ecc256, ecc384, ecc521, rsa2048, rsa3072, rsa4096, ed448]
-        hash: [sha256, sha384, sha3]
+        hash: [sha256, sha384, sha3] # --sha256 for commandline, SHA256 for make
 
         # See https://github.com/wolfSSL/wolfBoot/issues/614 regarding exclusions:
         # TODO disabled, expect failure until resolved:
@@ -67,20 +67,20 @@ jobs:
       - name: Build test-lib
         env:
           shell: bash
-          ASYM: ${{ matrix.asym }}
+          ASYM: ${{ matrix.asym }} # MAKE_SIGN in upper case
           HASH: ${{ matrix.hash }}
           MATH: ${{ matrix.math }}
         run: |
           # Test various library parameters
 
-          export SIGN="${ASYM^^}"
-          export HASH="${HASH^^}"
-          export MATH='${{ matrix.math }}' # e.g., "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
+          export MAKE_SIGN="${ASYM^^}"
+          export MAKE_HASH="${HASH^^}"
+          export MAKE_MATH='${{ matrix.math }}' # e.g., "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
           export PRIVATE_KEY="wolfboot_signing_private_key.der"
 
-          echo "This SIGN=$SIGN"
-          echo "This HASH=$HASH"
-          echo "This MATH=$MATH"
+          echo "This MAKE_SIGN=$MAKE_SIGN"
+          echo "This MAKE_HASH=$MAKE_HASH"
+          echo "This MAKE_MATH=$MAKE_MATH"
 
           # Sample build
           build_once() {
@@ -112,16 +112,16 @@ jobs:
 
           # Keytools
           echo ""
-          echo "make keytools SIGN=\"${ASYM}\" HASH=\"${HASH}\" $MATH"
-          make keytools SIGN="${ASYM}" HASH="${HASH}" $MATH
+          echo "make keytools SIGN=\"${MAKE_SIGN}\" HASH=\"${MAKE_HASH}\" $MATH"
+                make keytools SIGN="${MAKE_SIGN}"   HASH="${MAKE_HASH}"   $MATH
           ./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der
 
           # Sign
           echo ""
-          echo "Sign test.bin"
-          echo "./tools/keytools/sign --${SIGN} --${HASH} test.bin wolfboot_signing_private_key.der 1"
           echo "Test" > test.bin
-          ./tools/keytools/sign --${SIGN} --${HASH} test.bin wolfboot_signing_private_key.der 1
+          echo "Sign test.bin"
+          echo "./tools/keytools/sign --${ASYM} --${HASH} test.bin wolfboot_signing_private_key.der 1"
+                ./tools/keytools/sign --${ASYM} --${HASH} test.bin wolfboot_signing_private_key.der 1
 
           # First attempt
           if build_once >build.out 2>build.err; then
