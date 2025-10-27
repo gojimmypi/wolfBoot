@@ -22,8 +22,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
 
+/* Beware of wolfCrypt user settings in [WOLFBOOT_ROOT]/include/user_settings.h */
+
 /* Option to enable sign tool debugging */
-/* Must also define DEBUG_WOLFSSL in user_settings.h */
+/* Must also define DEBUG_WOLFSSL in /tools/keytools/user_settings.h */
 //#define DEBUG_SIGNTOOL
 
 #ifdef _WIN32
@@ -2433,7 +2435,14 @@ int main(int argc, char** argv)
     CMD.header_sz = 256;
 
     /* Parse Arguments */
+#ifdef DEBUG_SIGNTOOL
+    printf("  Debug Sign Tool Enabled:\n");
+    printf("  Looking at %d args\n", argc);
+#endif
     for (i=1; i<argc; i++) {
+#ifdef DEBUG_SIGNTOOL
+        printf("  Looking at arg #%d: %s\n", i, argv[i]);
+#endif
         if (strcmp(argv[i], "--no-sign") == 0) {
             CMD.sign = NO_SIGN;
             sign_str = "NONE";
@@ -2759,6 +2768,25 @@ int main(int argc, char** argv)
             CMD.cert_chain_file = argv[++i];
         }
         else {
+#ifdef DEBUG_SIGNTOOL
+            printf("    (#%d is not a setting, abort processing of remaining %d args as settings)\n", i, argc - i);
+#endif
+            if (i == (argc - 3)) {
+                /* Looks like we have good parameters */
+#ifdef DEBUG_SIGNTOOL
+                printf("Detected positional arguments.\n");
+                printf("Using:\n");
+                printf("  Image:   %s\n", argv[i + 0]);
+                printf("  Key:     %s\n", argv[i + 1]);
+                printf("  Version: %s\n", argv[i + 2]);
+#endif
+            }
+            else {
+                printf("Error: expected exactly 3 positional arguments after options, got %d.\n", argc);
+                printf("Usage: %s [OPTIONS] IMAGE.BIN KEY.DER VERSION\n", argv[0]);
+
+                exit(1);
+            }
             i--;
             break;
         }
@@ -2885,11 +2913,38 @@ int main(int argc, char** argv)
         set_signature_sizes(1);
     }
 
-    if (((CMD.sign != NO_SIGN) && (CMD.signature_sz == 0)) ||
-            CMD.header_sz == 0) {
+    if (CMD.header_sz == 0) {
+        printf("Header size cannot be zero");
+        ret = 2;
+    }
+#ifdef DEBUG_SIGNTOOL
+    else {
+        printf("Command header size:  %d\n", CMD.header_sz);
+    }
+#endif
+
+    if (CMD.sign == HDR_IMG_TYPE_AUTH_NONE) {
+        printf("Warning: image signing auth set to NONE");
+    }
+
+    if (CMD.sign == NO_SIGN) {
+        printf("Warning: not signing");
+    }
+
+    if ((CMD.sign != NO_SIGN) && (CMD.signature_sz == 0)) {
+        printf("ERROR: When signing (CMD.sign = %d), signature size cannot be zero.\n", CMD.sign);
+        ret = 2;
+    }
+#ifdef DEBUG_SIGNTOOL
+    else {
+        printf("Signature size: %d\n", CMD.signature_sz);
+    }
+#endif
+
+    if (ret != 0) {
         printf("Invalid hash or signature type! %d, %d, %d\n", CMD.sign,
                CMD.signature_sz, CMD.header_sz);
-        exit(2);
+        exit(ret);
     }
 
     if (CMD.sign == NO_SIGN) {
