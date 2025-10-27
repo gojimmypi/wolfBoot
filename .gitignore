@@ -46,7 +46,7 @@
 *.pdb
 *.gdb
 
-# automatically generated keys
+# any and all automatically generated keys
 *.der
 *.pem
 *.sig
@@ -63,6 +63,8 @@ src/rsa4096_pub_key.c
 # Renesas key data files
 include/key_data.*
 include/enckey_data.*
+# Visual Studio generated key files
+tools/keytools/keystore.c
 
 # keygen binaries
 tools/keytools/sign
@@ -275,6 +277,13 @@ language.settings.xml
 /**/build
 /**/build-**
 
+# User config
+# See cmake/config_defaults_user.cmake.sample
+/**/cmake/config_defaults_user.cmake
+
+
+
+# My local debris, not for upstream
 /IDE/VisualGDB
 /commit_squash.sh
 /evars.txt
@@ -283,5 +292,4 @@ language.settings.xml
 /IDE/VisualStudio/EmbeddedProject1
 /IDE/VisualStudio/wolfboot
 /IDE/CMakeProject
-
-/cmake/config_defaults_user.cmake
+/.vs.bad
