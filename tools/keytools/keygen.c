@@ -172,6 +172,10 @@ const char Store_hdr[] = "\n"
     "#define KEYSTORE_SECTION /* Renesas RX */\n"
     "#elif defined(TARGET_x86_64_efi)\n"
     "#define KEYSTORE_SECTION\n"
+    "#elif defined(_MSC_VER)\n"
+    "/* Create a RW data section named .keystore  ! */\n"
+    "#pragma section(\".keystore\", read, write)\n"
+    "#define KEYSTORE_SECTION __declspec(allocate(\".keystore\"))\n"
     "#else\n"
     "#define KEYSTORE_SECTION __attribute__((section (\".keystore\")))\n"
     "#endif\n\n"
@@ -503,10 +507,10 @@ void keystore_add(uint32_t ktype, uint8_t *key, uint32_t sz, const char *keyfile
     }
     fprintf(fpub, Pubkey_footer);
     fprintf(fpub, Slot_footer);
-    printf("Associated key file:   %s\n", keyfile);
+    printf("Associated key file:    %s\n", keyfile);
     printf("Partition ids mask:   %08x\n", id_mask);
-    printf("Key type   :           %s\n", KName[ktype]);
-    printf("Public key slot:       %u\n", id_slot);
+    printf("Key type:               %s\n", KName[ktype]);
+    printf("Public key slot:        %u\n", id_slot);
     if (noLocalKeys) {
         printf("WARNING: --nolocalkeys flag used, keystore.c public key is zeroed\n");
     }
@@ -1089,7 +1093,7 @@ static void keygen_ml_dsa(const char *priv_fname, uint32_t id_mask)
     if (exportPubKey) {
         if (saveAsDer) {
             uint8_t*  pubDer;
-            size_t    pubDerSz;
+            word32    pubDerSz;
             int       pubOutLen;
             const int WITH_ALG_SPKI = 1;
 
@@ -1454,19 +1458,22 @@ int main(int argc, char** argv)
         }
     }
     printf("Keytype: %s\n", KName[keytype]);
-    if (keytype == 0)
+    if (keytype == 0) {
+        fprintf(stderr, "No keytype, exiting...");
         exit(0);
+    }
     fpub = fopen(pubkeyfile, "rb");
     if (!force && (fpub != NULL)) {
         char reply[40];
         int replySz;
-        printf("** Warning: keystore already exists! Are you sure you want to generate a new key and overwrite the existing key? [Type 'Yes']: ");
+        printf("** Warning: keystore file already exists! %s\n", pubkeyfile);
+        printf("Are you sure you want to generate a new key and overwrite the existing key ? [Type 'Yes'] : ");
         fflush(stdout);
         replySz = scanf("%s", reply);
         printf("Reply is [%s]\n", reply);
         fclose(fpub);
         if (replySz < 0 || strcmp(reply, "Yes") != 0) {
-            printf("Operation aborted by user.");
+            printf("Operation aborted by user.\n");
             exit(5);
         } else {
             unlink(pubkeyfile);
