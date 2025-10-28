@@ -53,7 +53,11 @@
 #endif
 
 /* Globals */
+#ifdef _MSC_VER
+static XALIGNED(4) uint8_t digest[WOLFBOOT_SHA_DIGEST_SIZE];
+#else
 static uint8_t digest[WOLFBOOT_SHA_DIGEST_SIZE] XALIGNED(4);
+#endif
 
 #if defined(WOLFBOOT_CERT_CHAIN_VERIFY) && \
     (defined(WOLFBOOT_ENABLE_WOLFHSM_CLIENT) || \
@@ -939,7 +943,7 @@ static int header_sha256(wc_Sha256 *sha256_ctx, struct wolfBoot_image *img)
     while (p < end_sha) {
         blksz = WOLFBOOT_SHA_BLOCK_SIZE;
         if (end_sha - p < blksz)
-            blksz = end_sha - p;
+            blksz = (int)(end_sha - p);
         wc_Sha256Update(sha256_ctx, p, blksz);
         p += blksz;
     }

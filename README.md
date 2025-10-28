@@ -9,6 +9,8 @@ Some interim notes on progress in various environments:
 |  ✅   | VS 2022                   | Right-Click on [CMakeLists.txt](./CMakeLists.txt), Build
 |  ✅   | WSL                       | [./tools/scripts/cmake_test.sh](./tools/scripts/cmake_test.sh)
 |  ✅   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
+|  ✅   | WSL dot-config mode       | [test-build-cmake-dot-config.yml](./github/workflows/test-build-cmake-dot-config.yml)
+|  ❌   | DOS dev prompt, dot-config | 
 |  ✅   | VS Code, Dev Prompt       | Click "build" on bottom toolbar ribbon
 |  ✅   | VS Code, x64 Dev Prompt   | Click "build" on bottom toolbar ribbon
 |  ✅   | DOS Prompt, Dev Prompt    | [.\tools\scripts\cmake_dev_prompt_test.bat](./tools/scripts/cmake_dev_prompt_test.bat)

@@ -119,4 +119,7 @@ else
 fi
 
 # Sample build
-cmake --build build-stm32h7 -j
+cmake --build build-stm32h7 -j10
+
+rm .config
+

@@ -27,6 +27,12 @@
 #ifndef H_TARGETS_TARGET_
 #define H_TARGETS_TARGET_
 
+#ifndef TARGET_H_GENERATED
+    #define TARGET_H_GENERATED 1
+    /* generated content follows */
+#else
+    #error "Duplicate target.h detected in include path"
+#endif
 
 #ifndef WOLFBOOT_NO_PARTITIONS
 #    define WOLFBOOT_FIXED_PARTITIONS

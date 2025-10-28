@@ -25,6 +25,11 @@
 #ifndef _WOLFBOOT_USER_SETTINGS_H_
 #define _WOLFBOOT_USER_SETTINGS_H_
 
+/* This is the embedded target user settings.
+ *  See also settings in tools/keytools */
+
+// #pragma message ("============================================================include/user_settings")
+
 //#define DEBUG_SIGNTOOL
 //#define WOLFSSL_USE_ALIGN
 
@@ -348,7 +353,9 @@ extern int tolower(int c);
 
     /* SP Math needs to understand long long */
 #   ifndef ULLONG_MAX
-#       define ULLONG_MAX 18446744073709551615ULL
+#       ifndef _MSC_VER
+#           define ULLONG_MAX 18446744073709551615ULL
+#       endif
 #   endif
 #endif
 
@@ -511,7 +518,6 @@ extern int tolower(int c);
 #   define WOLFSSL_HAVE_MAX
 #endif
 
-
 /* Memory model */
 #if defined(WOLFSSL_SP_MATH) || defined(WOLFSSL_SP_MATH_ALL)
     /* Disable VLAs */
@@ -601,5 +607,49 @@ extern int tolower(int c);
 #   define WOLFSSL_SP_MUL_D
 #   define WOLFSSL_PEM_TO_DER
 #endif
+
+#ifdef DISABLED // test
+/* Base wolfCrypt (no TLS) */
+#define WOLFCRYPT_ONLY
+
+/* Hashes */
+#define WOLFSSL_SHA512
+
+#define WOLFSSL_SHA256
+#define WOLFSSL_SHA384
+#define WOLFSSL_SHA3
+
+/* Public-key algos */
+#define WOLFSSL_HAVE_ECC
+#define HAVE_ECC
+#define HAVE_ED25519
+#define HAVE_ED448
+#define WOLFSSL_RSA
+
+/* PQ / stateful */
+#define WOLFSSL_HAVE_DILITHIUM
+#define WOLFSSL_WC_LMS
+#define WOLFSSL_WC_XMSS
+
+/* Symmetric (for header encryption paths) */
+#define WOLFSSL_AES_DIRECT
+#define WOLFSSL_AES_COUNTER
+#define HAVE_CHACHA
+
+/* RNG */
+// #define WC_NO_HASHDRBG /* optional; default RNG on Windows uses Advapi32 */
+                       /* you can omit this if not needed */
+
+/* Host build quality-of-life */
+#define WOLFSSL_GENERAL_ALIGNMENT 4
+// #define WOLFSSL_SMALL_STACK       /* optional */
+#define SINGLE_THREADED
+
+/* Avoid redefining standard macros  */
+#ifndef ULLONG_MAX
+/* do NOT define it here let <limits.h> own it */
+#endif
+
+#endif // test
 
 #endif /* !_WOLFBOOT_USER_SETTINGS_H_ */

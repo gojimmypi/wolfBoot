@@ -2,6 +2,14 @@
 
 See documentation [here](../../docs/Signing.md).
 
+## KeyGen
+
+```
+make wolfboot_signing_private_key.der SIGN=ECC256
+
+# or
+./tools/keytools/keygen --ecc256 -g wolfboot_signing_private_key.der
+```
 
 ## Local Visual Studio Projects
 
@@ -31,3 +39,19 @@ C:\workspace\wolfBoot-%USERNAME%\tools\keytools
 
 Replace `$(ProjectDir)` with your desired path for keys and firmware locations.
 
+### wolfBootTestlib Visual Studio Project
+
+The `IS_TEST_LIB_APP` Macro is needed for the Visual Studio `wolfBootTestLib.vcproj` project file.
+See also the related `wolfBootImage.props` file.
+
+Other additional preprocessor macros defined in project file:
+
+```text
+__WOLFBOOT;
+WOLFBOOT_NO_PARTITIONS;
+WOLFBOOT_HASH_SHA256;
+WOLFBOOT_SIGN_ECC256;
+WOLFSSL_USER_SETTINGS;
+WOLFSSL_HAVE_MIN;
+WOLFSSL_HAVE_MAX;
+```

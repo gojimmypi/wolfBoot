@@ -143,6 +143,7 @@ ifeq ($(VISUALGDB),1)
 	@mkdir -p $(CMSIS_LOCAL_OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 else
+  # WOLFCRYPT_OBJS will not use VisualGDB paths
   OBJS+=$(WOLFCRYPT_OBJS)
 endif
 # ============================================================================

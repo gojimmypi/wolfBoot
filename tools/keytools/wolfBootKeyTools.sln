@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C
 		..\..\docs\Signing.md = ..\..\docs\Signing.md
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test-lib", "wolfBootTestLib.vcxproj", "{3A6C8B82-0B5E-4B5E-9C9D-5C9F1F9B1D77}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wolfBootTestLib", "wolfBootTestLib.vcxproj", "{3A6C8B82-0B5E-4B5E-9C9D-5C9F1F9B1D77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

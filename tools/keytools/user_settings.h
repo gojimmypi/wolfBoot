@@ -26,7 +26,25 @@
 #ifndef H_USER_SETTINGS_
 #define H_USER_SETTINGS_
 
+/* #pragma message ("============================================================keytools/user_settings")
+*/
 #include <stdint.h>
+/* #define DEBUG_SIGNTOOL */
+
+/* #define WOLFBOOT_HASH_SHA256 */
+/* #define WOLFBOOT_SIGN_ECC256 */
+
+/* Only the lib-test needs some image size macros in Visual Studio. */
+/* See project file to identify IS_TEST_LIB_APP */
+#if defined(_MSC_VER) && defined(IS_TEST_LIB_APP)
+    /* These should be defined in preprocessor section, here for backup: */
+    #ifndef LMS_IMAGE_SIGNATURE_SIZE
+        #define LMS_IMAGE_SIGNATURE_SIZE 4096
+    #endif
+    #ifndef XMSS_IMAGE_SIGNATURE_SIZE
+        #define XMSS_IMAGE_SIGNATURE_SIZE 4096
+    #endif
+#endif
 
 /* System */
 #ifndef WOLFBOOT_KEYTOOLS
@@ -162,6 +180,46 @@
     #define XSNPRINTF snprintf
 #else
     #define XSNPRINTF /* not used */
+#endif
+
+#ifdef MY_TEST
+/* Base wolfCrypt (no TLS) */
+#define WOLFCRYPT_ONLY
+
+/* Hashes */
+#define WOLFSSL_SHA256
+#define WOLFSSL_SHA384
+#define WOLFSSL_SHA3
+
+/* Public-key algos */
+#define WOLFSSL_HAVE_ECC
+#define HAVE_ECC
+#define HAVE_ED25519
+#define HAVE_ED448
+#define WOLFSSL_RSA
+
+/* PQ / stateful */
+#define WOLFSSL_HAVE_DILITHIUM
+#define WOLFSSL_WC_LMS
+#define WOLFSSL_WC_XMSS
+
+/* Symmetric (for header encryption paths) */
+#define WOLFSSL_AES_DIRECT
+#define WOLFSSL_AES_COUNTER
+#define HAVE_CHACHA
+/* RNG */
+// #define WC_NO_HASHDRBG /* optional; default RNG on Windows uses Advapi32 */
+                       /* you can omit this if not needed */
+
+/* Host build quality-of-life */
+#define WOLFSSL_GENERAL_ALIGNMENT 4
+// #define WOLFSSL_SMALL_STACK       /* optional */
+#define SINGLE_THREADED
+#define WOLFSSL_SP_MATH
+/* Avoid redefining standard macros (fix your warning) */
+#ifndef ULLONG_MAX
+/* do NOT define it here let <limits.h> own it */
+#endif
 #endif
 
 #endif /* !H_USER_SETTINGS_ */

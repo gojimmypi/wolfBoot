@@ -24,6 +24,19 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <io.h>
+#define HAVE_MMAP 0
+#define ftruncate(fd, len) _chsize(fd, len)
+static inline int fp_truncate(FILE* f, long len)
+{
+    int fd;
+    if (f == NULL)
+        return -1;
+    fd = _fileno(f);
+    return _chsize(fd, len);
+}
+#else
 #if 1 /* for desktop testing */
     #define HAVE_UNISTD_H
     #define PRINTF_ENABLED
@@ -36,6 +49,7 @@
     #define exit _exit
 #else
     #define exit(x) while(1);
+#endif
 #endif
 
 #include "image.h"
@@ -148,11 +162,21 @@ int wolfBoot_start(void)
     return 0;
 }
 
+/* debug hook for wolfCrypt */
+#include <wolfssl/wolfcrypt/logging.h>
+
+static void wc_log_cb(const int logLevel, const char* const logMsg)
+{
+    (void)logLevel;
+    if (logMsg) { fprintf(stderr, "%s\n", logMsg); }
+}
+
 
 int main(int argc, const char* argv[])
 {
     int ret = 0;
-
+    wolfSSL_SetLoggingCb(wc_log_cb);
+    wolfSSL_Debugging_ON(); /* enables DEBUG_WOLFSSL prints */
 #ifdef NO_FILESYSTEM
     gImage = (uintptr_t)test_img;
 #else
