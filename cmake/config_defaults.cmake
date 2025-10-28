@@ -64,8 +64,8 @@ else()
     else()
         message(STATUS "Did not detect architecture for hints, assume x86")
         # Likely a non-Microsoft environment, so no hints at all
-        set(USE_32BIT_LIBS   true)
-        set(USE_64BIT_LIBS   false)
+        set(USE_32BIT_LIBS   false)
+        set(USE_64BIT_LIBS   true)
     endif()
 
     set(USE_64BIT_LIBS true)
