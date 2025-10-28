@@ -82,8 +82,8 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdc17</LanguageStandard>
-      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -97,8 +97,8 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdc17</LanguageStandard>
-      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -114,8 +114,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdc17</LanguageStandard>
-      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -133,8 +133,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdc17</LanguageStandard>
-      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -151,15 +151,14 @@
     <ClCompile Include="src\image.c" />
     <ClCompile Include="src\libwolfboot.c" />
     <ClCompile Include="hal\hal.c" />
-    <!-- The executable-specific "library" HAL object -->
+    <!-- The executable-specific "library" HAL object (should contain main()) -->
     <ClCompile Include="hal\library.c" />
     <!-- Optional parts the Makefile may pull in -->
     <ClCompile Include="src\loader.c" />
-    <!-- Either keystore.c (generated) or flash_otp_keystore.c (if used); wildcards are safe if file absent -->
     <ClCompile Include="src\keystore*.c" />
     <ClCompile Include="src\flash_otp_keystore.c" />
   </ItemGroup>
-  <!-- Optional: headers for visibility -->
+  <!-- Headers (optional) -->
   <ItemGroup>
     <ClInclude Include="include\**\*.h" />
     <ClInclude Include="lib\wolfssl\**\*.h" />
