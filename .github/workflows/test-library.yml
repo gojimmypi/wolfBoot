@@ -88,8 +88,8 @@ jobs:
           build_once() {
               # Convert asym and hash to upper case, optionally add additional param
               echo "Build test-lib..."
-              echo "make -j test-lib SIGN=${MAKE_SIGN} HASH=${MAKE_HASH} ${MATH} \"$@\""
-                    make -j test-lib SIGN=${MAKE_SIGN} HASH=${MAKE_HASH} ${MATH}  "$@"
+              echo "make -j1 test-lib SIGN=${MAKE_SIGN} HASH=${MAKE_HASH} ${MATH} \"$@\""
+                    make -j1 test-lib SIGN=${MAKE_SIGN} HASH=${MAKE_HASH} ${MATH}  "$@"
           }
 
           set -euo pipefail
@@ -111,11 +111,17 @@ jobs:
           if [ -f "wolfboot_signing_private_key.der" ]; then
             echo "WARNING: Found unexpected wolfboot_signing_private_key.der"
           fi
+          if [ -f "./tools/keytools/keystore.der" ]; then
+            echo "WARNING: Found unexpected ./tools/keytools/keystore.der"
+          fi
+          if [ -f "./tools/keytools/wolfboot_signing_private_key.der" ]; then
+            echo "WARNING: Found unexpected ./tools/keytools/wolfboot_signing_private_key.der"
+          fi
 
           # Keytools
           echo ""
-          echo "make keytools SIGN=\"${MAKE_SIGN}\" HASH=\"${MAKE_HASH}\" $MATH"
-                make keytools SIGN="${MAKE_SIGN}"   HASH="${MAKE_HASH}"   $MATH
+          echo "make -j1 keytools SIGN=\"${MAKE_SIGN}\" HASH=\"${MAKE_HASH}\" $MATH"
+                make -j1 keytools SIGN="${MAKE_SIGN}"   HASH="${MAKE_HASH}"   $MATH
 
           # Generate keys
           echo ""
