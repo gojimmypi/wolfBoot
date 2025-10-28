@@ -57,30 +57,30 @@
   <!-- Output dirs and target name -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>test-lib</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>test-lib</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>test-lib</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>test-lib</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <!-- Core settings aligned with the Makefile -->
+  <!-- Core settings aligned with your C codebase -->
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
@@ -95,7 +95,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
@@ -112,7 +112,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
@@ -131,7 +131,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.;include;lib\wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
@@ -144,26 +144,26 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <!-- Files that mirror the Makefile's objects -->
+  <!-- Source files: note the ..\..\ to reach repo root -->
   <ItemGroup>
     <!-- libwolfboot core -->
-    <ClCompile Include="src\string.c" />
-    <ClCompile Include="src\image.c" />
-    <ClCompile Include="src\libwolfboot.c" />
-    <ClCompile Include="hal\hal.c" />
-    <!-- The executable-specific "library" HAL object (should contain main()) -->
-    <ClCompile Include="hal\library.c" />
+    <ClCompile Include="..\..\src\string.c" />
+    <ClCompile Include="..\..\src\image.c" />
+    <ClCompile Include="..\..\src\libwolfboot.c" />
+    <ClCompile Include="..\..\hal\hal.c" />
+    <!-- Executable-specific object; should contain main() or call entry -->
+    <ClCompile Include="..\..\hal\library.c" />
     <!-- Optional parts the Makefile may pull in -->
-    <ClCompile Include="src\loader.c" />
-    <ClCompile Include="src\keystore*.c" />
-    <ClCompile Include="src\flash_otp_keystore.c" />
+    <ClCompile Include="..\..\src\loader.c" />
+    <ClCompile Include="..\..\src\keystore*.c" />
+    <ClCompile Include="..\..\src\flash_otp_keystore.c" />
   </ItemGroup>
-  <!-- Headers (optional) -->
+  <!-- Headers (optional, for Solution Explorer only) -->
   <ItemGroup>
-    <ClInclude Include="include\**\*.h" />
-    <ClInclude Include="lib\wolfssl\**\*.h" />
-    <ClInclude Include="hal\**\*.h" />
-    <ClInclude Include="src\**\*.h" />
+    <ClInclude Include="..\..\include\**\*.h" />
+    <ClInclude Include="..\..\lib\wolfssl\**\*.h" />
+    <ClInclude Include="..\..\hal\**\*.h" />
+    <ClInclude Include="..\..\src\**\*.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
