@@ -75,18 +75,25 @@
     <OutDir>$(SolutionDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <!-- Core settings aligned with your C codebase -->
+  <!-- PreBuild: synthesize unistd.h into $(IntDir) so <unistd.h> resolves -->
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>
+mkdir "$(IntDir)" 2&gt;nul
+echo #pragma once&gt;"$(IntDir)unistd.h"
+echo #include "win_compat.h"&gt;&gt;"$(IntDir)unistd.h"
+      </Command>
+      <Message>Create synthetic unistd.h in IntDir</Message>
+    </PreBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);..\..\hal;..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ECC256;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-<ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-<PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -94,16 +101,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PreBuildEvent>
+      <Command>
+mkdir "$(IntDir)" 2&gt;nul
+echo #pragma once&gt;"$(IntDir)unistd.h"
+echo #include "win_compat.h"&gt;&gt;"$(IntDir)unistd.h"
+      </Command>
+      <Message>Create synthetic unistd.h in IntDir</Message>
+    </PreBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);..\..\hal;..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ECC256;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-<ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-<PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,18 +125,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>
+mkdir "$(IntDir)" 2&gt;nul
+echo #pragma once&gt;"$(IntDir)unistd.h"
+echo #include "win_compat.h"&gt;&gt;"$(IntDir)unistd.h"
+      </Command>
+      <Message>Create synthetic unistd.h in IntDir</Message>
+    </PreBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);..\..\hal;..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ECC256;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-<ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-<PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,18 +153,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEvent>
+      <Command>
+mkdir "$(IntDir)" 2&gt;nul
+echo #pragma once&gt;"$(IntDir)unistd.h"
+echo #include "win_compat.h"&gt;&gt;"$(IntDir)unistd.h"
+      </Command>
+      <Message>Create synthetic unistd.h in IntDir</Message>
+    </PreBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);..\..\hal;..\..\include;..\..\lib\wolfssl;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFSSL_USER_SETTINGS;WOLFTPM_USER_SETTINGS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ECC256;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-<ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-<PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>..\..\hal\win_compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,21 +180,24 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <!-- Source files: note the ..\..\ to reach repo root -->
+  <!-- Source files (relative to IDE\VisualStudio\) -->
   <ItemGroup>
     <!-- libwolfboot core -->
     <ClCompile Include="..\..\src\string.c" />
     <ClCompile Include="..\..\src\image.c" />
     <ClCompile Include="..\..\src\libwolfboot.c" />
     <ClCompile Include="..\..\hal\hal.c" />
-    <!-- Executable-specific object; should contain main() or call entry -->
+    <!-- Executable-specific object (should host main() on desktop) -->
     <ClCompile Include="..\..\hal\library.c" />
-    <!-- Optional parts the Makefile may pull in -->
+    <!-- Optional components often required -->
     <ClCompile Include="..\..\src\loader.c" />
-    <ClCompile Include="..\..\src\keystore*.c" />
+    <!-- Diff/delta support to satisfy wolfBoot_get_diffbase_hdr -->
+    <ClCompile Include="..\..\tools\keytools\delta.c" />
+    <!-- Key store variants (one may be absent; harmless if not referenced) -->
+    <ClCompile Include="..\..\src\keystore.c" />
     <ClCompile Include="..\..\src\flash_otp_keystore.c" />
   </ItemGroup>
-  <!-- Headers (optional, for Solution Explorer only) -->
+  <!-- Headers (optional, for Solution Explorer) -->
   <ItemGroup>
     <ClInclude Include="..\..\include\**\*.h" />
     <ClInclude Include="..\..\lib\wolfssl\**\*.h" />
