@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
 
       # Limit concurrent jobs for scheduling problem on GitHub's hosted runner pool.
-      max-parallel: 12
+      max-parallel: 1
 
       matrix:
         math:
@@ -87,9 +87,9 @@ jobs:
           # Sample build
           build_once() {
               # Convert asym and hash to upper case, optionally add additional param
-              echo "Build..."
-              echo "make -j test-lib SIGN=${ASYM^^} HASH=${HASH^^} ${MATH} \"$@\""
-                    make -j test-lib SIGN=${ASYM^^} HASH=${HASH^^} ${MATH}  "$@"
+              echo "Build test-lib..."
+              echo "make -j test-lib SIGN=${MAKE_SIGN} HASH=${MAKE_HASH} ${MATH} \"$@\""
+                    make -j test-lib SIGN=${MAKE_SIGN} HASH=${MAKE_HASH} ${MATH}  "$@"
           }
 
           set -euo pipefail
@@ -116,25 +116,27 @@ jobs:
           echo ""
           echo "make keytools SIGN=\"${MAKE_SIGN}\" HASH=\"${MAKE_HASH}\" $MATH"
                 make keytools SIGN="${MAKE_SIGN}"   HASH="${MAKE_HASH}"   $MATH
-          ./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der
+
+          # Generate keys
+          echo ""
+          echo "./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der"
+                ./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der
 
           # Force fresh files
           # peek
           echo "Existing files?"
           if [ -f "src/keystore.c" ]; then
-            echo "WARNING2: Found unexpected src/keystore.c"
+            echo "Found unexpected src/keystore.c"
           fi
           if [ -f "include/target.h" ]; then
-            echo "WARNING2: Found unexpected include/target.h"
+            echo "Found unexpected include/target.h"
           fi
           if [ -f "keystore.der" ]; then
-            echo "WARNING2: Found unexpected keystore.der"
+            echo "Found unexpected keystore.der"
           fi
           if [ -f "wolfboot_signing_private_key.der" ]; then
-            echo "WARNING2: Found unexpected wolfboot_signing_private_key.der"
+            echo "Found unexpected wolfboot_signing_private_key.der"
           fi
-          rm -f src/keystore.c include/target.h keystore.der pubkey_*.der
-          make -B src/keystore.c SIGN="${ASYM^^}" PRIVATE_KEY=wolfboot_signing_private_key.der ${MATH}
 
           # Sign
           echo ""
