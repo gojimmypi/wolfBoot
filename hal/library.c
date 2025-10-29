@@ -36,6 +36,7 @@ static inline int fp_truncate(FILE* f, long len)
     fd = _fileno(f);
     return _chsize(fd, len);
 }
+#define PRINTF_ENABLED
 #else
 #if 1 /* for desktop testing */
     #define HAVE_UNISTD_H
@@ -91,15 +92,16 @@ void hal_prepare_boot(void)
     return;
 }
 
+
+#ifdef HAVE_UNISTD_H
+    #define BOOT_SUFFIX " (actually exiting)"
+#else
+    #define BOOT_SUFFIX " (actually spin loop)"
+#endif
+
 int do_boot(uint32_t* v)
 {
-    wolfBoot_printf("booting %p"
-#ifdef HAVE_UNISTD_H
-         "(actually exiting)"
-#else
-         "(actually spin loop)"
-#endif
-         "\n", v);
+    wolfBoot_printf("booting %p" BOOT_SUFFIX "\n", v);
     exit(0);
 }
 
@@ -163,26 +165,26 @@ int wolfBoot_start(void)
 }
 
 /* debug hook for wolfCrypt */
-// #include <wolfssl/wolfcrypt/logging.h>
+//#include <wolfssl/wolfcrypt/logging.h>
 
-static void wc_log_cb(const int logLevel, const char* const logMsg)
-{
-    (void)logLevel;
-    if (logMsg) { fprintf(stderr, "%s\n", logMsg); }
-}
+//static void wc_log_cb(const int logLevel, const char* const logMsg)
+//{
+//    (void)logLevel;
+//    if (logMsg) { fprintf(stderr, "%s\n", logMsg); }
+//}
 
 
 int main(int argc, const char* argv[])
 {
     int ret = 0;
-//    wolfSSL_SetLoggingCb(wc_log_cb);
-//    wolfSSL_Debugging_ON(); /* enables DEBUG_WOLFSSL prints */
+    //wolfSSL_SetLoggingCb(wc_log_cb);
+    //wolfSSL_Debugging_ON(); /* enables DEBUG_WOLFSSL prints */
 #ifdef NO_FILESYSTEM
     wolfBoot_printf("NO_FILESYSTEM is defined, looking at test_img");
     gImage = (uintptr_t)test_img;
 #else
     if (argc > 1) {
-        wolfBoot_printf("Looking at image file: %s", argv[0]);
+        wolfBoot_printf("Looking at image file: %s\n", argv[1]);
         size_t sz = 0, bread;
         FILE* img = fopen(argv[1], "rb");
         if (img == NULL) {
