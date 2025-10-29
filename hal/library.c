@@ -163,7 +163,7 @@ int wolfBoot_start(void)
 }
 
 /* debug hook for wolfCrypt */
-#include <wolfssl/wolfcrypt/logging.h>
+// #include <wolfssl/wolfcrypt/logging.h>
 
 static void wc_log_cb(const int logLevel, const char* const logMsg)
 {
@@ -175,12 +175,14 @@ static void wc_log_cb(const int logLevel, const char* const logMsg)
 int main(int argc, const char* argv[])
 {
     int ret = 0;
-    wolfSSL_SetLoggingCb(wc_log_cb);
-    wolfSSL_Debugging_ON(); /* enables DEBUG_WOLFSSL prints */
+//    wolfSSL_SetLoggingCb(wc_log_cb);
+//    wolfSSL_Debugging_ON(); /* enables DEBUG_WOLFSSL prints */
 #ifdef NO_FILESYSTEM
+    wolfBoot_printf("NO_FILESYSTEM is defined, looking at test_img");
     gImage = (uintptr_t)test_img;
 #else
     if (argc > 1) {
+        wolfBoot_printf("Looking at image file: %s", argv[0]);
         size_t sz = 0, bread;
         FILE* img = fopen(argv[1], "rb");
         if (img == NULL) {

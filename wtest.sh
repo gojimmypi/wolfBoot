@@ -7,7 +7,10 @@ make -C tools/keytools clean
 
 # This script generates a target.h file
 # TODO why? Why in include directory?
-rm -f include/target.h
+if [ -f "include/target.h" ]; then
+    echo "Found existing target.h, removing it"
+    rm -f include/target.h
+fi
 
 ASYM=ecc256
 HASH=sha256
@@ -32,6 +35,11 @@ make -j1 keytools SIGN=${MAKE_SIGN} HASH=${MAKE_HASH}
 echo ""
 echo "Make test-lib"
 make -j1 "test-lib" SIGN=${MAKE_SIGN} HASH=${MAKE_HASH} ${MATH}
+if [ -f "include/target.h" ]; then
+    echo "Found new include/target.h after make test-lib"
+else
+    echo "WARNING: Expected to find a new include/target.h after make test-lib"
+fi
 
 echo ""
 echo "Run ./test-lib test_v1_signed.bin"

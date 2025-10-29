@@ -28,9 +28,9 @@
 /* This is the embedded target user settings.
  *  See also settings in tools/keytools */
 
-// #pragma message ("============================================================include/user_settings")
+#pragma message ("===============include/user_settings")
 
-//#define DEBUG_SIGNTOOL
+ //#define DEBUG_SIGNTOOL
 //#define WOLFSSL_USE_ALIGN
 
 #if defined(_MSC_VER)

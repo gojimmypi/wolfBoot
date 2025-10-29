@@ -26,8 +26,8 @@
 #ifndef H_USER_SETTINGS_
 #define H_USER_SETTINGS_
 
-/* #pragma message ("============================================================keytools/user_settings")
-*/
+#pragma message ("============keytools/user_settings")
+
 #include <stdint.h>
 /* #define DEBUG_SIGNTOOL */
 
