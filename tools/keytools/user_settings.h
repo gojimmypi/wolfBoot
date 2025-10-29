@@ -23,8 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
 
-#ifndef H_USER_SETTINGS_
-#define H_USER_SETTINGS_
+#ifndef _WOLFBOOT_USER_SETTINGS_H_
+#define _WOLFBOOT_USER_SETTINGS_H_
 
 #pragma message ("============keytools/user_settings")
 
