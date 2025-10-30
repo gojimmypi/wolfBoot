@@ -140,14 +140,17 @@ int wolfBoot_start(void)
     os_image.hdr = (uint8_t*)gImage;
 
     if ((ret = wolfBoot_open_image_address(&os_image, (uint8_t*)gImage)) < 0) {
+        wolfBoot_printf("Failed to open image address.\n");
         goto exit;
     }
 
     if ((ret = wolfBoot_verify_integrity(&os_image)) < 0) {
+        wolfBoot_printf("Failed to verify integrity.\n");
         goto exit;
     }
 
     if ((ret = wolfBoot_verify_authenticity(&os_image)) < 0) {
+        wolfBoot_printf("Failed to verify authenticity.\n");
         goto exit;
     }
 
@@ -159,9 +162,12 @@ int wolfBoot_start(void)
     if (ret < 0) {
         wolfBoot_printf("Failure %d: Hdr %d, Hash %d, Sig %d\n", ret,
                         os_image.hdr_ok, os_image.sha_ok, os_image.signature_ok);
+        return -1;
+    }
+    else {
+        return 0;
     }
 
-    return 0;
 }
 
 /* debug hook for wolfCrypt */
@@ -183,37 +189,55 @@ int main(int argc, const char* argv[])
     wolfBoot_printf("NO_FILESYSTEM is defined, looking at test_img");
     gImage = (uintptr_t)test_img;
 #else
-    if (argc > 1) {
-        wolfBoot_printf("Looking at image file: %s\n", argv[1]);
-        size_t sz = 0, bread;
+    if (argc == 2) {
+        size_t sz = 0, bread = 0;
         FILE* img = fopen(argv[1], "rb");
         if (img == NULL) {
-            wolfBoot_printf("failed to open %s!\n", argv[1]);
+            wolfBoot_printf("Failed to open file: %s!\n\n", argv[1]);
+            wolfBoot_printf("Usage: %s image_file.bin\n", argv[0]);
             return -3;
         }
-        fseek(img, 0, SEEK_END);
-        sz = ftell(img);
-        fseek(img, 0, SEEK_SET);
+        else {
+            wolfBoot_printf("Looking at image file: %s\n", argv[1]);
+            fseek(img, 0, SEEK_END);
+            sz = ftell(img);
+            fseek(img, 0, SEEK_SET);
 
-        gImage = (uintptr_t)malloc(sz);
+            gImage = (uintptr_t)malloc(sz);
+        }
+
         if (((void*)gImage) == NULL) {
-            wolfBoot_printf("failed to malloc %zu bytes for image\n", sz);
+            wolfBoot_printf("Failed to malloc %zu bytes for image.\n", sz);
             ret = -1;
         }
+        else {
+            /* check the image */
+            bread = fread((void*)gImage, 1, sz, img);
+        }
 
-        bread = fread((void*)gImage, 1, sz, img);
-        if (bread != sz) {
+        if (bread == sz) {
+            wolfBoot_printf("Confirmed expected size: %zu bytes.\n", bread);
+        }
+        else {
             ret = -2;
-            wolfBoot_printf("read %zu of %zu bytes from %s\n", bread, sz, argv[1]);
+            wolfBoot_printf("Read %zu of %zu bytes from %s\n", bread, sz, argv[1]);
         }
         fclose(img);
-    } else {
+    }
+    else {
         wolfBoot_printf("usage: %s image_file.bin\n", argv[0]);
         ret = 255;
     }
 #endif
     if (ret == 0) {
+        wolfBoot_printf("Checking image... ");
         ret = wolfBoot_start();
+    }
+    if (ret == 0) {
+        wolfBoot_printf("Success!\n");
+    }
+    else {
+        wolfBoot_printf("Failed to verify with wolfBoot_start\n");
     }
 
 #ifndef NO_FILESYSTEM

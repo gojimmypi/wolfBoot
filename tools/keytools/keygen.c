@@ -507,10 +507,10 @@ void keystore_add(uint32_t ktype, uint8_t *key, uint32_t sz, const char *keyfile
     }
     fprintf(fpub, Pubkey_footer);
     fprintf(fpub, Slot_footer);
-    printf("Associated key file:    %s\n", keyfile);
+    printf("Associated key file:  %s\n", keyfile);
     printf("Partition ids mask:   %08x\n", id_mask);
-    printf("Key type:               %s\n", KName[ktype]);
-    printf("Public key slot:        %u\n", id_slot);
+    printf("Key type:             %s\n", KName[ktype]);
+    printf("Public key slot:      %u\n", id_slot);
     if (noLocalKeys) {
         printf("WARNING: --nolocalkeys flag used, keystore.c public key is zeroed\n");
     }
@@ -1353,10 +1353,11 @@ int main(int argc, char** argv)
     uint32_t n_pubkeys = 0;
     uint32_t part_id_mask = 0xFFFFFFFF; /* Default: key verify all */
 
+    printf("wolfBoot KeyGen\n");
 #ifdef DEBUG_SIGNTOOL
     wolfSSL_Debugging_ON();
 #endif
-    printf("Keystore size: %lu\n", (unsigned long)sizeof(struct keystore_slot));
+    printf("Keystore size:        %lu\n", (unsigned long)sizeof(struct keystore_slot));
 
     /* Check arguments and print usage */
     if (argc < 2)
@@ -1440,6 +1441,7 @@ int main(int argc, char** argv)
             i++;
             sprintf(pubkeyfile,"%s%s", argv[i], "/keystore.c");
             sprintf(pubkeyimg, "%s%s", argv[i], "/keystore.der");
+            printf("Saving keystore file: %s\n", pubkeyfile);
             i++;
             continue;
         }
@@ -1457,7 +1459,7 @@ int main(int argc, char** argv)
             usage(argv[0]);
         }
     }
-    printf("Keytype: %s\n", KName[keytype]);
+    printf("Selected Keytype:     %s\n", KName[keytype]);
     if (keytype == 0) {
         fprintf(stderr, "No keytype, exiting...");
         exit(0);

@@ -2988,6 +2988,7 @@ int main(int argc, char** argv)
     } else {
         kbuf = load_key(&key_buffer, &key_buffer_sz, &pubkey, &pubkey_sz, 0);
         if (!kbuf) {
+            printf("Failed to load key");
             exit(1);
         }
     } /* CMD.sign != NO_SIGN */
