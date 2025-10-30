@@ -184,7 +184,8 @@
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss_impl.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
-    <ClCompile Include="keygen.c" />
+    <!-- NOTE: Linux apps may generate keystore files in [WOLFBOOT_ROOT]/src -->
+    <ClCompile Include="..\..\src\keystore.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

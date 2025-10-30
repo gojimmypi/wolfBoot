@@ -115,7 +115,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ECC256;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\tools\keytools;./;../../lib/wolfssl;../../include;../../hal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include;$(ProjectDir);$(ProjectDir)..\..\tools\keytools;./;../../lib/wolfssl;../../hal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
@@ -190,12 +190,13 @@
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss_impl.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
-    <ClCompile Include="..\..\src\keystore.c" />
     <ClCompile Include="..\..\src\image.c" />
     <ClCompile Include="..\..\src\libwolfboot.c" />
-    <ClCompile Include="..\..\tools\keytools\delta.c" Condition="Exists('..\..\tools\keytools\delta.c')" />
+    <!-- NOTE: Linux apps may generate keystore files in [WOLFBOOT_ROOT]/src -->
+    <ClCompile Include="..\..\src\keystore.c" />
+    <ClCompile Include="..\..\src\delta.c" Condition="Exists('..\..\src\delta.c')" />
     <ClCompile Include="..\..\hal\library.c">
-      <ForcedIncludeFiles>$(ProjectDir)user_settings.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>$(ProjectDir)..\..\include\user_settings.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

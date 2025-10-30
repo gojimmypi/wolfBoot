@@ -61,6 +61,12 @@ static inline int fp_truncate(FILE* f, long len)
     #undef NO_FILESYSTEM
 #endif
 
+#ifdef WOLFBOOT_KEYTOOLS
+    /* this code needs to use the Use ./include/user_settings.h file */
+    #error "The wrong user_settings.h has been included."
+#endif
+
+
 /* HAL Stubs */
 void hal_init(void)
 {
@@ -237,7 +243,10 @@ int main(int argc, const char* argv[])
         wolfBoot_printf("Success!\n");
     }
     else {
-        wolfBoot_printf("Failed to verify with wolfBoot_start\n");
+        if (ret != 255) {
+            /* Only show error if we actually processed file, not missing params */
+            wolfBoot_printf("Failed to verify with wolfBoot_start\n");
+        }
     }
 
 #ifndef NO_FILESYSTEM

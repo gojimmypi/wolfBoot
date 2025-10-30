@@ -30,6 +30,11 @@
 #include <stdio.h>
 #endif
 #include <wolfssl/wolfcrypt/settings.h> /* for wolfCrypt hash/sign routines */
+#ifdef WOLFBOOT_KEYTOOLS
+    /* this code needs to use the Use ./include/user_settings. */
+    #error "The wrong user_settings.h has been included."
+#endif
+
 
 #include <stddef.h>
 #include <string.h>
@@ -2244,6 +2249,7 @@ int keyslot_id_by_sha(const uint8_t *hint)
         ct++;
         ret = key_hash_ok(id, digest);
         if ((ret == 0) && memcmp(digest, hint, WOLFBOOT_SHA_DIGEST_SIZE) == 0) {
+            wolfBoot_printf("Found matching digest in slot %d\n", id);
             return id;
         }
     }
