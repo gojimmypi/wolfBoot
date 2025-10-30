@@ -42,6 +42,30 @@ def tlv_dict(tlvs):
         d.setdefault(t, []).append((l, v))
     return d
 
+# add this helper near the top-level functions, e.g., after tlv_dict()
+def find_tlv(data: bytes, header_size: int, ttype: int):
+    """
+    Scan the header TLV area and return (value_offset, value_len, tlv_start_offset)
+    for the first TLV matching 'ttype'. Returns None if not found.
+    """
+    off = 8  # skip magic(4) + size(4)
+    while off + 4 <= header_size:
+        # skip padding bytes 0xFF
+        while off < header_size and data[off] == 0xFF:
+            off += 1
+        if off + 4 > header_size:
+            break
+        t = int.from_bytes(data[off:off+2], "little")
+        l = int.from_bytes(data[off+2:off+4], "little")
+        tlv_hdr = off
+        off += 4
+        if off + l > header_size:
+            break
+        if t == ttype:
+            return (off, l, tlv_hdr)  # value starts at 'off'
+        off += l
+    return None
+
 def decode_timestamp(v: bytes):
     ts = struct.unpack("<Q", v)[0]
     try:
@@ -165,16 +189,35 @@ def main():
         if hash_bytes is None:
             print("[HASH] No hash TLV found (type 0x0003)")
         else:
-            hname = hash_name_for_len(len(hash_bytes))
-            if not hname:
-                print(f"[HASH] Unsupported hash length {len(hash_bytes)}")
+            # locate the actual SHA TLV and compute header_prefix || payload
+            sha_info = find_tlv(data, header_size, 0x0003)
+            if sha_info is None:
+                print("[HASH] Could not locate SHA TLV in header")
             else:
-                calc = compute_hash(payload, hname)
-                ok = (calc == hash_bytes)
-                print(f"[HASH] Algorithm: {hname}  ->  {'OK' if ok else 'MISMATCH'}")
-                if not ok:
-                    print(f"[HASH] expected: {hash_bytes.hex()}")
-                    print(f"[HASH] computed: {calc.hex()}")
+                sha_val_off, sha_len, sha_tlv_hdr = sha_info
+                # The header portion includes everything from start of image up to (but not including) Type+Len
+                header_prefix_end = sha_tlv_hdr  # exclude Type(2)+Len(2)
+                header_prefix = data[0:header_prefix_end]
+
+                # Payload is the declared 'size' bytes after the header
+                payload = data[header_size: header_size + size]
+
+                # pick hash by length
+                hname = hash_name_for_len(sha_len)
+                if not hname:
+                    print(f"[HASH] Unsupported hash length {sha_len}")
+                else:
+                    import hashlib
+                    h = hashlib.new(hname)
+                    h.update(header_prefix)
+                    h.update(payload)
+                    calc = h.digest()
+                    ok = (calc == hash_bytes)
+                    print(f"[HASH] Algorithm: {hname}  ->  {'OK' if ok else 'MISMATCH'}")
+                    if not ok:
+                        print(f"[HASH] expected: {hash_bytes.hex()}")
+                        print(f"[HASH] computed: {calc.hex()}")
+
 
     if args.verify_sig:
         if sig is None:
