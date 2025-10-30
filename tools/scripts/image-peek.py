@@ -1,45 +1,200 @@
 #!/usr/bin/env python3
-import struct, sys, datetime
+import argparse, struct, hashlib, sys, datetime
 from pathlib import Path
-TYPE_NAMES={0x0001:'version',0x0002:'timestamp',0x0003:'hash',0x0004:'attr',0x0010:'pubkey_hint',0x0020:'signature'}
-def parse_header(data,header_size=0x100):
-    magic=data[0:4]; size_le=struct.unpack('<I',data[4:8])[0]; tlvs=[]; off=8
-    while off<header_size:
-        while off<header_size and data[off]==0xFF: off+=1
-        if off+4>header_size: break
-        t=struct.unpack('<H',data[off:off+2])[0]; l=struct.unpack('<H',data[off+2:off+4])[0]; off+=4
-        if off+l>header_size: break
-        v=data[off:off+l]; off+=l; tlvs.append((t,l,v))
-    return {'magic':magic,'size':size_le,'tlvs':tlvs,'header_size':header_size}
-def decode_tlv(t,v):
-    n=TYPE_NAMES.get(t,'unknown_0x%04x'%t)
-    if t==0x0001 and len(v)==4: return n,struct.unpack('<I',v)[0]
-    if t==0x0002 and len(v)==8: ts=struct.unpack('<Q',v)[0];
-    if t==0x0002 and len(v)==8:
-        try: dt=datetime.datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S UTC')
-        except Exception: dt='out-of-range'
-        return n,{'unix':ts,'utc':dt}
-    if t==0x0003: return n,{'sha':v.hex()}
-    if t==0x0010: return n,{'digest':v.hex()}
-    if t==0x0020: return n,{'sig':v.hex()}
-    if t==0x0004:
-        return (n,struct.unpack('<H',v)[0]) if len(v)==2 else (n,v.hex())
-    return n,v.hex()
-def print_report(p):
-    try: m=p['magic'].decode('ascii')
-    except Exception: m=p['magic'].hex()
-    print('Magic:',m,'(raw:',p['magic'].hex()+')')
-    print('Payload size:%d bytes (0x%08X)'%(p['size'],p['size']))
-    print('Assumed header size:%d bytes (0x%X)'%(p['header_size'],p['header_size']))
-    print('TLVs:')
-    for i,(t,l,v) in enumerate(p['tlvs'],1):
-        n,val=decode_tlv(t,v)
-        print('%2d) type=0x%04X (%s) len=%d'%(i,t,n,l))
-        if isinstance(val,dict):
-            for k,vv in val.items(): print('     %s: %s'%(k,vv))
-        else: print('     value:',val)
+
+TYPE_NAMES = {
+    0x0001: "version",
+    0x0002: "timestamp",
+    0x0003: "hash",
+    0x0004: "attr",
+    0x0010: "pubkey_hint",
+    0x0020: "signature",
+}
+
+def read_file(path: Path) -> bytes:
+    return path.read_bytes()
+
+def parse_header(data: bytes, header_size: int = 0x100):
+    if len(data) < 8:
+        raise ValueError("Input too small to contain header")
+    magic = data[0:4]
+    size_le = struct.unpack("<I", data[4:8])[0]
+    off = 8
+    tlvs = []
+    while off < header_size:
+        while off < header_size and data[off] == 0xFF:
+            off += 1
+        if off + 4 > header_size:
+            break
+        t = struct.unpack("<H", data[off:off+2])[0]
+        l = struct.unpack("<H", data[off+2:off+4])[0]
+        off += 4
+        if off + l > header_size:
+            break
+        v = data[off:off+l]
+        off += l
+        tlvs.append((t, l, v))
+    return {"magic": magic, "size": size_le, "header_size": header_size, "tlvs": tlvs}
+
+def tlv_dict(tlvs):
+    d = {}
+    for (t, l, v) in tlvs:
+        d.setdefault(t, []).append((l, v))
+    return d
+
+def decode_timestamp(v: bytes):
+    ts = struct.unpack("<Q", v)[0]
+    try:
+        utc = datetime.datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S UTC")
+    except Exception:
+        utc = "out-of-range"
+    return ts, utc
+
+def hash_name_for_len(n: int):
+    if n == 32: return "sha256"
+    if n == 48: return "sha384"
+    if n == 64: return "sha512"
+    return None
+
+def compute_hash(payload: bytes, name: str):
+    import hashlib
+    h = hashlib.new(name)
+    h.update(payload)
+    return h.digest()
+
+def try_load_public_key(pubkey_path: Path):
+    try:
+        from cryptography.hazmat.primitives import serialization
+        data = read_file(pubkey_path)
+        try:
+            key = serialization.load_pem_public_key(data)
+            return key
+        except ValueError:
+            key = serialization.load_der_public_key(data)
+            return key
+    except Exception as e:
+        return e
+
+def verify_signature(pubkey, alg: str, firmware_hash: bytes, signature: bytes):
+    try:
+        from cryptography.hazmat.primitives.asymmetric import ec, ed25519, utils
+        from cryptography.hazmat.primitives import hashes
+        from cryptography.exceptions import InvalidSignature
+    except Exception as e:
+        return False, f"cryptography not available: {e}"
+
+    if alg == "ecdsa-p256":
+        if not hasattr(pubkey, "verify"):
+            return False, "Public key object is not ECDSA-capable"
+        if len(signature) != 64:
+            return False, f"Expected 64-byte r||s, got {len(signature)} bytes"
+        r = int.from_bytes(signature[:32], "big")
+        s = int.from_bytes(signature[32:], "big")
+        from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
+        sig_der = encode_dss_signature(r, s)
+        hash_algo = {32: hashes.SHA256(), 48: hashes.SHA384(), 64: hashes.SHA512()}.get(len(firmware_hash))
+        if hash_algo is None:
+            return False, f"Unsupported hash length {len(firmware_hash)}"
+        try:
+            pubkey.verify(sig_der, firmware_hash, ec.ECDSA(utils.Prehashed(hash_algo)))
+            return True, "Signature OK (ECDSA)"
+        except InvalidSignature:
+            return False, "Invalid signature (ECDSA)"
+        except Exception as e:
+            return False, f"ECDSA verify error: {e}"
+
+    if alg == "ed25519":
+        try:
+            if not hasattr(pubkey, "verify"):
+                return False, "Public key object is not Ed25519-capable"
+            pubkey.verify(signature, firmware_hash)
+            return True, "Signature OK (Ed25519 over stored digest)"
+        except Exception as e:
+            return False, f"Ed25519 verify error: {e}"
+
+    return False, f"Unknown alg '{alg}'"
+
 def main():
-    if len(sys.argv)<2:
-        print('Usage: python wolfboot_parse.py <signed_image.bin>'); sys.exit(2)
-    path=Path(sys.argv[1]); data=path.read_bytes(); p=parse_header(data,header_size=0x100); print_report(p)
-if __name__=='__main__': main()
+    ap = argparse.ArgumentParser(description="wolfBoot image parser/validator")
+    ap.add_argument("image", help="Signed image file")
+    ap.add_argument("--header-size", type=lambda x: int(x, 0), default="0x100", help="Header size (default 0x100)")
+    ap.add_argument("--dump-payload", metavar="OUT", help="Write payload to this file")
+    ap.add_argument("--verify-hash", action="store_true", help="Compute and compare payload hash against the header")
+    ap.add_argument("--verify-sig", metavar="PUBKEY", help="Verify signature using a PEM/DER public key")
+    ap.add_argument("--alg", choices=["ecdsa-p256", "ed25519"], help="Signature algorithm (try to infer if omitted)")
+    args = ap.parse_args()
+
+    img_path = Path(args.image)
+    data = read_file(img_path)
+
+    hdr = parse_header(data, header_size=args.header_size)
+    magic = hdr["magic"]; size = hdr["size"]; header_size = hdr["header_size"]; tlist = hdr["tlvs"]
+    d = tlv_dict(tlist)
+
+    print(f"Magic: {magic.decode('ascii', 'replace')} (raw: {magic.hex()})")
+    print(f"Payload size: {size} (0x{size:08X})")
+    print(f"Header size: {header_size} (0x{header_size:X})")
+
+    version = d.get(0x0001, [(None, None)])[0][1]
+    if version is not None:
+        print(f"Version: {struct.unpack('<I', version)[0]}")
+    if 0x0002 in d:
+        ts_val = d[0x0002][0][1]
+        ts, utc = decode_timestamp(ts_val)
+        print(f"Timestamp: {ts} ({utc})")
+    hash_bytes = d.get(0x0003, [(None, None)])[0][1]
+    if hash_bytes is not None:
+        print(f"Hash ({len(hash_bytes)} bytes): {hash_bytes.hex()}")
+    if 0x0010 in d:
+        hint = d[0x0010][0][1].hex()
+        print(f"Pubkey hint: {hint}")
+    sig = d.get(0x0020, [(None, None)])[0][1]
+    if sig is not None:
+        print(f"Signature ({len(sig)} bytes): {sig[:8].hex()}...{sig[-8:].hex()}")
+
+    if len(data) < header_size + size:
+        print(f"[WARN] File shorter ({len(data)} bytes) than header+payload ({header_size+size}). Hash/signature verification may fail.")
+    payload = data[header_size : header_size + size]
+
+    if args.dump_payload:
+        out = Path(args.dump_payload)
+        out.write_bytes(payload)
+        print(f"Wrote payload to: {out}")
+
+    if args.verify_hash:
+        if hash_bytes is None:
+            print("[HASH] No hash TLV found (type 0x0003)")
+        else:
+            hname = hash_name_for_len(len(hash_bytes))
+            if not hname:
+                print(f"[HASH] Unsupported hash length {len(hash_bytes)}")
+            else:
+                calc = compute_hash(payload, hname)
+                ok = (calc == hash_bytes)
+                print(f"[HASH] Algorithm: {hname}  ->  {'OK' if ok else 'MISMATCH'}")
+                if not ok:
+                    print(f"[HASH] expected: {hash_bytes.hex()}")
+                    print(f"[HASH] computed: {calc.hex()}")
+
+    if args.verify_sig:
+        if sig is None:
+            print("[SIG] No signature TLV found (type 0x0020)")
+        elif hash_bytes is None:
+            print("[SIG] Cannot verify without hash TLV (type 0x0003)")
+        else:
+            pubkey = try_load_public_key(Path(args.verify_sig))
+            if isinstance(pubkey, Exception):
+                print(f"[SIG] Failed to load public key: {pubkey}")
+            else:
+                alg = args.alg
+                if not alg:
+                    if len(sig) == 64 and len(hash_bytes) in (32,48,64):
+                        alg = "ecdsa-p256"
+                    else:
+                        print(f"[SIG] Cannot infer algorithm (sig={len(sig)} bytes, hash={len(hash_bytes) if hash_bytes else 0})")
+                        alg = "ecdsa-p256"
+                ok, msg = verify_signature(pubkey, alg, hash_bytes, sig)
+                print(f"[SIG] {msg} (alg={alg})")
+
+if __name__ == '__main__':
+    main()
