@@ -46,7 +46,7 @@
 *.pdb
 *.gdb
 
-# any and all automatically generated keys
+# automatically generated keys
 *.der
 *.pem
 *.sig
@@ -63,8 +63,6 @@ src/rsa4096_pub_key.c
 # Renesas key data files
 include/key_data.*
 include/enckey_data.*
-# Visual Studio generated key files
-tools/keytools/keystore.c
 
 # keygen binaries
 tools/keytools/sign
