@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 # Convert wolfBoot raw/public-key container to standard SPKI DER/PEM, next to input.
 # Usage:
+#
 #   ./tools/scripts/wolfboot-der-to-spki.py ./tools/keytools/keystore.der
+#
 # Optional:
 #   --curve p256|p384|p521  (only needed if auto-detect by length is not possible)
-
+#
+# Example (from [WOLFBOOT_ROOT]):
+#   ./tools/scripts/wolfboot-der-to-spki.py ./tools/keytools/keystore.der
+#
 import argparse
 import sys
 from pathlib import Path
