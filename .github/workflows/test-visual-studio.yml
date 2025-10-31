@@ -12,12 +12,6 @@ jobs:
     name: Visual Studio Keytools Tests
     runs-on: windows-latest
 
-    steps:
-      - name: Checkout (with submodules)
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
     strategy:
       matrix:
         config: [Debug, Release]
@@ -26,6 +20,11 @@ jobs:
     steps:
       # Adds MSBuild to PATH
       - uses: microsoft/setup-msbuild@v2
+
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Build
         run: >
