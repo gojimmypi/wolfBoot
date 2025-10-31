@@ -185,6 +185,8 @@
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss_impl.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
     <ClCompile Include="..\..\src\delta.c" />
+    
+    <!-- The main() app -->
     <ClCompile Include="sign.c">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\lib\wolfssl;..\..\include;..\..\include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\lib\wolfssl;..\..\include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

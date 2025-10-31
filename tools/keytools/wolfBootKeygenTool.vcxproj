@@ -186,6 +186,9 @@
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
     <!-- NOTE: Linux apps may generate keystore files in [WOLFBOOT_ROOT]/src -->
     <ClCompile Include="..\..\src\keystore.c" />
+    
+    <!-- The main() app -->
+    <ClCompile Include=".\keygen.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

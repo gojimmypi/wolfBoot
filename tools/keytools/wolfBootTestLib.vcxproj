@@ -196,6 +196,8 @@
     <!-- NOTE: Linux apps generate keystore files in [WOLFBOOT_ROOT]/src -->
     <ClCompile Include="..\..\src\keystore.c" />
     <ClCompile Include="..\..\src\delta.c" Condition="Exists('..\..\src\delta.c')" />
+
+    <!-- The main() app -->
     <ClCompile Include="..\..\hal\library.c">
       <ForcedIncludeFiles>$(ProjectDir)..\..\include\user_settings.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
