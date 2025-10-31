@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
 
       # Limit concurrent jobs for scheduling problem on GitHub's hosted runner pool.
-      max-parallel: 12
+      max-parallel: 10
 
       matrix:
         math:
