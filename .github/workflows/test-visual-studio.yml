@@ -26,6 +26,9 @@ jobs:
         with:
           submodules: true
 
+      - name: Fetch test target.h
+        run:  copy /Y tools\unit-tests\target.h src\target.h
+
       - name: Build
         run: >
           msbuild tools\keytools\wolfBootKeyTools.sln
