@@ -27,7 +27,13 @@ jobs:
           submodules: true
 
       - name: Fetch test target.h
-        run:  copy /Y tools\unit-tests\target.h src\target.h
+        shell: cmd
+        run: |
+          # Ensure there's a target.h
+
+          echo "Copying tools\unit-tests\target.h to src\target.h"
+
+          copy /Y tools\unit-tests\target.h src\target.h
 
       - name: Build
         run: >
