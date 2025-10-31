@@ -42,7 +42,6 @@
 #define KEYSTORE_SECTION __attribute__((section (".keystore")))
 #endif
 
-
 #define NUM_PUBKEYS 1
 const KEYSTORE_SECTION struct keystore_slot PubKeys[NUM_PUBKEYS] = {
 

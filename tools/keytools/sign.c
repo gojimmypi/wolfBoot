@@ -2777,6 +2777,7 @@ static int process_args(int argc, char** argv) {
             printf("    (#%d is not a setting, abort processing of remaining %d args as settings)\n", i, argc - i);
 #endif
             if ((i >= (argc - 3)) && (i <= (argc - 4)))
+            {
                 /* Looks like we have good parameters */
 #ifdef DEBUG_SIGNTOOL
                 printf("Detected positional arguments.\n");
