@@ -39,15 +39,18 @@ jobs:
       # Step 1 Build keygen, then run it
       - name: Build keygen
         shell: cmd
-        run: >
-          cd tools\keytools\
-          msbuild wolfBootKeygenTool.vcxproj
-          /t:Rebuild
-          /m
-          /p:Configuration=%CONFIG%
-          /p:Platform=%PLATFORM%
-          /p:PreferredToolArchitecture=x64
-          /v:m
+        run: |
+          pushd tools\keytools\
+
+          msbuild wolfBootKeygenTool.vcxproj   ^
+            /t:Rebuild                         ^
+            /m                                 ^
+            /p:Configuration=%CONFIG%          ^
+            /p:Platform=%PLATFORM%             ^
+            /p:PreferredToolArchitecture=x64   ^
+            /v:m
+
+          popd
 
       - name: Run keygen
         shell: cmd
@@ -56,4 +59,7 @@ jobs:
           pwd
 
           .\%PLATFORM%\%CONFIG%\keygen.exe ecc256 -g wolfboot_signing_private_key.der
+
+          dir wolfboot_signing_private_key.der /s
+          dir keystore.c /s
 
