@@ -58,7 +58,7 @@ jobs:
         run: |
           pwd
 
-          .\%PLATFORM%\%CONFIG%\keygen.exe ecc256 -g wolfboot_signing_private_key.der
+          .\%PLATFORM%\%CONFIG%\keygen.exe --ecc256 -g wolfboot_signing_private_key.der
 
           dir wolfboot_signing_private_key.der /s
           dir keystore.c /s
