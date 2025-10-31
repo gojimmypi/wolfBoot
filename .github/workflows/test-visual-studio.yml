@@ -29,6 +29,7 @@ jobs:
 
       - name: Fetch test target.h
         shell: cmd
+        working-directory: .\
         run: |
           # Ensure there's a target.h
 
@@ -39,6 +40,7 @@ jobs:
       # Step 1 Build keygen, then run it
       - name: Build keygen
         shell: cmd
+        working-directory: .\
         run: |
           pushd tools\keytools\
 
@@ -54,7 +56,7 @@ jobs:
 
       - name: Run keygen
         shell: cmd
-        working-directory: tools\keytools
+        working-directory: .\
         run: |
           pwd
 
@@ -62,4 +64,6 @@ jobs:
 
           dir wolfboot_signing_private_key.der /s
           dir keystore.c /s
+
+
 
