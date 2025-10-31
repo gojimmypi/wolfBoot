@@ -28,6 +28,17 @@
 
 
 #include <stdint.h>
+
+ /* This is the keytools user settings.
+  *  See also settings in [WOLFBOOT_ROOT]/include/user_settings
+  *
+  * When in question, define WOLFBOOT_SHOW_INCLUDE
+  */
+
+#ifdef WOLFBOOT_SHOW_INCLUDE
+    #pragma message ("=============== keytools/user_settings")
+#endif
+
 /* #define DEBUG_SIGNTOOL */
 
 /* #define WOLFBOOT_HASH_SHA256 */

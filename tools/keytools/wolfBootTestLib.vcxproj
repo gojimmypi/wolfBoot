@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemDefinitionGroup>
     <ClCompile>
@@ -115,8 +115,9 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ECC256;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <!-- Important: ensure ../../include is listed first to avoice user_settings.h conflict in other directories -->
       <AdditionalIncludeDirectories>../../include;$(ProjectDir);./;../../lib/wolfssl;../../hal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -204,4 +205,19 @@
   <Import Project="wolfBootImage.props" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+
+  <!-- Set default debug properties for debug builds: See wolfBootDebug.props -->
+  <Import Project="$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props') 
+                    and '$(Configuration)|$(Platform)'=='Debug|x64'" />
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props') 
+                    and '$(Configuration)|$(Platform)'=='Debug|x86'" />
+
+<!-- Show debugging params -->
+<Target Name="ShowDebugArgs" BeforeTargets="Build">
+  <Message Importance="High" Text="Args: $(LocalDebuggerCommandArguments)" />
+  <Message Importance="High" Text="WorkDir: $(LocalDebuggerWorkingDirectory)" />
+</Target>
 </Project>

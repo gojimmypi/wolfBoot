@@ -26,11 +26,16 @@
 #define _WOLFBOOT_USER_SETTINGS_H_
 
 /* This is the embedded target user settings.
- *  See also settings in tools/keytools */
+ *  See also settings in [WOLFBOOT_ROOT]/tools/keytools
+ *
+ * When in question, define WOLFBOOT_SHOW_INCLUDE
+ */
 
-#pragma message ("===============include/user_settings")
+#ifdef WOLFBOOT_SHOW_INCLUDE
+    #pragma message ("===============include/user_settings")
+#endif
 
- //#define DEBUG_SIGNTOOL
+//#define DEBUG_SIGNTOOL
 //#define WOLFSSL_USE_ALIGN
 
 #if defined(_MSC_VER)
