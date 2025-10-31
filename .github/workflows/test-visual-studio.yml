@@ -76,6 +76,10 @@ jobs:
           echo %cd%
 
           .\tools\keytools\%PLATFORM%\%CONFIG%\keygen.exe --ecc256 -g wolfboot_signing_private_key.der
+          if errorlevel 1 (
+            echo keygen.exe failed with ERRORLEVEL %ERRORLEVEL%
+            exit /b %ERRORLEVEL%
+          )
 
           echo "wolfboot_signing_private_key.der file:"
           dir wolfboot_signing_private_key.der /s
@@ -118,7 +122,14 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          .\tools\keytools\%PLATFORM%\%CONFIG%\sign.exe  --sign  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
+          echo Running .\tools\keytools\%PLATFORM%\%CONFIG%\sign.exe  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
+
+          .\tools\keytools\%PLATFORM%\%CONFIG%\sign.exe               --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
+
+          if errorlevel 1 (
+            echo sign.exe failed with ERRORLEVEL %ERRORLEVEL%
+            exit /b %ERRORLEVEL%
+          )
 
           echo wolfboot_signing_private_key.der file:
           dir wolfboot_signing_private_key.der /s
@@ -130,7 +141,7 @@ jobs:
           dir test.bin /s
 
           echo test_v1_signed.bin file:
-          echo dir test-lib test_v1_signed.bin /s
+          dir test_v1_signed.bin /s
 
       # Step 3 Build Test tool, then run it
       - name: Build Library Test test-lib.exe
@@ -158,11 +169,20 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          :: A missing target.h is a common failure on GitHub.
+          :: A missing target.h is a common build failure on GitHub.
           :: See above where we copy one from [WOLFBOOT_ROOT]\tools\unit-tests\
-          echo Where is the target.h?
-          dir target.h /s
+          :: echo Where is the target.h?
+          :: dir target.h /s
 
-          .\tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe  .\test_v1_signed.bin
+          dir test_v1_signed.bin /s
+
+          echo Running .\tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe  .\test_v1_signed.bin
+
+          if errorlevel 1 (
+            echo test-lib.exe failed with ERRORLEVEL %ERRORLEVEL%
+            exit /b %ERRORLEVEL%
+          )
+
+          .\tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe               .\test_v1_signed.bin
 
           echo Done!
