@@ -31,7 +31,7 @@ jobs:
         shell: cmd
         working-directory: .\
         run: |
-          # Ensure there's a target.h
+          :: Ensure there's a target.h
 
           echo "Copying tools\unit-tests\target.h to src\target.h"
 
@@ -58,9 +58,12 @@ jobs:
         shell: cmd
         working-directory: .\
         run: |
+          :: Run keygen.exe
+
+          echo "Current directory:"
           pwd
 
-          .\%PLATFORM%\%CONFIG%\keygen.exe --ecc256 -g wolfboot_signing_private_key.der
+          .\wolfBoot\tools\keytools\%PLATFORM%\%CONFIG%\keygen.exe --ecc256 -g wolfboot_signing_private_key.der
 
           dir wolfboot_signing_private_key.der /s
           dir keystore.c /s
