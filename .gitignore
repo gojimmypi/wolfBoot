@@ -276,7 +276,28 @@ language.settings.xml
 /**/build
 /**/build-**
 
+# User config
+# See cmake/config_defaults_user.cmake.sample
+/**/cmake/config_defaults_user.cmake
+
 # Eclipse
 .cproject
 .project
 .settings/
+
+# User config
+# See cmake/config_defaults_user.cmake.sample
+/**/cmake/config_defaults_user.cmake
+
+
+
+# My local debris, not for upstream
+/IDE/VisualGDB
+/commit_squash.sh
+/evars.txt
+/evars_non_dev.txt
+/gpg_refresh.sh
+/IDE/VisualStudio/EmbeddedProject1
+/IDE/VisualStudio/wolfboot
+/IDE/CMakeProject
+/.vs.bad
