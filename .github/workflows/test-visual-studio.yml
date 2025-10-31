@@ -9,7 +9,14 @@ on:
 
 jobs:
   build:
+    name: Visual Studio Keytools Tests
     runs-on: windows-latest
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
 
     strategy:
       matrix:
