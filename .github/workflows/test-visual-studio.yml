@@ -40,7 +40,8 @@ jobs:
       - name: Build keygen
         shell: cmd
         run: >
-          msbuild tools\keytools\wolfBootKeygenTool.vcxproj
+          cd tools\keytools\
+          msbuild wolfBootKeygenTool.vcxproj
           /t:Rebuild
           /m
           /p:Configuration=%CONFIG%
@@ -51,4 +52,8 @@ jobs:
       - name: Run keygen
         shell: cmd
         working-directory: tools\keytools
-        run: .\%PLATFORM%\%CONFIG%\keygen.exe --help
+        run: |
+          pwd
+
+          .\%PLATFORM%\%CONFIG%\keygen.exe ecc256 -g wolfboot_signing_private_key.der
+
