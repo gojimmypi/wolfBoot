@@ -1,0 +1,30 @@
+name: wolfBoot Visual Studio
+
+on:
+  push:
+    # TODO: branches: [ 'master', 'main', 'release/**' ]
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        platform: [x64, x86]
+
+    steps:
+      # Adds MSBuild to PATH
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Build
+        run: >
+          msbuild tools\keytools\wolfBootKeyTools.sln
+          /m
+          /p:Configuration=${{ matrix.config }}
+          /p:Platform=${{ matrix.platform }}
+          /p:PreferredToolArchitecture=x64
+          /warnaserror
