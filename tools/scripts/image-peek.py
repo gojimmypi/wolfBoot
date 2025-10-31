@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+#
+# Usage:
+#   usage: image-peek.py [-h] [--header-size HEADER_SIZE] [--dump-payload OUT] [--verify-hash] [--verify-sig PUBKEY] [--alg {ecdsa-p256,ed25519}] image
+#
+# Example:
+#   ./tools/scripts/image-peek.py ./test_v1_signed.bin --verify-sig ./keystore_spki.der --alg ecdsa-p256
+
 import argparse, struct, hashlib, sys, datetime
 from pathlib import Path
 
