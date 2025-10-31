@@ -28,8 +28,20 @@ export MAKE_HASH="${HASH^^}"
 
 make -j1 keytools SIGN=${MAKE_SIGN} HASH=${MAKE_HASH}
 
+echo "Generate a new keystore"
 ./tools/keytools/keygen --${ASYM} -g wolfboot_signing_private_key.der
 
+echo ""
+echo "Looking for test.bin to sign ..."
+if [ -f "test.bin" ]; then
+    echo "Found existing test.bin"
+else
+    echo "Creating a new test.bin"
+    echo "Test" > test.bin
+fi
+
+echo ""
+echo "Generate sign test.bin"
 ./tools/keytools/sign --${ASYM} --${HASH} test.bin wolfboot_signing_private_key.der 1
 
 echo ""
