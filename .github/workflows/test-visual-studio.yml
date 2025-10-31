@@ -38,9 +38,13 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          echo Copying tools\unit-tests\target.h to src\target.h
+          :: echo Copying tools\unit-tests\target.h to src\target.h
 
-          copy /Y tools\unit-tests\target.h src\target.h
+          :: copy /Y tools\unit-tests\target.h src\target.h
+
+          echo Copying tools\unit-tests\target.h to include\target.h
+
+          copy /Y tools\unit-tests\target.h include\target.h
 
       # Step 1 Build keygen, then run it
       - name: Build KeygenTool keygen.exe
@@ -153,6 +157,11 @@ jobs:
 
           echo Current directory:
           echo %cd%
+
+          :: A missing target.h is a common failure on GitHub.
+          :: See above where we copy one from [WOLFBOOT_ROOT]\tools\unit-tests\
+          echo Where is the target.h?
+          dir target.h /s
 
           .\tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe  .\test_v1_signed.bin
 
