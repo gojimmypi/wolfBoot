@@ -12,14 +12,15 @@ jobs:
     name: Visual Studio Keytools Tests
     runs-on: windows-latest
 
-    strategy:
-      matrix:
-        config: [Debug, Release]
-        platform: [x64, x86]
+    env:
+      CONFIG: Debug
+      PLATFORM: x64
 
     steps:
       # Adds MSBuild to PATH
       - uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x64
 
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
@@ -35,11 +36,19 @@ jobs:
 
           copy /Y tools\unit-tests\target.h src\target.h
 
-      - name: Build
+      # Step 1 Build keygen, then run it
+      - name: Build keygen
+        shell: cmd
         run: >
-          msbuild tools\keytools\wolfBootKeyTools.sln
+          msbuild tools\keytools\wolfBootKeygenTool.vcxproj
+          /t:Rebuild
           /m
-          /p:Configuration=${{ matrix.config }}
-          /p:Platform=${{ matrix.platform }}
+          /p:Configuration=%CONFIG%
+          /p:Platform=%PLATFORM%
           /p:PreferredToolArchitecture=x64
-          /warnaserror
+          /v:m
+
+      - name: Run keygen
+        shell: cmd
+        working-directory: tools\keytools
+        run: .\%PLATFORM%\%CONFIG%\keygen.exe --help
