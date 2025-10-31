@@ -8,5 +8,6 @@
       "build-stm32f1",
       "build-stm32g0"
     ]
-  }
+  },
+  "PreviewInSolutionExplorer": false
 }
