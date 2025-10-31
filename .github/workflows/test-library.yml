@@ -36,9 +36,9 @@ jobs:
 
         # See https://github.com/wolfSSL/wolfBoot/issues/614 regarding exclusions:
         # TODO disabled, expect failure until resolved:
-        # exclude:
-        #  - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
-        #  - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
+        exclude:
+         - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
+         - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
 
     steps:
       - uses: actions/checkout@v4
