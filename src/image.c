@@ -988,20 +988,28 @@ static int image_sha256(struct wolfBoot_image *img, uint8_t *hash)
  * @param key_slot The key slot ID to calculate the hash for.
  * @param hash A pointer to store the resulting SHA256 hash.
  */
-static void key_sha256(uint8_t key_slot, uint8_t *hash)
+static int key_sha256(uint8_t key_slot, uint8_t *hash)
 {
     uint8_t *pubkey = keystore_get_buffer(key_slot);
     int pubkey_sz = keystore_get_size(key_slot);
     wc_Sha256 sha256_ctx;
+    int ret = 0;
+
+    if (!pubkey || (pubkey_sz < 0)) {
+        return -1;
+    }
 
     memset(hash, 0, SHA256_DIGEST_SIZE);
-    if (!pubkey || (pubkey_sz < 0))
-        return;
 
-    wc_InitSha256(&sha256_ctx);
-    wc_Sha256Update(&sha256_ctx, pubkey, (word32)pubkey_sz);
-    wc_Sha256Final(&sha256_ctx, hash);
+    ret = wc_InitSha256(&sha256_ctx);
+    if (ret == 0) {
+        ret = wc_Sha256Update(&sha256_ctx, pubkey, (word32)pubkey_sz);
+    }
+    if (ret == 0) {
+        ret = wc_Sha256Final(&sha256_ctx, hash);
+    }
     wc_Sha256Free(&sha256_ctx);
+    return ret;
 }
 #endif /* WOLFBOOT_NO_SIGN */
 #endif /* SHA2-256 */
