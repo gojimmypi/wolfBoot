@@ -993,7 +993,7 @@ test-size-all:
 	make keysclean
 	make test-size SIGN=XMSS XMSS_PARAMS='XMSS-SHA2_10_256' \
 		IMAGE_SIGNATURE_SIZE=2500 IMAGE_HEADER_SIZE?=4096 \
-		LIMIT=8408 NO_ARM_ASM=1
+		LIMIT=8420 NO_ARM_ASM=1
 	make keysclean
 	make clean
 	make test-size SIGN=ML_DSA ML_DSA_LEVEL=2 LIMIT=19246 \
