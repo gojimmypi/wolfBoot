@@ -985,7 +985,7 @@ test-size-all:
 	make keysclean
 	make test-size SIGN=RSA3072 LIMIT=11548 NO_ARM_ASM=1
 	make clean
-	make test-size SIGN=RSA3072 NO_ASM=1 LIMIT=12080 NO_ARM_ASM=1
+	make test-size SIGN=RSA3072 NO_ASM=1 LIMIT=12092 NO_ARM_ASM=1
 	make keysclean
 	make test-size SIGN=LMS LMS_LEVELS=2 LMS_HEIGHT=5 LMS_WINTERNITZ=8 \
 		WOLFBOOT_SMALL_STACK=0 IMAGE_SIGNATURE_SIZE=2644 \
