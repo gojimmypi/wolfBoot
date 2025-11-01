@@ -1360,8 +1360,9 @@ int main(int argc, char** argv)
     printf("Keystore size:        %lu\n", (unsigned long)sizeof(struct keystore_slot));
 
     /* Check arguments and print usage */
-    if (argc < 2)
+    if (argc < 2) {
         usage(argv[0]);
+    }
 
     for (i = 1; i < argc; i++) {
         /* Parse Arguments */
@@ -1458,7 +1459,8 @@ int main(int argc, char** argv)
             fprintf(stderr, "Invalid argument '%s'.", argv[i]);
             usage(argv[0]);
         }
-    }
+    } /* for */
+
     printf("Selected Keytype:     %s\n", KName[keytype]);
     if (keytype == 0) {
         fprintf(stderr, "No keytype, exiting...");
