@@ -20,7 +20,7 @@ make wolfboot_signing_private_key.der SIGN=ECC256
 
 ## Generated Files
 
-Unless otherwise specified the keygen will create:
+Unless otherwise specified the `keygen` will create:
 
 1. `./wolfboot_signing_private_key.der` - the private key used for signing.
 2. `./keystore.der` - the public key.
@@ -161,10 +161,15 @@ Example:
 ```DOS
 cd $WOLFBOOT_ROOT\tools\keytools
 
-:: cmd       sign     hash   input     private key                    version
-:: ----- --------- -------- -------- -------------------------------- -------
-sign.exe --ed25519 --sha256 test.bin wolfboot_signing_private_key.der 1
+:: cmd       sign     hash   input     private key                    [version]      [output]
+:: ----- --------- -------- -------- -------------------------------- --------- ------------------
+sign.exe --ed25519 --sha256 test.bin wolfboot_signing_private_key.der     1     test_v1_signed.bin
 ```
+
+The last two parameters are optional:
+
+- Version, default is `1`
+- Output, default is `[input]_v1_signed.bin`, where the number after the `v` is the version.
 
 Be sure the signing algorithm used here matches the one on the key generation!
 
