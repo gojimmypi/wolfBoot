@@ -2789,19 +2789,19 @@ static int process_args(int argc, char** argv) {
                     printf("Using:\n");
                 }
                 else {
-                    if ((i == argc - param_ct)) {
+                    if (i == (argc - param_ct)) {
                         /* param #1 is essential */
                         printf("  Image:   %s\n", argv[i + 0]);
                     }
-                    if ((i == argc - param_ct + 1)) {
+                    if (i == (argc - param_ct + 1)) {
                         /* param #2 is essential */
                         printf("  Key:     %s\n", argv[i + 1]);
                     }
-                    if ((i == argc - param_ct + 2)) {
+                    if (i == (argc - param_ct + 2)) {
                         /* param #3 is optional, version number */
                         printf("  Version: %s\n", argv[i + 2]);
                     }
-                    if ((i == argc - param_ct + 3)) {
+                    if (i == (argc - param_ct + 3)) {
                         /* param #4 is optional, output name*/
                         printf("  Output:  %s\n", argv[i + 3]);
                     }
