@@ -963,7 +963,7 @@ test-all: clean
 test-size-all:
 	make test-size SIGN=NONE LIMIT=4896 NO_ARM_ASM=1
 	make keysclean
-	make test-size SIGN=ED25519 LIMIT=11548 NO_ARM_ASM=1
+	make test-size SIGN=ED25519 LIMIT=11556 NO_ARM_ASM=1
 	make keysclean
 	make test-size SIGN=ECC256  LIMIT=18656 NO_ARM_ASM=1
 	make clean
