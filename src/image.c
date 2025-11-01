@@ -2218,20 +2218,25 @@ int keyslot_id_by_sha(const uint8_t *hint)
     for (id = 0; id < keystore_num_pubkeys(); id++) {
         ct++;
 #ifdef WOLFBOOT_KEYHASH_HAS_RET
-        ret = key_hash_ok(id, digest);
+        key_hash_ok(id, digest);
+        ret = 0; /* No return code for this one; assume success calc */
 #else
         key_hash(id, digest);
         ret = 0; /* No return code for this one; assume success calc */
 #endif
         if ((ret == 0) && memcmp(digest, hint, WOLFBOOT_SHA_DIGEST_SIZE) == 0) {
+#ifdef mydebug
             wolfBoot_printf("Found matching digest in slot %d\n", id);
+#endif
             return id;
         }
     }
 
     if (ret == 0) {
         /* Calls to key_hash were successful, but we did not find one. Fail: */
+#ifdef mydebug
         wolfBoot_printf("No matching key hash found. Looked at %d slot(s)", ct);
+#endif
         ret = -1;
     }
     /* Reminder: zero based slot array. */
