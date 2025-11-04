@@ -45,7 +45,7 @@ else()
     # Environments are detected in this order:
     set(DETECT_VISUALGDB false)
     set(DETECT_MINGW     false)
-    set(DETECT_CUBEIDE   false)
+    set(DETECT_CUBEIDE   true)
     set(DETECT_VS2022    true)
     set(DETECT_LLVM      false)
 
