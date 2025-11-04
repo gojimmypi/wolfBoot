@@ -536,12 +536,28 @@ if(EXTRA_DEFS)
     list(APPEND WOLFBOOT_DEFS ${WOLFBOOT_EXTRA_DEFS})
 endif()
 
-set(WOLFBOOT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+# TODO also consider config setting
+# Ensure WOLFBOOT_ROOT is set. Prefer env var, else default to "."
+# WOLFBOOT_ROOT is typically a lib directory in wolfBoot and contains:
+#                   wolfHSM, wolfPKCS11, wolfssl, wolfTPM, and perhaps others.
+if(NOT DEFINED WOLFBOOT_ROOT OR WOLFBOOT_ROOT STREQUAL "")
+    if(DEFINED ENV{WOLFBOOT_ROOT} AND NOT "$ENV{WOLFBOOT_ROOT}" STREQUAL "")
+        message(STATUS "Setting WOLFBOOT_ROOT from environment variable")
+        set(WOLFBOOT_ROOT "$ENV{WOLFBOOT_ROOT}" CACHE PATH "Path to wolfBoot lib root")
+    else()
+        message(STATUS "Setting WOLFBOOT_ROOT to default current directory.")
+        set(WOLFBOOT_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Path to wolfBoot lib root")
+    endif()
+endif()
+message(STATUS "WOLFBOOT_ROOT=${WOLFBOOT_ROOT}")
+
 list(APPEND WOLFBOOT_DEFS __WOLFBOOT)
 
-set(WOLFBOOT_SOURCES include/loader.h include/image.h src/string.c src/image.c)
-
-list(APPEND WOLFBOOT_SOURCES src/loader.c)
+set(WOLFBOOT_SOURCES "include/loader.h"
+                     "include/image.h"
+                     "src/string.c"
+                     "src/image.c"
+                     "src/loader.c")
 
 if(0)
     # build bin-assemble tool
