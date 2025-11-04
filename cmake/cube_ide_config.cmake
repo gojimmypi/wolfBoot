@@ -37,6 +37,12 @@ else()
     include_guard(GLOBAL)
 endif()
 
+if(DEFINE FUNCTIONS_CMAKE_INCLUDED)
+    message(STATUS "Found required functions.cmake")
+else()
+    message(FATL_ERROR "Missing required functions.cmake")
+endif()
+
 # Exclude entire file unless DETECT_CUBEIDE is set to true
 if(DETECT_CUBEIDE)
 
