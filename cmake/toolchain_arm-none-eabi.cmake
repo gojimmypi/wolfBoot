@@ -217,4 +217,26 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG -flto -Wl,-flto"     CACHE INTERNAL
 set(CMAKE_ASM_FLAGS_MINSIZEREL ""        CACHE INTERNAL "ASM Compiler options for minimum size release build type")
 set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "-flto -Wl,-flto" CACHE INTERNAL "Linker options for minimum size release build type")
 
+
+# Locate the GNU Arm bin dir from the compiler path
+get_filename_component(_gcc_dir "${CMAKE_C_COMPILER}" DIRECTORY)
+
+# Prefer the tool right next to the compiler
+find_program(CMAKE_SIZE
+    NAMES arm-none-eabi-size
+    HINTS "${_gcc_dir}"
+    NO_DEFAULT_PATH
+)
+# Fallback: PATH search
+if(NOT CMAKE_SIZE)
+    find_program(CMAKE_SIZE NAMES arm-none-eabi-size)
+endif()
+
+# Make it visible to all dirs and saved in CMakeCache.txt
+if(CMAKE_SIZE)
+    set(CMAKE_SIZE "${CMAKE_SIZE}" CACHE FILEPATH "Path to arm-none-eabi-size")
+else()
+    message(STATUS "CMAKE_SIZE arm-none-eabi-size not found; add your ARM GCC bin dir to PATH or fix the toolchain hints.")
+endif()
+
 set(TOOLCHAIN_ARM_NONE_EABI_CMAKE_INCLUDED true)
