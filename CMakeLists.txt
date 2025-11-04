@@ -49,7 +49,7 @@ include(cmake/config_defaults.cmake)
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(
         FATAL_ERROR
-            "In-source builds are not allowed.\
+            "In-source builds are not allowed for wolfBoot.\
      Run cmake from a separate directory from where CMakeLists.txt lives.\
      NOTE: cmake will now create CMakeCache.txt and CMakeFiles/*.\
      You must delete them, or cmake will refuse to work.")
@@ -61,7 +61,7 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
             NOT WOLFBOOT_TARGET STREQUAL "x86_64_efi" AND
             NOT WOLFBOOT_TARGET STREQUAL "sim")
         set(CMAKE_TOOLCHAIN_FILE
-        "${CMAKE_SOURCE_DIR}/cmake/toolchain_arm-none-eabi.cmake"
+        "${CMAKE_CURRENT_LIST_DIR}/cmake/toolchain_arm-none-eabi.cmake"
         CACHE FILEPATH "" FORCE)
     endif()
 endif()
@@ -296,10 +296,10 @@ endif()
 # Common includes/defines for host tools
 #---------------------------------------------------------------------------------------------
 set(HOST_INCLUDES
-    ${HOST_I}${CMAKE_SOURCE_DIR}/tools/keytools
-    ${HOST_I}${CMAKE_SOURCE_DIR}/lib/wolfssl
-    ${HOST_I}${CMAKE_SOURCE_DIR}/include
-    ${HOST_I}${CMAKE_CURRENT_BINARY_DIR}
+    ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools>
+    ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/lib/wolfssl>
+    ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
 if(NOT DEFINED IMAGE_HEADER_SIZE)
@@ -365,8 +365,10 @@ if(CMAKE_HOST_WIN32 AND  (HOST_IS_MSVC OR HOST_CC MATCHES [[(^|[/\\])clang(\.exe
     list(INSERT HOST_INCLUDES 0 ${HOST_I}$<SHELL_PATH:${HOST_SHIM_DIR}>)
 endif() # Windows Host Shim
 
-include_directories(include)
-include_directories(lib/wolfssl)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/wolfssl
+)
 
 # TODO
 if(false) # my Windows
@@ -592,7 +594,7 @@ else()
                 ${HOST_INCLUDES}            # <-- needed for unistd.h shim
                 ${HOST_FO} # /Fo$<SHELL_PATH:${BINASSEMBLE_OBJDIR}/>  # isolate objs
                 ${HOST_OUT}$<SHELL_PATH:${BINASSEMBLE}>
-                $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
+                $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/bin-assemble/bin-assemble.c>
                 ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         COMMENT "Building bin-assemble tool"
@@ -1162,17 +1164,15 @@ list(
 )
 
 set(KEYTOOL_SOURCES_ABS ${KEYTOOL_SOURCES})
-list(TRANSFORM KEYTOOL_SOURCES_ABS PREPEND ${CMAKE_SOURCE_DIR}/)
+list(TRANSFORM KEYTOOL_SOURCES_ABS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
 
-list(APPEND  KEYTOOL_FLAGS
-    -Wall
-    -Wextra
-    -Werror
-    -Itools/keytools
+list(APPEND KEYTOOL_FLAGS
+    -Wall -Wextra -Werror
+    -I$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools>
     -DWOLFSSL_USER_SETTINGS
-    -Ilib/wolfssl/
-    -Iinclude
-    -I${CMAKE_CURRENT_BINARY_DIR}
+    -I$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/lib/wolfssl>
+    -I$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    -I$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}>
     -O2
     -DIMAGE_HEADER_SIZE=${IMAGE_HEADER_SIZE}
     -DDELTA_UPDATES
@@ -1223,7 +1223,7 @@ endif()
       COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
               ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
               ${HOST_FO_SIGN}
-              $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/sign.c>
+              $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools/sign.c>
               ${KEYTOOL_SOURCES_ABS}
               ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
               ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
@@ -1257,7 +1257,7 @@ add_custom_command(
   COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
           ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
           ${HOST_FO_KEYGEN}
-          $<SHELL_PATH:${CMAKE_SOURCE_DIR}/tools/keytools/keygen.c>
+          $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools/keygen.c>
           ${KEYTOOL_SOURCES_ABS}
           ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
           ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
@@ -1376,7 +1376,9 @@ configure_file(include/target.h.in ${CMAKE_CURRENT_BINARY_DIR}/target.h @ONLY)
 
 add_library(target INTERFACE)
 target_compile_definitions(target INTERFACE ${WOLFBOOT_DEFS})
-target_include_directories(target BEFORE INTERFACE ${CMAKE_CURRENT_BINARY_DIR} lib/wolfssl)
+target_include_directories(target BEFORE INTERFACE
+                                    ${CMAKE_CURRENT_BINARY_DIR}
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/lib/wolfssl)
 
 set(KEYSTORE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
 
