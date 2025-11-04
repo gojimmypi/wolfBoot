@@ -1,6 +1,5 @@
 ﻿# Key Tools for signing and key generation
 
-
 ## Sign
 
 See documentation in [docs/Signing.md](../../docs/Signing.md).
@@ -18,9 +17,9 @@ make wolfboot_signing_private_key.der SIGN=ECC256
 ./tools/keytools/keygen --ecc256 -g wolfboot_signing_private_key.der
 ```
 
-## Generated Files
+## Generated Keystore Files
 
-Unless otherwise specified the `keygen` will create:
+Unless otherwise specified the `keygen` app will create:
 
 1. `./wolfboot_signing_private_key.der` - the private key used for signing.
 2. `./keystore.der` - the public key.
@@ -103,11 +102,11 @@ Select: Properties - Configuration Properties - Debugging:
 ```text
 Command:           $(TargetPath)
 Command Arguments: --ed25519 -g $(ProjectDir)wolfboot_signing_private_key.der   -keystoreDir  $(ProjectDir)
-Working Directory: $(ProjectDir)
+Working Directory: $(ProjectDir)..\..\
 ```
 
-Replace `$(ProjectDir)` with your desired path for keys and firmware locations.
-Otherwise the private key will be created in `tools\keytools`.
+Replace `$(ProjectDir)` with your desired `keystoreDir` path for keys and firmware locations.
+Otherwise the private key will be created in the project directory `[WOLFBOOT_ROOT]\tools\keytools`.
 
 Example:
 

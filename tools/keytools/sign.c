@@ -1601,6 +1601,8 @@ static int make_header_ex(int is_diff, uint8_t *pubkey, uint32_t pubkey_sz,
                 signature, &CMD.signature_sz, digest, digest_sz, 0);
             if (ret != 0) {
                 printf("Signing error %d\n", ret);
+                printf("Check keystore.c, keystore and private key DER files in entire project path.");
+                printf("There should be exactly 1 of each file.");
                 goto failure;
             }
         }
@@ -2779,6 +2781,11 @@ static int process_args(int argc, char** argv) {
 #ifdef DEBUG_SIGNTOOL
             printf("    (#%d is not a setting, stop processing of remaining %d args as settings)\n", i, argc - i);
 #endif
+            /* With 2 required and 2 optional parameters, we'll have (#args - 4) .. (#args - 2) values.
+             * The first required parameter is the image name.
+             * The next required parameter is the private key DER file.
+             * Optionally specify version, default is "1"
+             * Optionally specify output image, default is  "[image_name]_v[version]_signed.bin" */
             if ((i >= (argc - (REQUIRED_PARAM_CT + OPTIONAL_PARAM_CT))) && (i <= (argc - REQUIRED_PARAM_CT)))
             {
                 /* Looks like we have good parameters */
