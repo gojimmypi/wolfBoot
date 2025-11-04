@@ -45,7 +45,7 @@ set "SCRIPT_DIR_P=%SCRIPT_DIR%"
 set "REPO_ROOT_P=%REPO_ROOT%"
 set "CALLER_CWD_P=%CALLER_CWD%"
 
-rem === Print only if caller CWD is neither <root> nor <root>\scripts ===
+rem === Print only if caller CWD is neither [root] nor [root]\scripts ===
 if /I "%CALLER_CWD_P%"=="%REPO_ROOT_P%" goto after_print
 if /I "%CALLER_CWD_P%"=="%REPO_ROOT_P%\scripts" goto after_print
 
