@@ -27,7 +27,22 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <unistd.h>
+#ifdef _WIN32
+    #include <io.h>        /* _open, _write, _close */
+    #include <sys/stat.h>  /* _S_IREAD, _S_IWRITE   */
+    #define OPEN  _open
+    #define WRITE _write
+    #define CLOSE _close
+    #define OFLAGS (O_WRONLY | O_CREAT | O_TRUNC | O_BINARY)
+    #define OMODE  (_S_IREAD | _S_IWRITE)   /* 0600 equivalent */
+#else
+    #include <unistd.h>    /* open, write, close on POSIX */
+    #define OPEN  open
+    #define WRITE write
+    #define CLOSE close
+    #define OFLAGS (O_WRONLY | O_CREAT | O_TRUNC)
+    #define OMODE  (0600)
+#endif
 #include <errno.h>
 
 /* Define a generic max OTP size to appease otp_keystore.h */
@@ -71,20 +86,20 @@ int main(void)
     fprintf(stderr, "%s size: %d\n", outfile, (slot_size * n_keys) +
         (int)sizeof(struct wolfBoot_otp_hdr));
 
-    ofd = open(outfile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
+    ofd = OPEN(outfile, OFLAGS, OMODE);
     if (ofd < 0) {
         perror("opening output file");
         exit(2);
     }
 
     /* Write the header to the beginning of the OTP binary file */
-    if (write(ofd, &hdr, sizeof(hdr)) != sizeof(hdr)) {
+    if (WRITE(ofd, &hdr, sizeof(hdr)) != sizeof(hdr)) {
         fprintf(stderr, "Error writing to %s: %s\n", outfile, strerror(errno));
     }
 
     for (i = 0; i < n_keys; i++) {
         /* Write each public key to its slot in OTP */
-        if (write(ofd, &PubKeys[i],
+        if (WRITE(ofd, &PubKeys[i],
                 slot_size) < 0) {
             fprintf(stderr, "Error adding key %d to %s: %s\n", i, outfile,
                 strerror(errno));
@@ -92,7 +107,7 @@ int main(void)
         }
     }
     fprintf(stderr, "%s successfully created.\nGoodbye.\n", outfile);
-    close(ofd);
+    CLOSE(ofd);
 
     return 0;
 }
