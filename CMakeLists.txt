@@ -1389,23 +1389,21 @@ if(NOT SIGN STREQUAL "NONE")
     add_custom_target(keystore DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL} ${KEYSTORE})
 
     # generate keystore.c if it does not already exist
-    if(NOT EXISTS ${KEYSTORE})
-            message(STATUS "Will generate fresh: ${KEYSTORE}")
-            message(STATUS "  with KEYGEN_TOOL:  ${KEYGEN_TOOL}")
-            message(STATUS "  and options:       ${KEYTOOL_OPTIONS}")
-            message(STATUS "  with key file:     ")
-        add_custom_command(
-            OUTPUT ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
-            COMMAND "${KEYGEN_TOOL}" ${KEYTOOL_OPTIONS} -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
-                    -keystoreDir ${CMAKE_CURRENT_BINARY_DIR}
-            WORKING_DIRECTORY ${WOLFBOOT_ROOT}
-            COMMENT "Generating keystore.c and signing private key")
+    message(STATUS "Will generate fresh: ${KEYSTORE}")
+    message(STATUS "  with KEYGEN_TOOL:  ${KEYGEN_TOOL}")
+    message(STATUS "  and options:       ${KEYTOOL_OPTIONS}")
+    message(STATUS "  with key file:     ")
+    add_custom_command(
+        OUTPUT ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
+        COMMAND "${KEYGEN_TOOL}" ${KEYTOOL_OPTIONS} --no-overwrite -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
+                -keystoreDir ${CMAKE_CURRENT_BINARY_DIR}
+        WORKING_DIRECTORY ${WOLFBOOT_ROOT}
+        COMMENT "Generating keystore.c and signing private key")
 
-        add_custom_command(
-            OUTPUT "${KEYSTORE}" ${WOLFBOOT_SIGNING_PRIVATE_KEY}
-            DEPENDS "${KEYGEN_TOOL}"
-            APPEND)
-    endif()
+    add_custom_command(
+        OUTPUT "${KEYSTORE}" ${WOLFBOOT_SIGNING_PRIVATE_KEY}
+        DEPENDS "${KEYGEN_TOOL}"
+        APPEND)
 
     add_library(public_key)
     target_sources(public_key PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
