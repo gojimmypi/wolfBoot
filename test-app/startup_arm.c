@@ -29,7 +29,7 @@ extern unsigned int _end_bss;
 extern unsigned int _end_stack;
 extern unsigned int _start_heap;
 
-#ifdef TARGET_stm32f4
+#if (defined TARGET_stm32f4 || defined TARGET_stm32g0)
 extern void isr_tim2(void);
 #else
 #define isr_tim2 isr_empty
