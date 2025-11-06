@@ -38,10 +38,13 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          :: echo Copying tools\unit-tests\target.h to src\target.h
+          :: # echo Copying tools\unit-tests\target.h to src\target.h
+          :: # copy /Y      tools\unit-tests\target.h    src\target.h
 
-          :: copy /Y tools\unit-tests\target.h src\target.h
-
+          :: # Note the target.h is typically assembled during the CMake process.
+          :: # configure_file(include/target.h.in ${CMAKE_CURRENT_BINARY_DIR}/target.h @ONLY)
+          ::
+          :: # But we copy the unit-test sample for this workflow
           echo Copying tools\unit-tests\target.h to include\target.h
 
           copy /Y tools\unit-tests\target.h include\target.h
