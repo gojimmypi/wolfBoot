@@ -1,4 +1,5 @@
 cls
+:: run .\tools\scripts\gen_vs.bat from [WOLFBOOT_ROOT]
 
 setlocal enabledelayedexpansion
 
