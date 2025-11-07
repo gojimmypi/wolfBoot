@@ -73,7 +73,7 @@ jobs:
         shell: cmd
         working-directory: .\
         run: |
-          :: Run keygen.exe
+          :: # Run keygen.exe
 
           echo Current directory:
           echo %cd%
@@ -167,15 +167,15 @@ jobs:
         shell: cmd
         working-directory: .\
         run: |
-          :: Run sign.exe
+          :: # Run sign.exe
 
           echo Current directory:
           echo %cd%
 
-          :: A missing target.h is a common build failure on GitHub.
-          :: See above where we copy one from [WOLFBOOT_ROOT]\tools\unit-tests\
-          :: echo Where is the target.h?
-          :: dir target.h /s
+          :: # A missing target.h is a common build failure on GitHub.
+          :: # See above where we copy one from [WOLFBOOT_ROOT]\tools\unit-tests\
+          :: # echo Where is the target.h?
+          :: # dir target.h /s
 
           dir test_v1_signed.bin /s
 
@@ -188,4 +188,72 @@ jobs:
 
           .\tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe               .\test_v1_signed.bin
 
+        # Build the OTP Flash otp-keystore-gen.exe that creates otp.bin
+      - name: Build Flash OTP
+        shell: cmd
+        working-directory: .\
+        run: |
+          :: # Begin otp-keystore-gen.exe build from DOS command prompt
+
+          echo Current directory:
+          echo %cd%
+
+          pushd tools\keytools\
+
+          msbuild wolfBootFlashOTP.vcxproj   ^
+            /t:Rebuild                         ^
+            /m                                 ^
+            /p:Configuration=%CONFIG%          ^
+            /p:Platform=%PLATFORM%             ^
+            /p:PreferredToolArchitecture=x64   ^
+            /v:m
+
+          popd
+
+      - name: Run Flash OTP otp-keystore-gen.exe
+        shell: cmd
+        working-directory: .\
+        run: |
+          :: # Run otp-keystore-gen.exe
+
+          echo Current directory:
+          echo %cd%
+
+          .\tools\keytools\%PLATFORM%\%CONFIG%\otp-keystore-gen.exe
+
+          if errorlevel 1 (
+            echo otp-keystore-gen.exe failed with ERRORLEVEL %ERRORLEVEL%
+            exit /b %ERRORLEVEL%
+          )
+
+          echo "otp-keystore-gen otp.bin file:"
+          dir otp.bin /s
+
           echo Done!
+
+      # Upload binaries if present (non-fatal if none)
+      - name: Upload firmware/artifacts
+        if:   always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wolfboot-visual-studio
+          path: |
+            # copied from tools\unit-tests\target.h
+            include\target.h
+
+            # test private key generated
+            .\wolfboot_signing_private_key.der
+            .\src\keystore.c
+
+            # created executables
+            .\tools\keytools\x64\Debug\keygen.exe
+            .\tools\keytools\x64\Debug\sign.exe
+            .\tools\keytools\x64\Debug\test-lib.exe
+            .\tools\keytools\x64\Debug\otp-keystore-gen.exe
+
+            # sample files
+            .\test.bin
+            .\test_v1_signed.bin
+            .\otp.bin
+
+          if-no-files-found: warn

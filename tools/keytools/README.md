@@ -8,13 +8,23 @@ See documentation in [docs/Signing.md](../../docs/Signing.md).
 
 See documentation [docs/keystore.md](../../docs/keystore.md).
 
+## Flash OTP
+
+Pack public keys into a single binary (`otp.bin`) formatted the way wolfBoot expects for
+provisioning the device’s OTP/NVM keystore. No signing, no encryption—just a correctly laid-out image
+with a header plus fixed-size "slots" for each key.
+
+See documentation [docs/flash-OTP.md](../../docs/flash-OTP.md).
+
+
 ## Quick Start (Linux)
 
 ```
-make wolfboot_signing_private_key.der SIGN=ECC256
+make wolfboot_signing_private_key.der SIGN=ED25519
 
 # or
-./tools/keytools/keygen --ecc256 -g wolfboot_signing_private_key.der
+
+./tools/keytools/keygen --ed25519 -g wolfboot_signing_private_key.der
 ```
 
 ## Generated Keystore Files
@@ -25,8 +35,11 @@ Unless otherwise specified the `keygen` app will create:
 2. `./keystore.der` - the public key.
 3. `src/keystore.c` - the public key, converted to c array.
 
+Common pitfalls: mismatched keystore files in different directories. There should be exactly one
+instance of each of the above files in the build tree.
 
-Common pitfalls: mismatched keystore files in different directories.
+The `./tools/scripts/keystore_file_check.sh` may be helpful.
+
 
 ## Strip wolfBoot header
 

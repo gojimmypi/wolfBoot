@@ -29,12 +29,13 @@
 #include <fcntl.h>
 #ifdef _WIN32
     #include <io.h>        /* _open, _write, _close */
+    #include <share.h>     /* _SH_DENYNO */
     #include <sys/stat.h>  /* _S_IREAD, _S_IWRITE   */
-    #define OPEN  _open
+    #define OPEN  _sopen_s
     #define WRITE _write
     #define CLOSE _close
-    #define OFLAGS (O_WRONLY | O_CREAT | O_TRUNC | O_BINARY)
-    #define OMODE  (_S_IREAD | _S_IWRITE)   /* 0600 equivalent */
+    #define OFLAGS (_O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY)
+    #define OMODE  (_S_IREAD | _S_IWRITE)
 #else
     #include <unistd.h>    /* open, write, close on POSIX */
     #define OPEN  open
@@ -63,9 +64,16 @@ int main(void)
     int n_keys = keystore_num_pubkeys();
     int i;
     struct wolfBoot_otp_hdr hdr;
-    uint32_t tot_len;
-    int ofd;
+    int ofd = -1;
     int slot_size;
+#ifdef _WIN32
+    char msg[128] = { 0 };
+    const int oflags = _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY;
+    const int share = _SH_DENYNO;
+    const int mode = _S_IREAD | _S_IWRITE;
+
+    errno_t err = -1;
+#endif
 
     memcpy(hdr.keystore_hdr_magic, KEYSTORE_HDR_MAGIC, 8);
     hdr.item_count = n_keys;
@@ -86,23 +94,44 @@ int main(void)
     fprintf(stderr, "%s size: %d\n", outfile, (slot_size * n_keys) +
         (int)sizeof(struct wolfBoot_otp_hdr));
 
+#ifdef _WIN32
+    err = _sopen_s(&ofd, outfile, oflags, share, mode);
+    if (err != 0 || ofd < 0) {
+        (void)strerror_s(msg, sizeof msg, (err != 0) ? err : errno);
+        fprintf(stderr, "opening output file: %s\n", msg);
+        exit(2);
+    }
+#else
     ofd = OPEN(outfile, OFLAGS, OMODE);
     if (ofd < 0) {
         perror("opening output file");
         exit(2);
     }
+#endif
 
     /* Write the header to the beginning of the OTP binary file */
     if (WRITE(ofd, &hdr, sizeof(hdr)) != sizeof(hdr)) {
+#ifdef _WIN32
+        (void)strerror_s(msg, sizeof msg, (err != 0) ? err : errno);
+        fprintf(stderr, "Error writing to %s: %s\n", outfile, msg);
+#else
         fprintf(stderr, "Error writing to %s: %s\n", outfile, strerror(errno));
+#endif
+
     }
 
     for (i = 0; i < n_keys; i++) {
         /* Write each public key to its slot in OTP */
         if (WRITE(ofd, &PubKeys[i],
                 slot_size) < 0) {
+#ifdef _WIN32
+            (void)strerror_s(msg, sizeof msg, (err != 0) ? err : errno);
+            fprintf(stderr, "Error adding key %d to %s: %s\n", i, outfile,
+                msg);
+#else
             fprintf(stderr, "Error adding key %d to %s: %s\n", i, outfile,
                 strerror(errno));
+#endif
             exit(3);
         }
     }
