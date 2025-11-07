@@ -146,23 +146,6 @@ jobs:
           echo test_v1_signed.bin file:
           dir test_v1_signed.bin /s
 
-      # Step 3 Build Test tool, then run it
-      - name: Build Library Test test-lib.exe
-        shell: cmd
-        working-directory: .\
-        run: |
-          pushd tools\keytools\
-
-          msbuild wolfBootTestLib.vcxproj      ^
-            /t:Rebuild                         ^
-            /m                                 ^
-            /p:Configuration=%CONFIG%          ^
-            /p:Platform=%PLATFORM%             ^
-            /p:PreferredToolArchitecture=x64   ^
-            /v:m
-
-          popd
-
       - name: DOS Keystore File Check
         shell: cmd
         working-directory: .\
@@ -180,6 +163,23 @@ jobs:
             echo "Running ./tools/scripts/keystore_file_check.sh"
 
             ./tools/scripts/keystore_file_check.sh
+
+      # Step 3 Build Test tool, then run it
+      - name: Build Library Test test-lib.exe
+        shell: cmd
+        working-directory: .\
+        run: |
+          pushd tools\keytools\
+
+          msbuild wolfBootTestLib.vcxproj      ^
+            /t:Rebuild                         ^
+            /m                                 ^
+            /p:Configuration=%CONFIG%          ^
+            /p:Platform=%PLATFORM%             ^
+            /p:PreferredToolArchitecture=x64   ^
+            /v:m
+
+          popd
 
       - name: Run Library Test test-lib.exe
         shell: cmd
