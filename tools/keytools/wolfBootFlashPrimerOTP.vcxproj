@@ -19,10 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0E5B9C81-CA2B-47CA-BA83-074078CF3393}</ProjectGuid>
+    <ProjectGuid>{2DA24AC1-1775-440A-AEEC-257BB8E078CD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>wolfBootSignTool</RootNamespace>
+    <RootNamespace>wolfBootPrimerOTP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>wolfBootPrimerOTP</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,22 +72,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>sign</TargetName>
+    <TargetName>otp-keystore-gen</TargetName>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>sign</TargetName>
+    <TargetName>otp-keystore-gen</TargetName>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>sign</TargetName>
+    <TargetName>otp-keystore-gen</TargetName>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>sign</TargetName>
+    <TargetName>otp-keystore-gen</TargetName>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -95,8 +96,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;DELTA_UPDATES;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;WOLFBOOT_SIGN_ED25519;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;../../lib/wolfssl;../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./otp;../../lib/wolfssl;../../include;../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TARGET_sim;FLASH_OTP_KEYSTORE;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -109,9 +110,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;DELTA_UPDATES;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;WOLFBOOT_SIGN_ED25519;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;../../lib/wolfssl;../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
+      <AdditionalIncludeDirectories>./otp;../../lib/wolfssl;../../include;../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TARGET_sim;FLASH_OTP_KEYSTORE;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+   </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -125,8 +126,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;DELTA_UPDATES;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;WOLFBOOT_SIGN_ED25519;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;../../lib/wolfssl;../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./otp;../../lib/wolfssl;../../include;../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TARGET_sim;FLASH_OTP_KEYSTORE;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,8 +144,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;DELTA_UPDATES;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;WOLFBOOT_SIGN_ED25519;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;../../lib/wolfssl;../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./otp;../../lib/wolfssl;../../include;../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TARGET_sim;FLASH_OTP_KEYSTORE;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,44 +155,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\aes.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\asn.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\chacha.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\coding.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\dilithium.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ecc.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ed25519.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ed448.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\fe_448.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\fe_operations.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ge_448.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ge_operations.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\hash.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\logging.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\memory.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\random.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\rsa.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\sha256.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\sha3.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\sha512.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\sp_c32.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\sp_c64.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\sp_int.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\tfm.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_port.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_lms.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_lms_impl.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss_impl.c" />
-    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
-    <ClCompile Include="..\..\src\delta.c" />
+    <!-- wolfssl not used here -->
+    <!-- NOTE: Linux apps may generate keystore files in [WOLFBOOT_ROOT]/src -->
+    <ClCompile Include=".\keystore.c" Condition="Exists('.\keystore.c')" />
+    <ClCompile Include="..\..\src\keystore.c" Condition="Exists('..\..\src\keystore.c')" />
+
+    <!-- Sim code -->
+    <ClCompile Include=".\otp\hal_host_sim_stub.c" />
     <!-- The main() app -->
-    <ClCompile Include="sign.c">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\lib\wolfssl;..\..\include;..\..\include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\lib\wolfssl;..\..\include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.;..\..\lib\wolfssl;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.;..\..\lib\wolfssl;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile Include=".\otp\otp-keystore-primer.c" />
+
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

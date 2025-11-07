@@ -2,19 +2,31 @@
 
 ## Sign
 
-See documentation in [docs/Signing.md](../../docs/Signing.md).
+See [code file `./tools/keytools/sign.c`](./sign.c) and documentation in [docs/Signing.md](../../docs/Signing.md).
 
 ## KeyGen and KeyStore
 
-See documentation [docs/keystore.md](../../docs/keystore.md).
+See [code file `./tools/keytools/keygen.c`](./keygen.c) and documentation [docs/keystore.md](../../docs/keystore.md).
 
-## Flash OTP
+## Flash OTP Keystore Generation, Primer, Startup
+
+See documentation [docs/flash-OTP.md](../../docs/flash-OTP.md).
+
+### Keystore Generation
 
 Pack public keys into a single binary (`otp.bin`) formatted the way wolfBoot expects for
 provisioning the device’s OTP/NVM keystore. No signing, no encryption—just a correctly laid-out image
 with a header plus fixed-size "slots" for each key.
 
-See documentation [docs/flash-OTP.md](../../docs/flash-OTP.md).
+See [code file `./tools/keytools/otp/otp-keystore-gen.c`](./otp/otp-keystore-gen.c)
+
+### Flash OTP Primer
+
+See [code file `./tools/keytools/otp/otp-keystore-primer.c`](./otp/otp-keystore-primer.c)
+
+## Flash OTP Startup
+
+See [code file `./tools/keytools/otp/startup.c`](./otp/startup.c)
 
 
 ## Quick Start (Linux)

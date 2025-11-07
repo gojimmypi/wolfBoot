@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <KeystoreRel>..\..\src\keystore.c</KeystoreRel>
+    <KeystorePath>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\$(KeystoreRel)'))</KeystorePath>
+  </PropertyGroup>
+  <Target Name="CheckKeystore" BeforeTargets="ClCompile">
+    <Message Importance="High" Text="Using keystore: $(KeystorePath)" Condition="Exists('$(KeystorePath)')" />
+    <!-- Choose ONE of these: -->
+    <!-- Warn but keep building: -->
+    <Warning Text="Missing keystore.c at $(KeystorePath). Generate keystore.c before building." Condition="!Exists('$(KeystorePath)')" />
+    <!-- Or hard-fail the build: -->
+    <!-- <Error Text="Missing keystore.c at $(KeystorePath)."
+            Condition="!Exists('$(KeystorePath)')" /> -->
+  </Target>
+  <!-- Guess common locations for target.h.in -->
+  <PropertyGroup>
+    <CandidateTemplate1>$([System.IO.Path]::GetFullPath('$(ProjectDir)include\target.h.in'))</CandidateTemplate1>
+    <CandidateTemplate2>$([System.IO.Path]::GetFullPath('$(ProjectDir)..\..\include\target.h.in'))</CandidateTemplate2>
+    <!-- If you have WOLFBOOT_ROOT as a User Macro or env var, this picks it up -->
+    <CandidateTemplate3>$([System.IO.Path]::GetFullPath('$(WOLFBOOT_ROOT)\include\target.h.in'))</CandidateTemplate3>
+  </PropertyGroup>
+  <!-- Pick the first one that exists -->
+  <PropertyGroup>
+    <TargetHeaderTemplate Condition="'$(TargetHeaderTemplate)'=='' and Exists('$(CandidateTemplate1)')">$(CandidateTemplate1)</TargetHeaderTemplate>
+    <TargetHeaderTemplate Condition="'$(TargetHeaderTemplate)'=='' and Exists('$(CandidateTemplate2)')">$(CandidateTemplate2)</TargetHeaderTemplate>
+    <TargetHeaderTemplate Condition="'$(TargetHeaderTemplate)'=='' and '$(WOLFBOOT_ROOT)'!='' and Exists('$(CandidateTemplate3)')">$(CandidateTemplate3)</TargetHeaderTemplate>
+  </PropertyGroup>
+  <!-- Log choice -->
+  <Target Name="LogTemplateChoice" BeforeTargets="GenerateTargetHeader">
+    <Message Importance="High" Text="TargetHeaderTemplate = '$(TargetHeaderTemplate)'" />
+    <Message Importance="High" Text="Tried: '$(CandidateTemplate1)', '$(CandidateTemplate2)', '$(CandidateTemplate3)'" />
+  </Target>
+  <!-- Hard stop with a clear error if we still didn't find it -->
+  <Target Name="ValidateTemplate" BeforeTargets="GenerateTargetHeader" Condition="'$(TargetHeaderTemplate)'==''">
+    <Error Text="target.h.in not found. Searched: '$(CandidateTemplate1)', '$(CandidateTemplate2)', '$(CandidateTemplate3)'. Set WOLFBOOT_ROOT or fix paths." />
+  </Target>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>IS_TEST_LIB_APP=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -100,7 +135,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;DELTA_UPDATES;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ED25519;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);../../lib/wolfssl;../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -114,7 +149,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ECC256;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ED25519;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Important: ensure ../../include is listed first to avoice user_settings.h conflict in other directories -->
       <AdditionalIncludeDirectories>../../include;$(ProjectDir);./;../../lib/wolfssl;../../hal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ShowIncludes>false</ShowIncludes>
@@ -132,7 +167,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;DELTA_UPDATES;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ED25519;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);../../lib/wolfssl;../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -150,7 +185,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;DELTA_UPDATES;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;WOLFBOOT_HASH_SHA256;WOLFBOOT_SIGN_ED25519;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);../../lib/wolfssl;../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -165,13 +200,16 @@
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\asn.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\chacha.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\coding.c" />
+    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\curve25519.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\dilithium.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ecc.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ed25519.c" />
+    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\fe_low_mem.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ed448.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\fe_448.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\fe_operations.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ge_448.c" />
+    <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ge_low_mem.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\ge_operations.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\hash.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\logging.c" />
@@ -192,34 +230,67 @@
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wc_xmss_impl.c" />
     <ClCompile Include="..\..\lib\wolfssl\wolfcrypt\src\wolfmath.c" />
     <ClCompile Include="..\..\src\image.c" />
+    <!-- contains wolfBoot_verify_authenticity, etc-->
     <ClCompile Include="..\..\src\libwolfboot.c" />
     <!-- NOTE: Linux apps generate keystore files in [WOLFBOOT_ROOT]/src -->
-    <ClCompile Include="..\..\src\keystore.c" />
+    <ClCompile Include=".\keystore.c" Condition="Exists('.\keystore.c')" />
+    <ClCompile Include="..\..\src\keystore.c" Condition="Exists('..\..\src\keystore.c')" />
     <ClCompile Include="..\..\src\delta.c" Condition="Exists('..\..\src\delta.c')" />
-
     <!-- The main() app -->
     <ClCompile Include="..\..\hal\library.c">
       <ForcedIncludeFiles>$(ProjectDir)..\..\include\user_settings.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="wolfBootTarget.targets" Condition="Exists('wolfBootTarget.targets')" />
+  <!--  <Import Project="wolfBootTarget.props" Condition="Exists('wolfBootTarget.props')" /> -->
   <Import Project="wolfBootImage.props" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-
-  <!-- Set default debug properties for debug builds: See wolfBootDebug.props -->
-  <Import Project="$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props"
-          Condition="Exists('$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props') 
-                    and '$(Configuration)|$(Platform)'=='Debug|x64'" />
-
-  <Import Project="$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props"
-          Condition="Exists('$(MSBuildThisFileDirectory)..\..\IDE\VisualStudio\wolfBootDebug.props') 
-                    and '$(Configuration)|$(Platform)'=='Debug|x86'" />
-
-<!-- Show debugging params -->
-<Target Name="ShowDebugArgs" BeforeTargets="Build">
-  <Message Importance="High" Text="Args: $(LocalDebuggerCommandArguments)" />
-  <Message Importance="High" Text="WorkDir: $(LocalDebuggerWorkingDirectory)" />
-</Target>
+  <!-- Set default debug properties for debug builds: See wolfBootDebug.props  -->
+  <Import Project="$(MSBuildThisFileDirectory)\wolfBootDebug.props" Condition="Exists('$(MSBuildThisFileDirectory)\wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <Import Project="$(MSBuildThisFileDirectory)\VisualStudio\wolfBootDebug.props" Condition="Exists('$(MSBuildThisFileDirectory)\wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|x86'" />
+  <PropertyGroup>
+    <GeneratedIncludeDir>$(IntDir)generated</GeneratedIncludeDir>
+    <GeneratedHeader>$(GeneratedIncludeDir)\target.h</GeneratedHeader>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(GeneratedIncludeDir);../../include;../../lib/wolfssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <UsingTask TaskFactory="CodeTaskFactory" TaskName="ConfigureHeader" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <TemplatePath ParameterType="System.String" Required="true" />
+      <OutputPath ParameterType="System.String" Required="true" />
+      <WOLFBOOT_TARGET ParameterType="System.String" Required="false" />
+      <USE_FPU ParameterType="System.String" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+          var text = File.ReadAllText(TemplatePath);
+          text = text.Replace("@WOLFBOOT_TARGET@", WOLFBOOT_TARGET ?? "");
+          text = text.Replace("@USE_FPU@", USE_FPU ?? "");
+          Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
+          File.WriteAllText(OutputPath, text);
+          return true;
+      ]]></Code>
+    </Task>
+  </UsingTask>
+  <Target Name="GenerateTargetHeader" BeforeTargets="ClCompile" Inputs="$(TargetHeaderTemplate);$(WOLFBOOT_TARGET);$(USE_FPU)" Outputs="$(GeneratedHeader)">
+    <ConfigureHeader TemplatePath="$(TargetHeaderTemplate)" OutputPath="$(GeneratedHeader)" WOLFBOOT_TARGET="$(WOLFBOOT_TARGET)" USE_FPU="$(USE_FPU)" />
+    <!-- Optional: show generated file in Solution Explorer -->
+    <ItemGroup>
+      <ClInclude Include="$(GeneratedHeader)">
+        <Visible>true</Visible>
+      </ClInclude>
+    </ItemGroup>
+  </Target>
+  <!-- Show debugging params -->
+  <Target Name="ShowDebugArgs" BeforeTargets="Build">
+    <Message Importance="High" Text="Args: $(LocalDebuggerCommandArguments)" />
+    <Message Importance="High" Text="WorkDir: $(LocalDebuggerWorkingDirectory)" />
+  </Target>
 </Project>

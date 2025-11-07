@@ -99,6 +99,7 @@ message(STATUS "Current user detected: ${CURRENT_USER}")
 
 
 # We're in [WOLFBOOT_ROOT]/cmake for this file, ensure there are no stray target.h files
+# See wolfBoot CMakeLists.txt that generates ${CMAKE_CURRENT_BINARY_DIR}/target.h
 if(EXISTS "../include/target.h")
     # This can really spoil the day, not very intuitive:
     message(FATAL_ERROR "unexpected include/target.h")
