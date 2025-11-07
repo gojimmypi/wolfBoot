@@ -3,6 +3,8 @@
 # keystore_file_check.sh
 # Find files with the same name as given targets in any other local branch.
 
+# Edit with caution, used by GitHub workflow: test-visual-studio.yml
+
 echo "$0 v1.0"
 echo ""
 

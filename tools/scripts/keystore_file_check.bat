@@ -2,6 +2,8 @@
 rem keystore_file_check.bat
 rem Find files with the same name as given targets in any other local branch.
 
+rem Edit with caution, used by GitHub workflow: test-visual-studio.yml
+
 rem Defaults for wolfBoot if no args are given
 set DEF1=wolfboot_signing_private_key.der
 set DEF2=keystore.der
