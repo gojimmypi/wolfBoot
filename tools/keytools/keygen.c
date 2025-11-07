@@ -27,8 +27,10 @@
 //#define DEBUG_SIGNTOOL
 
 #ifdef _WIN32
-#define _CRT_SECURE_NO_WARNINGS
-#define _CRT_NONSTDC_NO_DEPRECATE /* unlink */
+    #define _CRT_SECURE_NO_WARNINGS
+    #define _CRT_NONSTDC_NO_DEPRECATE /* unlink */
+#else
+    #include <unistd.h>
 #endif
 #include <stdio.h>
 #include <stdint.h>
@@ -40,21 +42,31 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifndef _WIN32
-    #include <unistd.h>
+
+/* wolfSSL */
+/* Always include wolfcrypt/settings.h before any other wolfSSL file.    */
+/* Reminder: settings.h pulls in user_settings.h; don't include it here. */
+#include <wolfssl/wolfcrypt/settings.h>
+#ifdef WOLFBOOT_USER_SETTINGS_H
+    #error "Keygen encountered unexpected user settings from [WOLFBOOT_ROOT]/include/user_settings.h"
+#endif
+#ifdef __WOLFBOOT
+    /* wolfBoot otherwise uses a user_se*/
+#error "Keygen unexpectedly encountered __WOLFBOOT. Check your config"
+#endif
+#ifndef WOLFBOOT_KEYTOOLS_USER_SETTINGS_H
+    #error "Keygen expects settings from [WOLFBOOT_ROOT]/tools/keygen/user_settings.h"
 #endif
 
-#include <wolfssl/wolfcrypt/settings.h>
 #ifndef NO_RSA
-#include <wolfssl/wolfcrypt/rsa.h>
+    #include <wolfssl/wolfcrypt/rsa.h>
 #endif
 #ifdef HAVE_ECC
-#include <wolfssl/wolfcrypt/ecc.h>
-#include <wolfssl/wolfcrypt/asn.h>
-
+    #include <wolfssl/wolfcrypt/ecc.h>
+    #include <wolfssl/wolfcrypt/asn.h>
 #endif
 #ifdef HAVE_ED25519
-#include <wolfssl/wolfcrypt/ed25519.h>
+    #include <wolfssl/wolfcrypt/ed25519.h>
 #endif
 
 #ifdef HAVE_ED448
@@ -86,11 +98,11 @@
 #include <wolfssl/wolfcrypt/random.h>
 #include <wolfssl/wolfcrypt/error-crypt.h>
 #ifdef DEBUG_SIGNTOOL
-#include <wolfssl/wolfcrypt/logging.h>
+    #include <wolfssl/wolfcrypt/logging.h>
 #endif
 
 #if !defined(PATH_MAX)
-#define PATH_MAX 256
+    #define PATH_MAX 256
 #endif
 
 #include "wolfboot/wolfboot.h"

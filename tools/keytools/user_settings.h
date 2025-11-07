@@ -23,21 +23,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
 
-#ifndef H_USER_SETTINGS_
-#define H_USER_SETTINGS_
+#ifndef WOLFBOOT_KEYTOOLS_USER_SETTINGS_H
+#define WOLFBOOT_KEYTOOLS_USER_SETTINGS_H
 
-
-#include <stdint.h>
-
- /* This is the keytools user settings.
-  *  See also settings in [WOLFBOOT_ROOT]/include/user_settings
-  *
-  * When in question, define WOLFBOOT_SHOW_INCLUDE
-  */
+/* This is the keytools user settings.
+ *
+ * See also settings in [WOLFBOOT_ROOT]/include/user_settings.h
+ *
+ * When in question, define WOLFBOOT_SHOW_INCLUDE
+ */
 
 #ifdef WOLFBOOT_SHOW_INCLUDE
-    #pragma message ("=============== keytools/user_settings")
+    #ifdef __GNUC__  /* GCC compiler */
+        #pragma message "============= keytools/user_settings.h"
+    #elif defined(_MSC_VER) /* Microsoft Visual C++ compiler */
+        #pragma message("============= keytools/user_settings.h")
+    #else
+        #warning "============= keytools/user_settings"
+    #endif
 #endif
+
+#include <stdint.h>
 
 /* #define DEBUG_SIGNTOOL */
 
@@ -232,4 +238,4 @@
 #endif
 #endif
 
-#endif /* !H_USER_SETTINGS_ */
+#endif /* !WOLFBOOT_KEYTOOLS_USER_SETTINGS_H */

@@ -81,11 +81,22 @@ static inline int fp_truncate(FILE *f, long len)
 #endif
 
 #include <wolfssl/wolfcrypt/settings.h>
+#ifdef WOLFBOOT_USER_SETTINGS_H
+    #error "signing tool encountered unexpected user settings from [WOLFBOOT_ROOT]/include/user_settings.h"
+#endif
+#ifdef __WOLFBOOT
+    /* wolfBoot otherwise uses a different user_settings */
+    #error "signing tool unexpectedly encountered __WOLFBOOT. Check your config"
+#endif
+#ifndef WOLFBOOT_KEYTOOLS_USER_SETTINGS_H
+    #error "signing tool expects settings from [WOLFBOOT_ROOT]/tools/keygen/user_settings.h"
+#endif
+
 #include <wolfssl/wolfcrypt/asn.h>
 #include <wolfssl/wolfcrypt/aes.h>
 
 #ifdef HAVE_CHACHA
-#include <wolfssl/wolfcrypt/chacha.h>
+    #include <wolfssl/wolfcrypt/chacha.h>
 #endif
 
 

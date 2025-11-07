@@ -31,8 +31,9 @@
 #endif
 #include <wolfssl/wolfcrypt/settings.h> /* for wolfCrypt hash/sign routines */
 #ifdef WOLFBOOT_KEYTOOLS
-  /* this code needs to use the Use ./include/user_settings.h, not keytools */
-#error "The wrong user_settings.h has been included."
+    /* this code needs to use the local tools/keytools/user_settings.h
+     *                    not [WOLFBOOT_ROOT]/include/user_settings.h  */
+    #error "The wrong user_settings.h has been included."
 #endif
 
 
@@ -45,38 +46,39 @@
 #include "spi_drv.h"
 #include "printf.h"
 #ifdef WOLFBOOT_TPM
-#include "tpm.h"
+    #include "tpm.h"
 #endif
 #ifdef WOLFBOOT_HASH_SHA256
-#include <wolfssl/wolfcrypt/sha256.h>
+    #include <wolfssl/wolfcrypt/sha256.h>
 #endif
 #ifdef WOLFBOOT_HASH_SHA384
-#include <wolfssl/wolfcrypt/sha512.h>
+    #include <wolfssl/wolfcrypt/sha512.h>
 #endif
 #ifdef WOLFBOOT_HASH_SHA3_384
-#include <wolfssl/wolfcrypt/sha3.h>
+    #include <wolfssl/wolfcrypt/sha3.h>
 #endif
 
 /* Globals */
 #ifdef _MSC_VER
-static XALIGNED(4) uint8_t digest[WOLFBOOT_SHA_DIGEST_SIZE];
+    static XALIGNED(4) uint8_t digest[WOLFBOOT_SHA_DIGEST_SIZE];
 #else
-static uint8_t digest[WOLFBOOT_SHA_DIGEST_SIZE] XALIGNED(4);
+    static uint8_t digest[WOLFBOOT_SHA_DIGEST_SIZE] XALIGNED(4);
 #endif
 
 #if defined(WOLFBOOT_CERT_CHAIN_VERIFY) && \
     (defined(WOLFBOOT_ENABLE_WOLFHSM_CLIENT) || \
      defined(WOLFBOOT_ENABLE_WOLFHSM_SERVER))
-static whKeyId g_certLeafKeyId  = WH_KEYID_ERASED;
-static int     g_leafKeyIdValid = 0;
+    static whKeyId g_certLeafKeyId  = WH_KEYID_ERASED;
+    static int     g_leafKeyIdValid = 0;
 #endif
 
 /* TPM based verify */
 #if defined(WOLFBOOT_TPM) && defined(WOLFBOOT_TPM_VERIFY)
+
 #ifdef ECC_IMAGE_SIGNATURE_SIZE
-#define IMAGE_SIGNATURE_SIZE ECC_IMAGE_SIGNATURE_SIZE
+    #define IMAGE_SIGNATURE_SIZE ECC_IMAGE_SIGNATURE_SIZE
 #else
-#define IMAGE_SIGNATURE_SIZE RSA_IMAGE_SIGNATURE_SIZE
+    #define IMAGE_SIGNATURE_SIZE RSA_IMAGE_SIGNATURE_SIZE
 #endif
 
 static void wolfBoot_verify_signature_tpm(uint8_t key_slot,

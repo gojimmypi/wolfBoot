@@ -22,17 +22,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
-#ifndef _WOLFBOOT_USER_SETTINGS_H_
-#define _WOLFBOOT_USER_SETTINGS_H_
+#ifndef WOLFBOOT_USER_SETTINGS_H
+#define WOLFBOOT_USER_SETTINGS_H
 
-/* This is the embedded target user settings.
- *  See also settings in [WOLFBOOT_ROOT]/tools/keytools
+/* This is the wolfBoot embedded target user settings.
+ *
+ * See also settings in [WOLFBOOT_ROOT]/tools/keytools
  *
  * When in question, define WOLFBOOT_SHOW_INCLUDE
  */
 
 #ifdef WOLFBOOT_SHOW_INCLUDE
-    #pragma message ("===============include/user_settings")
+    #ifdef __GNUC__  /* GCC compiler */
+        #pragma message "===============include/user_settings.h"
+    #elif defined(_MSC_VER) /* Microsoft Visual C++ compiler */
+        #pragma message("===============include/user_settings.h")
+    #else
+        #warning "===============include/user_settings.h"
+    #endif
 #endif
 
 //#define DEBUG_SIGNTOOL
@@ -57,6 +64,10 @@
 # include "test-app/wcs/user_settings.h"
 #else
 
+/* The target.h is a device-specific, typically a generated file.
+ * CMake configures from `include/target.h.in` into ${CMAKE_CURRENT_BINARY_DIR}
+ *
+ * See also the sample in [WOLFBOOT_ROOT]/tools/unit-tests/target.h */
 #include <target.h>
 
 /* System */
@@ -659,4 +670,4 @@ extern int tolower(int c);
 
 #endif // test
 
-#endif /* !_WOLFBOOT_USER_SETTINGS_H_ */
+#endif /* !WOLFBOOT_USER_SETTINGS_H */
