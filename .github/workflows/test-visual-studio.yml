@@ -156,7 +156,7 @@ jobs:
             .\tools\scripts\keystore_file_check.bat
 
       - name: Bash Keystore File Check
-        shell: cmd
+        shell: bash
         working-directory: .\
         run: |
             :: # Run a script to re-check for keystore files using bash (just to test scripts)
