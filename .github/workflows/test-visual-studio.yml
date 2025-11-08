@@ -26,6 +26,7 @@ jobs:
       APP_SIGN:    sign
       APP_TESTLIB: test-lib
       APP_OTP:     otp-keystore-gen
+      APP_PRIMER:  otp-keystore-primer
 
     steps:
       # Adds MSBuild to PATH
@@ -299,6 +300,44 @@ jobs:
           echo "otp-keystore-gen otp.bin file:"
           dir otp.bin /s
 
+        # Build the OTP Keystore Primer otp-keystore-primer.exe
+      - name: Build  OTP Keystore Primer
+        shell: cmd
+        working-directory: .\
+        run: |
+          :: # Begin otp-keystore-primer.exe build from DOS command prompt
+
+          echo Current directory:
+          echo %cd%
+
+          pushd tools\keytools\
+
+          msbuild wolfBootPrimerOTP.vcxproj   ^
+            /t:Rebuild                         ^
+            /m                                 ^
+            /p:Configuration=%CONFIG%          ^
+            /p:Platform=%PLATFORM%             ^
+            /p:PreferredToolArchitecture=x64   ^
+            /v:m
+
+          popd
+
+      - name: Run Flash OTP otp-keystore-primer.exe
+        shell: cmd
+        working-directory: .\
+        run: |
+          :: # Run otp-keystore-primer.exe
+
+          echo Current directory:
+          echo %cd%
+
+          .\tools\keytools\%PLATFORM%\%CONFIG%\otp-keystore-primer.exe
+
+          if errorlevel 1 (
+            echo otp-keystore-primer.exe failed with ERRORLEVEL %ERRORLEVEL%
+            exit /b %ERRORLEVEL%
+          )
+
           echo Done!
 
       # Upload binaries if present (non-fatal if none)
@@ -324,11 +363,13 @@ jobs:
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}.exe
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}.exe
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_PRIMER  }}.exe
 
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_KEYGEN  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_PRIMER  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
 
             # sample files
             ./test.bin
