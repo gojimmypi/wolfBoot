@@ -15,7 +15,10 @@ jobs:
     env:
       CONFIG:   Debug
       PLATFORM: x64
-      ASYM:     ecc256
+
+      # Note: project-level preprocessors made need to be adjusted when changing.
+      # These are the "--" params, case sensitive:
+      ASYM:     ed25519
       HASH:     sha256
 
     steps:
