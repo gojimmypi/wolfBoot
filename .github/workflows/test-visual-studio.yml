@@ -159,7 +159,7 @@ jobs:
         shell: bash
         working-directory: .\
         run: |
-            :: # Run a script to re-check for keystore files using bash (just to test scripts)
+            # Run a script to re-check for keystore files using bash (just to test scripts)
             echo "Running ./tools/scripts/keystore_file_check.sh"
 
             ./tools/scripts/keystore_file_check.sh
