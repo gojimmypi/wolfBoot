@@ -293,22 +293,23 @@ jobs:
         with:
           name: wolfboot-visual-studio
           path: |
-            # copied from tools\unit-tests\target.h
-            include\target.h
+            # copied from tools/unit-tests/target.h
+            ./include/target.h
 
             # test private key generated
-            .\wolfboot_signing_private_key.der
-            .\src\keystore.c
+            ./keystore.der
+            ./wolfboot_signing_private_key.der
+            ./src/keystore.c
 
             # created executables
-            .\tools\keytools\x64\Debug\keygen.exe
-            .\tools\keytools\x64\Debug\sign.exe
-            .\tools\keytools\x64\Debug\test-lib.exe
-            .\tools\keytools\x64\Debug\otp-keystore-gen.exe
+            ./tools/keytools/x64/Debug/keygen.exe
+            ./tools/keytools/x64/Debug/sign.exe
+            ./tools/keytools/x64/Debug/test-lib.exe
+            ./tools/keytools/x64/Debug/otp-keystore-gen.exe
 
             # sample files
-            .\test.bin
-            .\test_v1_signed.bin
-            .\otp.bin
+            ./test.bin
+            ./test_v1_signed.bin
+            ./otp.bin
 
           if-no-files-found: warn
