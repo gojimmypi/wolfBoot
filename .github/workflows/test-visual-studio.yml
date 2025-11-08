@@ -300,14 +300,14 @@ jobs:
         if:   always()
         uses: actions/upload-artifact@v4
         with:
-          name: wolfboot-visual-studio
+          name: wolfboot-visual-studio-${{ env.CONFIG }}-${{ env.PLATFORM }}
           path: |
             # config params used
             ./config_params.txt
-            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/keygen-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
-            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/otp-keystore-gen-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
-            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/sign-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
-            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/test-lib-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/keygen-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/otp-keystore-gen-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/sign-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/test-lib-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
 
             # copied from tools/unit-tests/target.h
             ./include/target.h
@@ -318,10 +318,10 @@ jobs:
             ./src/keystore.c
 
             # created executables
-            ./tools/keytools/%PLATFORM%/Debug/keygen.exe
-            ./tools/keytools/%PLATFORM%/Debug/sign.exe
-            ./tools/keytools/%PLATFORM%/Debug/test-lib.exe
-            ./tools/keytools/%PLATFORM%/Debug/otp-keystore-gen.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/keygen.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/sign.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/test-lib.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/otp-keystore-gen.exe
 
             # sample files
             ./test.bin
