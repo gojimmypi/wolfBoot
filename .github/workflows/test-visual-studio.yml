@@ -78,7 +78,12 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          .\tools\keytools\%PLATFORM%\%CONFIG%\keygen.exe --ecc256 -g wolfboot_signing_private_key.der
+          echo "Config params used:"
+          echo "HASH=%HASH%" >  .\config_params.txt
+          echo "ASYM=%ASYM%" >> .\config_params.txt
+
+          echo "Calling keygen using --%ASYM%"
+          .\tools\keytools\%PLATFORM%\%CONFIG%\keygen.exe --%ASYM% -g wolfboot_signing_private_key.der
           if errorlevel 1 (
             echo keygen.exe failed with ERRORLEVEL %ERRORLEVEL%
             exit /b %ERRORLEVEL%
@@ -125,6 +130,7 @@ jobs:
           echo Current directory:
           echo %cd%
 
+          echo "Calling sign using --%ASYM% --%HASH%"
           echo Running .\tools\keytools\%PLATFORM%\%CONFIG%\sign.exe  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
 
           .\tools\keytools\%PLATFORM%\%CONFIG%\sign.exe               --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
@@ -293,6 +299,9 @@ jobs:
         with:
           name: wolfboot-visual-studio
           path: |
+            # config params used
+            ./config_params.txt
+
             # copied from tools/unit-tests/target.h
             ./include/target.h
 
