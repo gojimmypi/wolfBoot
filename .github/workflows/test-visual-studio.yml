@@ -187,24 +187,61 @@ jobs:
         run: |
           :: # Run sign.exe
 
+          @echo on
+          setlocal enableextensions
+
           echo Current directory:
           echo %cd%
+
+          :: # Paths
+          set "EXE=tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe"
+          set "BIN=test_v1_signed.bin"
+
+          :: # Validate required env vars
+          if "%PLATFORM%"=="" (
+            echo ERROR: PLATFORM is not set.
+            exit /b 1
+          )
+          if "%CONFIG%"=="" (
+            echo ERROR: CONFIG is not set.
+            exit /b 1
+          )
+
+          :: # Show where files are
+          echo Looking for "%BIN%" under "%cd%":
+          dir "%BIN%" /s 2>nul
+
+          rem Existence checks
+          if not exist "%EXE%" (
+            echo ERROR: Missing "%EXE%".
+            echo Tree of tools\keytools:
+            dir tools\keytools /s /b 2>nul
+            exit /b 2
+          )
+          if not exist "%BIN%" (
+            echo ERROR: Missing "%BIN%" in current dir.
+            exit /b 3
+          )
 
           :: # A missing target.h is a common build failure on GitHub.
           :: # See above where we copy one from [WOLFBOOT_ROOT]\tools\unit-tests\
           :: # echo Where is the target.h?
           :: # dir target.h /s
 
-          dir test_v1_signed.bin /s
+          echo Running %EXE%"  "%BIN%"
 
-          echo Running .\tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe  .\test_v1_signed.bin
+          "%EXE%" "%BIN%"
+          set ERR=%ERRORLEVEL%
 
-          if errorlevel 1 (
-            echo test-lib.exe failed with ERRORLEVEL %ERRORLEVEL%
-            exit /b %ERRORLEVEL%
+          if not "%ERR%"=="0" (
+            echo test-lib.exe failed with ERRORLEVEL %ERR%
+            exit /b %ERR%
           )
 
-          .\tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe               .\test_v1_signed.bin
+          dir test_v1_signed.bin /s
+
+          echo test-lib.exe completed successfully.
+          endlocal
 
         # Build the OTP Flash otp-keystore-gen.exe that creates otp.bin
       - name: Build Flash OTP
