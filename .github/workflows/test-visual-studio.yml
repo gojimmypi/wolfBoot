@@ -308,6 +308,9 @@ jobs:
         with:
           name: wolfboot-visual-studio-${{ env.CONFIG }}-${{ env.PLATFORM }}
           path: |
+            # config params used
+            ./config_params.txt
+
             # copied from tools/unit-tests/target.h
             ./include/target.h
 
@@ -322,12 +325,10 @@ jobs:
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}.exe
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}.exe
 
-            # config params used
-            ./config_params.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_KEYGEN  }}/${{ env.APP_KEYGEN  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}/${{ env.APP_SIGN    }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}/${{ env.APP_TESTLIB }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}/${{ env.APP_OTP     }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_KEYGEN  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
 
             # sample files
             ./test.bin

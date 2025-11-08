@@ -173,7 +173,7 @@
   <!-- Show the project-level preprocessor definitions-->
   <PropertyGroup>
     <!-- Where to write it; change if you prefer another path -->
-    <PreprocDefsFile>$(IntDir)$(TargetName)-preprocessor-defs.$(Configuration).$(Platform).txt</PreprocDefsFile>
+    <PreprocDefsFile>$(TargetDir)$(TargetName)-preprocessor-defs.$(Configuration).$(Platform).txt</PreprocDefsFile>
   </PropertyGroup>
 
   <Target Name="SaveAndShowPreprocessorDefinitions" BeforeTargets="ClCompile">
