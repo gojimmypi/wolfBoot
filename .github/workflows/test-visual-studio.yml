@@ -13,13 +13,19 @@ jobs:
     runs-on: windows-latest
 
     env:
-      CONFIG:   Debug
-      PLATFORM: x64
+      CONFIG:      Debug
+      PLATFORM:    x64
 
       # Note: project-level preprocessors made need to be adjusted when changing.
       # These are the "--" params, case sensitive:
-      ASYM:     ed25519
-      HASH:     sha256
+      ASYM:        ed25519
+      HASH:        sha256
+
+      # Generated exe files, used for artifacts
+      APP_KEYGEN:  keygen
+      APP_SIGN:    sign
+      APP_TESTLIB: test-lib
+      APP_OTP:     otp-keystore-gen
 
     steps:
       # Adds MSBuild to PATH
@@ -302,13 +308,6 @@ jobs:
         with:
           name: wolfboot-visual-studio-${{ env.CONFIG }}-${{ env.PLATFORM }}
           path: |
-            # config params used
-            ./config_params.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/keygen-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/otp-keystore-gen-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/sign-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/wolfBootTestLib/test-lib-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-
             # copied from tools/unit-tests/target.h
             ./include/target.h
 
@@ -318,10 +317,17 @@ jobs:
             ./src/keystore.c
 
             # created executables
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/keygen.exe
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/sign.exe
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/test-lib.exe
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/otp-keystore-gen.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_KEYGEN  }}.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}.exe
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}.exe
+
+            # config params used
+            ./config_params.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_KEYGEN  }}/${{ env.APP_KEYGEN  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}/${{ env.APP_SIGN    }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}/${{ env.APP_TESTLIB }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}/${{ env.APP_OTP     }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
 
             # sample files
             ./test.bin
