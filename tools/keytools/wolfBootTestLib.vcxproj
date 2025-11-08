@@ -290,24 +290,39 @@
   </Target>
 
   <!-- Show the project-level preprocessor definitions-->
-  <Target Name="ShowPreprocessorDefinitions" BeforeTargets="ClCompile">
-    <!-- Collect PreprocessorDefinitions from the ItemDefinitionGroup for ClCompile -->
+  <PropertyGroup>
+    <!-- Where to write it; change if you prefer another path -->
+    <PreprocDefsFile>$(IntDir)$(TargetName)-preprocessor-defs.$(Configuration).$(Platform).txt</PreprocDefsFile>
+  </PropertyGroup>
+
+  <Target Name="SaveAndShowPreprocessorDefinitions" BeforeTargets="ClCompile">
+    <!-- Collect all PreprocessorDefinitions visible to ClCompile -->
     <ItemGroup>
       <_AllDefs Include="%(ClCompile.PreprocessorDefinitions)" />
-      <!-- Split the semicolon list into individual items -->
-      <_Def Include="$([System.String]::Copy('%(_AllDefs.Identity)').Split(';'))" />
+      <!-- Split semicolon list into individual items -->
+      <_DefRaw Include="$([System.String]::Copy('%(_AllDefs.Identity)').Split(';'))" />
     </ItemGroup>
 
-    <!-- Remove empties and duplicates (optional but tidy) -->
+    <!-- Clean up empties and dedupe -->
     <ItemGroup>
-      <_Def Include="@(_Def)" Condition="'%(_Def.Identity)' != ''" />
+      <_Def Include="@(_DefRaw)" Condition="'%(_DefRaw.Identity)' != ''" />
     </ItemGroup>
     <RemoveDuplicates Inputs="@(_Def)">
       <Output TaskParameter="Filtered" ItemName="_DefDistinct" />
     </RemoveDuplicates>
 
-    <!-- Print one per line -->
-    <Message Importance="High" Text="ProjectPreprocessorDefinitions:" />
+    <!-- Ensure output directory exists -->
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(PreprocDefsFile)'))" />
+
+    <!-- Write one per line, overwrite each build -->
+    <WriteLinesToFile
+        File="$(PreprocDefsFile)"
+        Lines="@(_DefDistinct)"
+        Overwrite="true"
+        Encoding="UTF-8" />
+
+    <!-- Also echo to build log -->
+    <Message Importance="High" Text="PreprocessorDefinitions written to: $(PreprocDefsFile)" />
     <Message Importance="High" Text="  %(_DefDistinct.Identity)" />
   </Target>
 

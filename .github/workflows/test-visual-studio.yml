@@ -304,6 +304,10 @@ jobs:
           path: |
             # config params used
             ./config_params.txt
+            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/keygen-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
+            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/otp-keystore-gen-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
+            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/sign-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
+            ./tools/keytools/%PLATFORM%/%CONFIG%/wolfBootTestLib/test-lib-preprocessor-defs.%CONFIG%.%PLATFORM%.txt
 
             # copied from tools/unit-tests/target.h
             ./include/target.h
@@ -314,10 +318,10 @@ jobs:
             ./src/keystore.c
 
             # created executables
-            ./tools/keytools/x64/Debug/keygen.exe
-            ./tools/keytools/x64/Debug/sign.exe
-            ./tools/keytools/x64/Debug/test-lib.exe
-            ./tools/keytools/x64/Debug/otp-keystore-gen.exe
+            ./tools/keytools/%PLATFORM%/Debug/keygen.exe
+            ./tools/keytools/%PLATFORM%/Debug/sign.exe
+            ./tools/keytools/%PLATFORM%/Debug/test-lib.exe
+            ./tools/keytools/%PLATFORM%/Debug/otp-keystore-gen.exe
 
             # sample files
             ./test.bin

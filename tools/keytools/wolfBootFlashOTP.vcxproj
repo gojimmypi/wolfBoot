@@ -165,4 +165,47 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+
+  <!-- Show the project-level preprocessor definitions-->
+  <PropertyGroup>
+    <!-- Where to write it; change if you prefer another path -->
+    <PreprocDefsFile>$(IntDir)$(TargetName)-preprocessor-defs.$(Configuration).$(Platform).txt</PreprocDefsFile>
+  </PropertyGroup>
+
+  <Target Name="SaveAndShowPreprocessorDefinitions" BeforeTargets="ClCompile">
+    <!-- Collect all PreprocessorDefinitions visible to ClCompile -->
+    <ItemGroup>
+      <_AllDefs Include="%(ClCompile.PreprocessorDefinitions)" />
+      <!-- Split semicolon list into individual items -->
+      <_DefRaw Include="$([System.String]::Copy('%(_AllDefs.Identity)').Split(';'))" />
+    </ItemGroup>
+
+    <!-- Clean up empties and dedupe -->
+    <ItemGroup>
+      <_Def Include="@(_DefRaw)" Condition="'%(_DefRaw.Identity)' != ''" />
+    </ItemGroup>
+    <RemoveDuplicates Inputs="@(_Def)">
+      <Output TaskParameter="Filtered" ItemName="_DefDistinct" />
+    </RemoveDuplicates>
+
+    <!-- Ensure output directory exists -->
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(PreprocDefsFile)'))" />
+
+    <!-- Write one per line, overwrite each build -->
+    <WriteLinesToFile
+        File="$(PreprocDefsFile)"
+        Lines="@(_DefDistinct)"
+        Overwrite="true"
+        Encoding="UTF-8" />
+
+    <!-- Also echo to build log -->
+    <Message Importance="High" Text="PreprocessorDefinitions written to: $(PreprocDefsFile)" />
+    <Message Importance="High" Text="  %(_DefDistinct.Identity)" />
+  </Target>
+
+  <!-- Show debugging params -->
+  <Target Name="ShowDebugArgs" BeforeTargets="Build">
+    <Message Importance="High" Text="Args: $(LocalDebuggerCommandArguments)" />
+    <Message Importance="High" Text="WorkDir: $(LocalDebuggerWorkingDirectory)" />
+  </Target>
 </Project>
