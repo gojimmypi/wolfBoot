@@ -312,7 +312,7 @@ jobs:
 
           pushd tools\keytools\
 
-          msbuild wolfBootPrimerOTP.vcxproj   ^
+          msbuild wolfBootFlashPrimerOTP.vcxproj   ^
             /t:Rebuild                         ^
             /m                                 ^
             /p:Configuration=%CONFIG%          ^

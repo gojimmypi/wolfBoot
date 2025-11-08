@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>wolfBootPrimerOTP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>wolfBootPrimerOTP</ProjectName>
+    <ProjectName>wolfBootFlashPrimerOTP</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -112,7 +112,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./otp;../../lib/wolfssl;../../include;../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>TARGET_sim;FLASH_OTP_KEYSTORE;WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-   </ClCompile>
+    </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -159,23 +159,19 @@
     <!-- NOTE: Linux apps may generate keystore files in [WOLFBOOT_ROOT]/src -->
     <ClCompile Include=".\keystore.c" Condition="Exists('.\keystore.c')" />
     <ClCompile Include="..\..\src\keystore.c" Condition="Exists('..\..\src\keystore.c')" />
-
     <!-- Sim code -->
     <ClCompile Include=".\otp\hal_host_sim_stub.c" />
     <!-- The main() app -->
     <ClCompile Include=".\otp\otp-keystore-primer.c" />
-
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-
   <!-- Show the project-level preprocessor definitions-->
   <PropertyGroup>
     <!-- Where to write it; change if you prefer another path -->
     <PreprocDefsFile>$(TargetDir)$(TargetName)-preprocessor-defs.$(Configuration).$(Platform).txt</PreprocDefsFile>
   </PropertyGroup>
-
   <Target Name="SaveAndShowPreprocessorDefinitions" BeforeTargets="ClCompile">
     <!-- Collect all PreprocessorDefinitions visible to ClCompile -->
     <ItemGroup>
@@ -183,7 +179,6 @@
       <!-- Split semicolon list into individual items -->
       <_DefRaw Include="$([System.String]::Copy('%(_AllDefs.Identity)').Split(';'))" />
     </ItemGroup>
-
     <!-- Clean up empties and dedupe -->
     <ItemGroup>
       <_Def Include="@(_DefRaw)" Condition="'%(_DefRaw.Identity)' != ''" />
@@ -191,22 +186,14 @@
     <RemoveDuplicates Inputs="@(_Def)">
       <Output TaskParameter="Filtered" ItemName="_DefDistinct" />
     </RemoveDuplicates>
-
     <!-- Ensure output directory exists -->
     <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(PreprocDefsFile)'))" />
-
     <!-- Write one per line, overwrite each build -->
-    <WriteLinesToFile
-        File="$(PreprocDefsFile)"
-        Lines="@(_DefDistinct)"
-        Overwrite="true"
-        Encoding="UTF-8" />
-
+    <WriteLinesToFile File="$(PreprocDefsFile)" Lines="@(_DefDistinct)" Overwrite="true" Encoding="UTF-8" />
     <!-- Also echo to build log -->
     <Message Importance="High" Text="PreprocessorDefinitions written to: $(PreprocDefsFile)" />
     <Message Importance="High" Text="  %(_DefDistinct.Identity)" />
   </Target>
-
   <!-- Show debugging params -->
   <Target Name="ShowDebugArgs" BeforeTargets="Build">
     <Message Importance="High" Text="Args: $(LocalDebuggerCommandArguments)" />

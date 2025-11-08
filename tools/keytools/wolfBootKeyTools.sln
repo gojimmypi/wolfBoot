@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		..\..\.github\workflows\test-visual-studio.yml = ..\..\.github\workflows\test-visual-studio.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
@@ -23,7 +24,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wolfBootTestLib", "wolfBoot
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wolfBootFlashOTP", "wolfBootFlashOTP.vcxproj", "{45575902-43FE-473B-8236-B4F620993C4D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wolfBootFlashOTP", "wolfBootFlashPrimerOTP.vcxproj", "{2DA24AC1-1775-440A-AEEC-257BB8E078CD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wolfBootFlashPrimerOTP", "wolfBootFlashPrimerOTP.vcxproj", "{2DA24AC1-1775-440A-AEEC-257BB8E078CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
