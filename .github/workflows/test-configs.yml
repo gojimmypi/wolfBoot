@@ -2,7 +2,7 @@ name: Test Example Configs
 
 on:
   push:
-    branches: [ 'master', 'main', 'release/**' ]
+    branches: [ '*', 'master', 'main', 'release/**' ]
   pull_request:
     branches: [ '*' ]
 
