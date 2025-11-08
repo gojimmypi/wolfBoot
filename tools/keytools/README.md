@@ -136,7 +136,7 @@ Otherwise the private key will be created in the project directory `[WOLFBOOT_RO
 Example:
 
 ```DOS
-cd $WOLFBOOT_ROOT\tools\keytools
+cd %WOLFBOOT_ROOT%\tools\keytools
 
 :: cmd       sign     private key
 :: ------- --------- -----------------------------------
@@ -183,7 +183,7 @@ The `$(ProjectDir)` will typically be something like this, where the `keystore.c
 Example:
 
 ```DOS
-cd $WOLFBOOT_ROOT\tools\keytools
+cd %WOLFBOOT_ROOT%\tools\keytools
 
 :: cmd       sign     hash   input     private key                    [version]      [output]
 :: ----- --------- -------- -------- -------------------------------- --------- ------------------
