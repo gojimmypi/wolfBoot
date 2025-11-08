@@ -56,15 +56,16 @@ void main(void)
     hdr.version = WOLFBOOT_VERSION;
 
     /* Sanity check to avoid writing an empty keystore */
-#ifdef TARGET_sim
-    SIM_PRINTF("Error: too few keys (%d), refusing to write\n", n_keys);
-    exit(1);
-#else
     if (n_keys < 1) {
+#ifdef TARGET_sim
+        SIM_PRINTF("Error: too few keys (%d), refusing to write\n", n_keys);
+        exit(1);
+#else
         while(1)
             ;
-    }
+        /* no exit */
 #endif
+    }
 
     /* Write the header to the beginning of the OTP memory */
     hal_flash_otp_write(FLASH_OTP_BASE, (uint16_t *)&hdr, sizeof(hdr));
@@ -92,5 +93,6 @@ void main(void)
     /* Done! */
     while(1)
         ;
+    /* no exit */
 #endif
 }
