@@ -532,8 +532,14 @@ unset(SIGN_TOOL CACHE)
 unset(SIGN_OPTIONS CACHE)
 unset(KEYTOOL_OPTIONS CACHE)
 unset(BINASSEMBLE CACHE)
-unset(ARCH_FLASH_OFFSET CACHE)
 unset(WOLFBOOT_VERSION CACHE)
+# TODO don't always unset
+#if(${WOLFBOOT_CONFIG_MODE} STREQUAL "preset")
+#    message(STATUS "ARCH_FLASH_OFFSET configured in CMakePresets.json")
+#else()
+    unset(ARCH_FLASH_OFFSET CACHE)
+#endif()
+
 
 if(EXTRA_DEFS)
     string(REPLACE " " ";" WOLFBOOT_EXTRA_DEFS ${EXTRA_DEFS})
@@ -554,6 +560,7 @@ if(NOT DEFINED WOLFBOOT_ROOT OR WOLFBOOT_ROOT STREQUAL "")
     endif()
 endif()
 message(STATUS "WOLFBOOT_ROOT=${WOLFBOOT_ROOT}")
+set(SIZE_SCRIPT "${WOLFBOOT_ROOT}/cmake/write_size.cmake")
 
 list(APPEND WOLFBOOT_DEFS __WOLFBOOT)
 
@@ -674,7 +681,8 @@ if(ARCH STREQUAL "ARM")
         )
     endif()
 
-    if(${WOLFBOOT_TARGET} STREQUAL "stm32u5")
+    # TODO move these to presets
+    if(${WOLFBOOT_TARGET} STREQUAL "stm32g0")
         set(ARCH_FLASH_OFFSET 0x08000000)
         set(WOLFBOOT_ORIGIN ${ARCH_FLASH_OFFSET})
     endif()
@@ -683,6 +691,11 @@ if(ARCH STREQUAL "ARM")
         set(ARCH_FLASH_OFFSET 0x08000000)
         set(WOLFBOOT_ORIGIN ${ARCH_FLASH_OFFSET})
     endif()
+    if(${WOLFBOOT_TARGET} STREQUAL "stm32u5")
+        set(ARCH_FLASH_OFFSET 0x08000000)
+        set(WOLFBOOT_ORIGIN ${ARCH_FLASH_OFFSET})
+    endif()
+
 endif()
 
 if(ARCH STREQUAL "AARCH64")

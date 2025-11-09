@@ -1464,7 +1464,7 @@ int main(int argc, char** argv)
             i++;
             sprintf(pubkeyfile,"%s%s", argv[i], "/keystore.c");
             sprintf(pubkeyimg, "%s%s", argv[i], "/keystore.der");
-            printf("Saving keystore file: %s\n", pubkeyfile);
+            printf("keystore file: %s\n", pubkeyfile);
             i++;
             continue;
         }

@@ -395,7 +395,7 @@ endif()
 # C:\Users\${CURRENT_USER}\STM32Cube\Repository\STM32Cube_FW_L4_V1.18.0\Drivers\STM32L4xx_HAL_Driver
 # C:/Users/${CURRENT_USER}/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.1/Drivers/
 
-message(STATUS "WOLFBOOT_TARGET=${WOLFBOOT_TARGET}")
+message(STATUS "CubeIDE Config WOLFBOOT_TARGET=${WOLFBOOT_TARGET}")
 string(TOLOWER "${WOLFBOOT_TARGET}" _wb_target_lc)
 string(FIND "${_wb_target_lc}" "stm32l4" _pos)
 message(STATUS "Checking if the HAL and CMSIS libraries needed")
@@ -422,6 +422,11 @@ if(_pos EQUAL 0)
 else()
     message(STATUS "WOLFBOOT_TARGET=${WOLFBOOT_TARGET}, not loading HAL and CMSIS libraries.")
 endif() # #STM32L4 detection
+
+string(FIND "${_wb_target_lc}" "stm32g0" _pos)
+if(_pos EQUAL 0)
+
+endif()
 
 mark_as_advanced(STM32CUBEIDE_EXECUTABLE STM32CUBEIDE_ROOT STM32CUBEIDE_VERSION)
 
