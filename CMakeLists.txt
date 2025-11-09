@@ -1383,13 +1383,13 @@ target_include_directories(target BEFORE INTERFACE
                                     ${CMAKE_CURRENT_BINARY_DIR}
                                     ${CMAKE_CURRENT_SOURCE_DIR}/lib/wolfssl)
 
-set(KEYSTORE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
 
 #---------------------------------------------------------------------------------------------
-#
+# keystore
 #---------------------------------------------------------------------------------------------
+set(KEYSTORE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
 if(NOT SIGN STREQUAL "NONE")
-    add_custom_target(keystore DEPENDS ${KEYSTORE})
+    add_custom_target(keystore DEPENDS ${KEYGEN_TOOL} ${KEYSTORE})
 
     # generate keystore.c if it does not already exist
     message(STATUS "Will generate fresh: ${KEYSTORE}")
@@ -1404,7 +1404,6 @@ if(NOT SIGN STREQUAL "NONE")
                 -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
                 -keystoreDir ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS ${KEYGEN_TOOL}
-        BYPRODUCTS ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
         WORKING_DIRECTORY ${WOLFBOOT_ROOT}
         COMMENT "Generating keystore.c and signing private key"
         VERBATIM
@@ -1415,8 +1414,12 @@ if(NOT SIGN STREQUAL "NONE")
     target_compile_definitions(public_key PRIVATE ${WOLFBOOT_DEFS})
     target_include_directories(public_key PRIVATE include)
     target_link_libraries(public_key target)
-    add_dependencies(public_key keygen_build)  # ensure tool exists before any use
+
+    # Ensure the tool exists before anything tries to build public_key,
+    # and also make the explicit custom target a dependency if you like:
+    add_dependencies(public_key keygen_build keystore)
 endif()
+
 
 
 # generate libwolfboot
