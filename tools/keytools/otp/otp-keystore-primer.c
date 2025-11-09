@@ -26,6 +26,7 @@
 #include "wolfboot/wolfboot.h"
 #include "hal.h"
 #include "otp_keystore.h"
+
 #ifdef TARGET_sim
     #include <stdio.h>
     #define SIM_PRINTF(...)         \
@@ -45,8 +46,17 @@ void main(void)
     int i;
     struct wolfBoot_otp_hdr hdr;
     uint32_t tot_len;
+#ifdef NO_FLASH_OTP_KEYSTORE_TARGET
+    /* See otp_keystore.h */
+    #ifndef _MSC_VER
+        #warning "No device target defined and no TARGET_sim"
+    #else
+        #pragma message("Warning: No device target defined and no TARGET_sim")
+    #endif
+#endif
 
     hal_init();
+    SIM_PRINTF("[primer] Warning: no \n");
     SIM_PRINTF("[primer] hal_init() done\n");
     SIM_PRINTF("[primer] detected %d public key(s)\n", n_keys);
 

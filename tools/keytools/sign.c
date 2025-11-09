@@ -47,7 +47,11 @@
 #include <delta.h>
 
 #include "wolfboot/version.h"
+
+/* my debugging */
+#undef DEBUG_SIGNTOOL
 #define DEBUG_SIGNTOOL
+
 #ifdef DEBUG_SIGNTOOL
 #define DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
 #define DEBUG_BUFFER(buf,sz) WOLFSSL_BUFFER(buf,sz)
