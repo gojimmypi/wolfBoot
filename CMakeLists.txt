@@ -299,7 +299,7 @@ set(HOST_INCLUDES
     ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools>
     ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/lib/wolfssl>
     ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}>
+    ${HOST_I}$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}> # Reminder target.h typically gets generated here
 )
 
 if(NOT DEFINED IMAGE_HEADER_SIZE)
@@ -314,6 +314,8 @@ set(HOST_DEFS
 
 # --- Hard-pin the algorithms the host tools must support (only for host tools) ---
 # This guarantees sign.c compiles with these on MSVC even if SIGN_OPTIONS plumbing misses.
+
+# TODO check defaults
 list(APPEND HOST_DEFS
      ${HOST_D}WOLFBOOT_SIGN_ED25519
      ${HOST_D}WOLFBOOT_HASH_SHA256)
@@ -1251,18 +1253,19 @@ if (HOST_IS_MSVC)
 else()
     set(HOST_FO_KEYGEN "")
 endif()
+
 add_custom_command(
-  OUTPUT ${KEYGEN_TOOL}
-  COMMAND "${CMAKE_COMMAND}" -E make_directory ${KEYGEN_OBJDIR}
-  COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
-          ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
-          ${HOST_FO_KEYGEN}
-          $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools/keygen.c>
-          ${KEYTOOL_SOURCES_ABS}
-          ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
-          ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  COMMENT "Building keygen tool"
+    OUTPUT ${KEYGEN_TOOL}
+    COMMAND "${CMAKE_COMMAND}" -E make_directory ${KEYGEN_OBJDIR}
+    COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
+            ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
+            ${HOST_FO_KEYGEN}
+            $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools/keygen.c>
+            ${KEYTOOL_SOURCES_ABS}
+            ${HOST_OUT}$<SHELL_PATH:${KEYGEN_TOOL}>
+            ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Building keygen tool"
 )
 
 add_custom_target(keygen_build DEPENDS ${KEYGEN_TOOL})
@@ -1386,30 +1389,33 @@ set(KEYSTORE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
 #
 #---------------------------------------------------------------------------------------------
 if(NOT SIGN STREQUAL "NONE")
-    add_custom_target(keystore DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL} ${KEYSTORE})
+    add_custom_target(keystore DEPENDS ${KEYSTORE})
 
     # generate keystore.c if it does not already exist
     message(STATUS "Will generate fresh: ${KEYSTORE}")
     message(STATUS "  with KEYGEN_TOOL:  ${KEYGEN_TOOL}")
     message(STATUS "  and options:       ${KEYTOOL_OPTIONS}")
-    message(STATUS "  with key file:     ")
+    message(STATUS "  with key file:     ${WOLFBOOT_SIGNING_PRIVATE_KEY}")
+
     add_custom_command(
         OUTPUT ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
-        COMMAND "${KEYGEN_TOOL}" ${KEYTOOL_OPTIONS} --no-overwrite -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
+        COMMAND "${KEYGEN_TOOL}" ${KEYTOOL_OPTIONS}
+                --no-overwrite
+                -g ${WOLFBOOT_SIGNING_PRIVATE_KEY}
                 -keystoreDir ${CMAKE_CURRENT_BINARY_DIR}
+        DEPENDS ${KEYGEN_TOOL}
+        BYPRODUCTS ${KEYSTORE} ${WOLFBOOT_SIGNING_PRIVATE_KEY}
         WORKING_DIRECTORY ${WOLFBOOT_ROOT}
-        COMMENT "Generating keystore.c and signing private key")
-
-    add_custom_command(
-        OUTPUT "${KEYSTORE}" ${WOLFBOOT_SIGNING_PRIVATE_KEY}
-        DEPENDS "${KEYGEN_TOOL}"
-        APPEND)
+        COMMENT "Generating keystore.c and signing private key"
+        VERBATIM
+    )
 
     add_library(public_key)
-    target_sources(public_key PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/keystore.c)
+    target_sources(public_key PRIVATE ${KEYSTORE})
     target_compile_definitions(public_key PRIVATE ${WOLFBOOT_DEFS})
     target_include_directories(public_key PRIVATE include)
     target_link_libraries(public_key target)
+    add_dependencies(public_key keygen_build)  # ensure tool exists before any use
 endif()
 
 
