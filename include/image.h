@@ -365,6 +365,11 @@ static void __attribute__((noinline)) wolfBoot_image_clear_signature_ok(
     asm volatile("cmp r2, r0":::"cc"); \
     asm volatile("bne .-12")
 
+/* Some SHA checks */
+#if !defined(WOLFBOOT_SHA_DIGEST_SIZE) || (WOLFBOOT_SHA_DIGEST_SIZE <= 0)
+    #error "WOLFBOOT_SHA_DIGEST_SIZE must be defined"
+#endif
+
 /**
  * First part of RSA verification. Ensure that the function is called by
  * double checking its return value contains a valid
