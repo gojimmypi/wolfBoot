@@ -1,0 +1,113 @@
+{
+  "folders": [
+    {
+      "name": "wolfBoot",
+      "path": "./"
+    }
+  ],
+  "settings": {
+    "cmake.useCMakePresets": "always",
+    "cmake.configureOnOpen": true,
+
+    "cmake.useConfigurePresets": "always",
+
+    // Default to a project preset that exists; users can switch to their user preset
+    "cmake.defaultConfigurePreset": "stm32l4",
+    "cmake.defaultBuildPreset": "stm32l4",
+
+    // Nice-to-haves
+    "cmake.loggingLevel": "info",
+
+    // Fallback. Only when no preset/kit specifies a generator will CMake Tools consult:
+    "cmake.preferredGenerators": ["Ninja", "Ninja Multi-Config", "Unix Makefiles", "Visual Studio 17 2022"],
+    "cmake.sourceDirectory": "${workspaceFolder}",
+
+    // When presets are used, this is mostly ignored, but kept as a sensible fallback
+    "cmake.buildDirectory": "${workspaceFolder}/build-vsc-${buildPresetName}",
+
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "files.encoding": "utf8",
+    "files.eol": "\n"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cmake-tools",
+      "ms-vscode.cpptools",
+      "marus25.cortex-debug"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "CMake: Configure (active)",
+        "command": "cmake",
+        "args": [
+          "--preset",
+          "${command:cmake.activeConfigurePresetName}"
+        ],
+        "options": { "cwd": "${workspaceFolder}" },
+        "problemMatcher": []
+      },
+      {
+        "label": "CMake: Build (active)",
+        "command": "cmake",
+        "args": [
+          "--build",
+          "--preset",
+          "${command:cmake.activeBuildPresetName}"
+        ],
+        "options": { "cwd": "${workspaceFolder}" },
+        "group": "build",
+        "problemMatcher": "$gcc"
+      },
+      {
+        "label": "CMake: Clean (active)",
+        "command": "cmake",
+        "args": [
+          "--build",
+          "--preset",
+          "${command:cmake.activeBuildPresetName}",
+          "--target",
+          "clean"
+        ],
+        "options": { "cwd": "${workspaceFolder}" },
+        "problemMatcher": []
+      },
+      {
+        "label": "OpenOCD: Flash wolfBoot (active)",
+        "type": "shell",
+        "command": "openocd",
+        "args": [
+          "-f", "interface/stlink-dap.cfg",
+          "-f", "target/stm32l4x.cfg",
+          "-c",
+          "program ${command:cmake.buildDirectory}/wolfboot.elf verify reset exit"
+        ],
+        "options": { "cwd": "${workspaceFolder}" },
+        "problemMatcher": []
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "STM32L4 - OpenOCD (active preset)",
+        "type": "cortex-debug",
+        "request": "launch",
+        "servertype": "openocd",
+        "cwd": "${workspaceFolder}",
+        "device": "STM32L475VG",
+        "svdFile": "${workspaceFolder}/hal/stm32l4/STM32L4x.svd",
+        "executable": "${command:cmake.buildDirectory}/wolfboot.elf",
+        "configFiles": [
+          "interface/stlink-dap.cfg",
+          "target/stm32l4x.cfg"
+        ],
+        "runToMain": true,
+        "preLaunchTask": "CMake: Build (active)"
+      }
+    ]
+  }
+}
