@@ -1,3 +1,7 @@
+/* This is the wolfBoot VS Code workspace file
+ *
+ * JSONC, supporting comments
+ */
 {
   "folders": [
     {
@@ -7,9 +11,27 @@
   ],
 
   "settings": {
+    /* current, unified switch. Enables using all presets from CMakePresets.json file:
+     * configure, build, test, package, workflow - and drives the UI accordingly. */
     "cmake.useCMakePresets": "always",
-    "cmake.configureOnOpen": true,
+
+    /* This is a legacy setting for older versions */
     "cmake.useConfigurePresets": "always",
+
+    "cmake.configureOnOpen": true,
+
+    /* Ensure Status Bar icons are enabled.  The default is "hidden".
+     *
+     * Ctrl-Shift-P  CMake:Open CMake Tools Extension Settings
+     *
+     * Status Bar Visibility:
+     *
+     *        @ext:ms-vscode.cmake-tools stat
+     *
+     * See also CMake icon (3D Triangle with Wrench)
+     */
+    "cmake.options.statusBarVisibility": "visible",
+
 
     "cmake.defaultConfigurePreset": "stm32l4",
     "cmake.defaultBuildPreset": "stm32l4",
@@ -42,6 +64,7 @@
     ]
   },
 
+  /* Alternative to [WOLFBOOT_ROOT]/.vscode/tasks.json  */
   "tasks": {
     "version": "2.0.0",
     "tasks": [
@@ -96,6 +119,7 @@
     ]
   },
 
+  /* Alternative to [WOLFBOOT_ROOT]/.vscode/launch.json  */
   "launch": {
     "version": "0.2.0",
     "configurations": [
