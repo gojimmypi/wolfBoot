@@ -2224,7 +2224,7 @@ uint8_t* wolfBoot_peek_image(struct wolfBoot_image *img, uint32_t offset,
 int keyslot_id_by_sha(const uint8_t *hint)
 {
     int id;
-    int ret = -1;
+    int ret = 0; /* TODO default to failure until proven otherwise */
     int ct = 0;
     if (hint == NULL) {
         return -1;
@@ -2232,7 +2232,9 @@ int keyslot_id_by_sha(const uint8_t *hint)
 
     for (id = 0; id < keystore_num_pubkeys(); id++) {
         ct++;
-        ret = key_hash(id, digest);
+
+        /* TODO: return values for key_hash */
+        key_hash(id, digest);
         if ((ret == 0) && memcmp(digest, hint, WOLFBOOT_SHA_DIGEST_SIZE) == 0) {
             wolfBoot_printf("Found matching digest in slot %d\n", id);
             return id;
