@@ -30,6 +30,12 @@
 #include "wolfssl/wolfcrypt/settings.h"
 #include "wolfssl/wolfcrypt/sha256.h"
 
+/* Either hand-craft a device target.h file in [WOLFBOOT_ROOT]/include
+ * or let build process auto-create one from .config file or cmake presets.
+ *
+ * See template: [WOLFBOOT_ROOT]/include/target.h.in
+ * or unit test: [WOLFBOOT_ROOT]/tools/unit-tests/target.h
+ */
 #include "target.h"
 #include "wolfboot/wolfboot.h"
 

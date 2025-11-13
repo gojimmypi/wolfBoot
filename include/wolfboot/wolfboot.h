@@ -31,6 +31,12 @@ extern "C" {
 
 #include <stdint.h>
 #ifdef __WOLFBOOT
+/* Either hand-craft a device target.h file in [WOLFBOOT_ROOT]/include
+ * or let build process auto-create one from .config file or cmake presets.
+ *
+ * See template: [WOLFBOOT_ROOT]/include/target.h.in
+ * or unit test: [WOLFBOOT_ROOT]/tools/unit-tests/target.h
+ */
 #include "target.h"
 #endif
 #include "wolfboot/version.h"
@@ -163,6 +169,9 @@ extern "C" {
 #if defined(__WOLFBOOT) || defined(UNIT_TEST_AUTH)
 
 #include "wolfssl/wolfcrypt/settings.h"
+
+/* During development in new environment, ensure the expected user settings is used: */
+#ifdef DEBUG_SIGNTOOL
 #ifdef WOLFBOOT_KEYTOOLS_USER_SETTINGS_H
     /* Encountered the user settings in  [WOLFBOOT_ROOT]/tools/keytools/user_settings.h */
     #error "wolfBoot expects user settings from [WOLFBOOT_ROOT]/tools/keygen/user_settings.h"
@@ -170,6 +179,8 @@ extern "C" {
 #ifndef WOLFBOOT_USER_SETTINGS_H
     #error "wolfBoot expected user settings from [WOLFBOOT_ROOT]/include/user_settings.h"
 #endif
+#endif /* DEBUG_SIGNTOOL optional user settings check */
+
 #include "wolfssl/wolfcrypt/visibility.h"
 #include "wolfssl/wolfcrypt/wc_port.h"
 #include "wolfssl/wolfcrypt/types.h"

@@ -29,9 +29,10 @@
  *
  * See also settings in [WOLFBOOT_ROOT]/tools/keytools
  *
- * When in question, define WOLFBOOT_SHOW_INCLUDE
+ * When in question, define DEBUG_SIGNTOOL and optionally WOLFBOOT_SHOW_INCLUDE
  */
 
+/* During development in new environment, ensure the expected user settings is used: */
 #ifdef WOLFBOOT_SHOW_INCLUDE
     #ifdef __GNUC__  /* GCC compiler */
         #pragma message "===============include/user_settings.h"
@@ -40,10 +41,7 @@
     #else
         #warning "===============include/user_settings.h"
     #endif
-#endif
-
-//#define DEBUG_SIGNTOOL
-//#define WOLFSSL_USE_ALIGN
+#endif /* WOLFBOOT_SHOW_INCLUDE user_settings message */
 
 #if defined(_MSC_VER)
     /* MSVC and clang-cl both define _MSC_VER */
@@ -535,6 +533,7 @@ extern int tolower(int c);
 #   define WOLFSSL_HAVE_MIN
 #   define WOLFSSL_HAVE_MAX
 #endif
+
 
 /* Memory model */
 #if defined(WOLFSSL_SP_MATH) || defined(WOLFSSL_SP_MATH_ALL)

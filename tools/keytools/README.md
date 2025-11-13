@@ -39,7 +39,15 @@ make wolfboot_signing_private_key.der SIGN=ED25519
 ./tools/keytools/keygen --ed25519 -g wolfboot_signing_private_key.der
 ```
 
-## Generated Keystore Files
+## Debugging and Development
+
+### `DEBUG_SIGNTOOL`
+
+Enables additional diagnostic messages that may be useful during development and initial bring-up.
+
+### `WOLFBOOT_SHOW_INCLUDE`
+
+Enables compile-time verbosity to indicate which `user_settings.h` file is being used.
 
 Unless otherwise specified the `keygen` app will create:
 

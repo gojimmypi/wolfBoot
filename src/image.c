@@ -46,16 +46,16 @@
 #include "spi_drv.h"
 #include "printf.h"
 #ifdef WOLFBOOT_TPM
-    #include "tpm.h"
+#include "tpm.h"
 #endif
 #ifdef WOLFBOOT_HASH_SHA256
-    #include <wolfssl/wolfcrypt/sha256.h>
+#include <wolfssl/wolfcrypt/sha256.h>
 #endif
 #ifdef WOLFBOOT_HASH_SHA384
-    #include <wolfssl/wolfcrypt/sha512.h>
+#include <wolfssl/wolfcrypt/sha512.h>
 #endif
 #ifdef WOLFBOOT_HASH_SHA3_384
-    #include <wolfssl/wolfcrypt/sha3.h>
+#include <wolfssl/wolfcrypt/sha3.h>
 #endif
 
 /* Globals */
@@ -74,11 +74,10 @@
 
 /* TPM based verify */
 #if defined(WOLFBOOT_TPM) && defined(WOLFBOOT_TPM_VERIFY)
-
 #ifdef ECC_IMAGE_SIGNATURE_SIZE
-    #define IMAGE_SIGNATURE_SIZE ECC_IMAGE_SIGNATURE_SIZE
+#define IMAGE_SIGNATURE_SIZE ECC_IMAGE_SIGNATURE_SIZE
 #else
-    #define IMAGE_SIGNATURE_SIZE RSA_IMAGE_SIGNATURE_SIZE
+#define IMAGE_SIGNATURE_SIZE RSA_IMAGE_SIGNATURE_SIZE
 #endif
 
 static void wolfBoot_verify_signature_tpm(uint8_t key_slot,
@@ -2211,17 +2210,6 @@ uint8_t* wolfBoot_peek_image(struct wolfBoot_image *img, uint32_t offset,
 
 #if !defined(WOLFBOOT_NO_SIGN) && !defined(WOLFBOOT_RENESAS_SCEPROTECT)
 
-/* Normalize the call so we always get an int status: 0 == OK, <0 == error */
-static inline int key_hash_ok(int id, uint8_t* digest)
-{
-#ifdef WOLFBOOT_KEYHASH_HAS_RET
-    return key_hash(id, digest);
-#else
-    key_hash(id, digest);
-    return 0;
-#endif
-}
-
 /**
  * @brief Get the key slot ID by SHA hash.
  *
@@ -2241,13 +2229,10 @@ int keyslot_id_by_sha(const uint8_t *hint)
     if (hint == NULL) {
         return -1;
     }
-    if (WOLFBOOT_SHA_DIGEST_SIZE <= 0) {
-        return -1;
-    }
 
     for (id = 0; id < keystore_num_pubkeys(); id++) {
         ct++;
-        ret = key_hash_ok(id, digest);
+        ret = key_hash(id, digest);
         if ((ret == 0) && memcmp(digest, hint, WOLFBOOT_SHA_DIGEST_SIZE) == 0) {
             wolfBoot_printf("Found matching digest in slot %d\n", id);
             return id;

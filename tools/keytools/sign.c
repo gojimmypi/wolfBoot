@@ -26,7 +26,7 @@
 
 /* Option to enable sign tool debugging */
 /* Must also define DEBUG_WOLFSSL in /tools/keytools/user_settings.h */
-//#define DEBUG_SIGNTOOL
+/* #define DEBUG_SIGNTOOL */
 
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
@@ -85,6 +85,8 @@ static inline int fp_truncate(FILE *f, long len)
 #endif
 
 #include <wolfssl/wolfcrypt/settings.h>
+/* During development in new environment, ensure the expected user settings is used: */
+#ifdef DEBUG_SIGNTOOL
 #ifdef WOLFBOOT_USER_SETTINGS_H
     #error "signing tool encountered unexpected user settings from [WOLFBOOT_ROOT]/include/user_settings.h"
 #endif
@@ -95,6 +97,7 @@ static inline int fp_truncate(FILE *f, long len)
 #ifndef WOLFBOOT_KEYTOOLS_USER_SETTINGS_H
     #error "signing tool expects settings from [WOLFBOOT_ROOT]/tools/keygen/user_settings.h"
 #endif
+#endif /* DEBUG_SIGNTOOL optional user settings check */
 
 #include <wolfssl/wolfcrypt/asn.h>
 #include <wolfssl/wolfcrypt/aes.h>

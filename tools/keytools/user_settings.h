@@ -30,9 +30,10 @@
  *
  * See also settings in [WOLFBOOT_ROOT]/include/user_settings.h
  *
- * When in question, define WOLFBOOT_SHOW_INCLUDE
+ * When in question, define DEBUG_SIGNTOOL and optionally WOLFBOOT_SHOW_INCLUDE
  */
 
+ /* During development in new environment, ensure the expected user settings is used: */
 #ifdef WOLFBOOT_SHOW_INCLUDE
     #ifdef __GNUC__  /* GCC compiler */
         #pragma message "============= keytools/user_settings.h"
@@ -41,20 +42,21 @@
     #else
         #warning "============= keytools/user_settings"
     #endif
-#endif
+#endif /* optional user settings check */
 
-#include <stdint.h>
-
+/* Some debug options. See docs. */
 /* #define DEBUG_SIGNTOOL */
-
 /* #define WOLFBOOT_HASH_SHA256 */
 /* #define WOLFBOOT_SIGN_ECC256 */
+
+#include <stdint.h>
 
 /* Only the lib-test needs some image size macros in Visual Studio. */
 /* See project file to identify IS_TEST_LIB_APP */
 #if defined(_MSC_VER) && defined(IS_TEST_LIB_APP)
     /* These should be defined in preprocessor section, here for backup: */
     #ifndef LMS_IMAGE_SIGNATURE_SIZE
+        // TODO
         #define LMS_IMAGE_SIGNATURE_SIZE 4096
     #endif
     #ifndef XMSS_IMAGE_SIGNATURE_SIZE
