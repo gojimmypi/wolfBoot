@@ -1,16 +1,48 @@
-/* This is the wolfBoot VS Code workspace file
+/* [WOLFBOOT_ROOT]/IDE/VSCode/wolfBoot.code-workspace
  *
- * JSONC, supporting comments
+ * Copyright (C) 2025 wolfSSL Inc.
+ *
+ * This file is part of wolfBoot.
+ *
+ * wolfBoot is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * wolfBoot is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
 {
   "folders": [
     {
       "name": "wolfBoot",
+
+      /* This workspace is found two directories deep in [WOLFBOOT_ROOT]/IDE/VSCode */
       "path": "../.."
     }
   ],
 
+  /* Extension expected */
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cmake-tools",
+      "ms-vscode.cpptools",
+      "marus25.cortex-debug"
+    ]
+  },
+
+  /* Alternative to [WOLFBOOT_ROOT]/.vscode/settings.json  */
   "settings": {
+    /* Pick a default config to work immediately upon opening project */
+    "cmake.defaultConfigurePreset": "stm32l4",
+    "cmake.defaultBuildPreset": "stm32l4",
+
     /* current, unified switch. Enables using all presets from CMakePresets.json file:
      * configure, build, test, package, workflow - and drives the UI accordingly. */
     "cmake.useCMakePresets": "always",
@@ -32,10 +64,6 @@
      */
     "cmake.options.statusBarVisibility": "visible",
 
-
-    "cmake.defaultConfigurePreset": "stm32l4",
-    "cmake.defaultBuildPreset": "stm32l4",
-
     "cmake.loggingLevel": "info",
 
     /* Make the project root the source dir no matter where VS Code is opened */
@@ -51,17 +79,11 @@
       "Visual Studio 17 2022"
     ],
 
+    "cmake.generator": "Ninja",
+
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.encoding": "utf8",
     "files.eol": "\n"
-  },
-
-  "extensions": {
-    "recommendations": [
-      "ms-vscode.cmake-tools",
-      "ms-vscode.cpptools",
-      "marus25.cortex-debug"
-    ]
   },
 
   /* Alternative to [WOLFBOOT_ROOT]/.vscode/tasks.json  */
@@ -108,8 +130,10 @@
         "type": "shell",
         "command": "openocd",
         "args": [
-          "-f", "interface/stlink-dap.cfg",
-          "-f", "target/stm32l4x.cfg",
+          "-f",
+          "interface/stlink-dap.cfg",
+          "-f",
+          "target/stm32l4x.cfg",
           "-c",
           "program ${command:cmake.buildDirectory}/wolfboot.elf verify reset exit"
         ],
