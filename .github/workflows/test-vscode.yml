@@ -20,6 +20,10 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # Provide fallbacks when not workflow_dispatch
+    env:
+      WORKSPACE_PATH: ${{ github.event_name == 'workflow_dispatch' && inputs.workspace_path || 'IDE/VSCode/wolfBoot.code-workspace' }}
+      CMAKE_LIST: ${{ github.event_name == 'workflow_dispatch' && inputs.cmake_list_presets || 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,10 +38,13 @@ jobs:
       - name: Validate workspace JSONC and folder paths
         shell: python3 {0}
         env:
-          WORKSPACE_PATH: ${{ inputs.workspace_path }}
+          WORKSPACE_PATH: ${{ env.WORKSPACE_PATH }}
         run: |
           import os, sys, re, json, pathlib
+          print("pwd:", pathlib.Path(".").resolve())
           ws_rel = os.environ.get("WORKSPACE_PATH", "").strip()
+          print("WORKSPACE_PATH:", ws_rel or "<EMPTY>")
+
           if not ws_rel:
               print("WORKSPACE_PATH input is required", file=sys.stderr)
               sys.exit(2)
@@ -49,32 +56,32 @@ jobs:
 
           txt = ws.read_text(encoding="utf-8", errors="replace")
           # strip /* */ and // comments (JSONC -> JSON)
-          txt_no_block = re.sub(r"/\*.*?\*/", "", txt, flags=re.S)
-          txt_no_comments = re.sub(r"//.*", "", txt_no_block)
+          txt = re.sub(r"/\*.*?\*/", "", txt, flags=re.S)
+          txt = re.sub(r"//.*", "", txt)
           try:
-              data = json.loads(txt_no_comments)
-          except Exception as e:
+              data = json.loads(txt)
+          except Exception:
               print("Failed to parse workspace as JSON after removing comments.", file=sys.stderr)
               raise
 
-          if "folders" not in data or not isinstance(data["folders"], list) or not data["folders"]:
+          folders = data.get("folders", [])
+          if not isinstance(folders, list) or not folders:
               print("No 'folders' defined in workspace.", file=sys.stderr)
               sys.exit(4)
 
           ws_dir = ws.parent.resolve()
           errors = 0
-          for idx, item in enumerate(data["folders"]):
+          for idx, item in enumerate(folders):
               if not isinstance(item, dict):
                   print(f"folders[{idx}] is not an object", file=sys.stderr)
                   errors += 1
                   continue
-              path = item.get("path")
-              uri  = item.get("uri")
+              path = item.get("path"); uri = item.get("uri")
               if path is None and uri is None:
                   print(f"folders[{idx}] missing 'path' or 'uri'", file=sys.stderr)
                   errors += 1
                   continue
-              if path:
+              if path is not None:
                   if not isinstance(path, str):
                       print(f"folders[{idx}].path is not a string", file=sys.stderr)
                       errors += 1
@@ -83,13 +90,12 @@ jobs:
                       print(f"[ok] folders[{idx}] path='{path}' -> '{resolved}'")
                       if not resolved.exists():
                           print(f"[warn] resolved path does not exist on runner: {resolved}", file=sys.stderr)
-              if uri:
+              if uri is not None:
                   print(f"[info] folders[{idx}] uses 'uri': {uri}")
 
           if errors:
               sys.exit(5)
 
-          # Optional: sanity-check a couple of common settings types
           settings = data.get("settings", {})
           if settings and not isinstance(settings, dict):
               print("settings is not an object", file=sys.stderr)
@@ -98,7 +104,6 @@ jobs:
           print("Workspace JSONC and folder paths look sane.")
 
       - name: List CMake presets (optional)
-        if: ${{ inputs.cmake_list_presets == 'true' }}
+        if: ${{ env.CMAKE_LIST == 'true' }}
         run: |
-          # Try listing presets from repo root. If your presets live elsewhere, adjust -S.
           cmake --list-presets || true
