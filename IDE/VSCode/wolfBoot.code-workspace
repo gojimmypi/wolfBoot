@@ -2,33 +2,38 @@
   "folders": [
     {
       "name": "wolfBoot",
-      "path": "./"
+      "path": "../.."
     }
   ],
+
   "settings": {
     "cmake.useCMakePresets": "always",
     "cmake.configureOnOpen": true,
-
     "cmake.useConfigurePresets": "always",
 
-    // Default to a project preset that exists; users can switch to their user preset
     "cmake.defaultConfigurePreset": "stm32l4",
     "cmake.defaultBuildPreset": "stm32l4",
 
-    // Nice-to-haves
     "cmake.loggingLevel": "info",
 
-    // Fallback. Only when no preset/kit specifies a generator will CMake Tools consult:
-    "cmake.preferredGenerators": ["Ninja", "Ninja Multi-Config", "Unix Makefiles", "Visual Studio 17 2022"],
-    "cmake.sourceDirectory": "${workspaceFolder}",
+    /* Make the project root the source dir no matter where VS Code is opened */
+    "cmake.sourceDirectory": "${workspaceFolder:wolfBoot}",
 
-    // When presets are used, this is mostly ignored, but kept as a sensible fallback
-    "cmake.buildDirectory": "${workspaceFolder}/build-vsc-${buildPresetName}",
+    /* One build dir per preset under the repo root */
+    "cmake.buildDirectory": "${workspaceFolder:wolfBoot}/build-vsc-${buildPresetName}",
+
+    "cmake.preferredGenerators": [
+      "Ninja",
+      "Ninja Multi-Config",
+      "Unix Makefiles",
+      "Visual Studio 17 2022"
+    ],
 
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.encoding": "utf8",
     "files.eol": "\n"
   },
+
   "extensions": {
     "recommendations": [
       "ms-vscode.cmake-tools",
@@ -36,6 +41,7 @@
       "marus25.cortex-debug"
     ]
   },
+
   "tasks": {
     "version": "2.0.0",
     "tasks": [
@@ -46,7 +52,7 @@
           "--preset",
           "${command:cmake.activeConfigurePresetName}"
         ],
-        "options": { "cwd": "${workspaceFolder}" },
+        "options": { "cwd": "${workspaceFolder:wolfBoot}" },
         "problemMatcher": []
       },
       {
@@ -57,7 +63,7 @@
           "--preset",
           "${command:cmake.activeBuildPresetName}"
         ],
-        "options": { "cwd": "${workspaceFolder}" },
+        "options": { "cwd": "${workspaceFolder:wolfBoot}" },
         "group": "build",
         "problemMatcher": "$gcc"
       },
@@ -71,7 +77,7 @@
           "--target",
           "clean"
         ],
-        "options": { "cwd": "${workspaceFolder}" },
+        "options": { "cwd": "${workspaceFolder:wolfBoot}" },
         "problemMatcher": []
       },
       {
@@ -84,11 +90,12 @@
           "-c",
           "program ${command:cmake.buildDirectory}/wolfboot.elf verify reset exit"
         ],
-        "options": { "cwd": "${workspaceFolder}" },
+        "options": { "cwd": "${workspaceFolder:wolfBoot}" },
         "problemMatcher": []
       }
     ]
   },
+
   "launch": {
     "version": "0.2.0",
     "configurations": [
@@ -97,9 +104,9 @@
         "type": "cortex-debug",
         "request": "launch",
         "servertype": "openocd",
-        "cwd": "${workspaceFolder}",
+        "cwd": "${workspaceFolder:wolfBoot}",
         "device": "STM32L475VG",
-        "svdFile": "${workspaceFolder}/hal/stm32l4/STM32L4x.svd",
+        "svdFile": "${workspaceFolder:wolfBoot}/hal/stm32l4/STM32L4x.svd",
         "executable": "${command:cmake.buildDirectory}/wolfboot.elf",
         "configFiles": [
           "interface/stlink-dap.cfg",
