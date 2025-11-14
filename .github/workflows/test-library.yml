@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
 
       # Limit concurrent jobs for scheduling problem on GitHub's hosted runner pool.
-      max-parallel: 10
+      max-parallel: 12
 
       matrix:
         math:
@@ -32,7 +32,7 @@ jobs:
           - "SPMATH=0 SPMATHALL=0 WOLFBOOT_SMALL_STACK=0"
           - "SPMATH=0 SPMATHALL=0 WOLFBOOT_SMALL_STACK=1"
         asym: [ed25519, ecc256, ecc384, ecc521, rsa2048, rsa3072, rsa4096, ed448]
-        hash: [sha256, sha384, sha3] # --sha256 for commandline, SHA256 for make
+        hash: [sha256, sha384, sha3]
 
         # See https://github.com/wolfSSL/wolfBoot/issues/614 regarding exclusions:
         # TODO disabled, expect failure until resolved:

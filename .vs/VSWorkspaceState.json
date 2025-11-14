@@ -1,6 +1,14 @@
 {
+  "ExpandedNodes": [
+    "",
+    "\\IDE\\VisualStudio"
+  ],
+  "SelectedNode": "\\CMakeLists.txt",
+  "PreviewInSolutionExplorer": false,
   "OutputFoldersPerTargetSystem": {
     "Local Machine": [
+      "build-sim",
+      "out\\build\\sign_hash_config",
       "build-stm32h7",
       "out\\build\\vs-debug-trace",
       "build-stm32l4",
@@ -8,6 +16,5 @@
       "build-stm32f1",
       "build-stm32g0"
     ]
-  },
-  "PreviewInSolutionExplorer": false
+  }
 }

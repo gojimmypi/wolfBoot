@@ -1,4 +1,4 @@
-# utils.cmake
+# write_size.cmake
 #
 # Copyright (C) 2025 wolfSSL Inc.
 #
