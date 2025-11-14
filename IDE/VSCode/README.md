@@ -8,6 +8,24 @@ For example, select `STM32L4` wait for CMake to finish, then click `build`. The 
 
 <img width="848" height="217" alt="image" src="https://github.com/user-attachments/assets/39a67930-18f6-4ce2-b221-a475956ca672" /><br /><br />
 
+-----
+
+## Quick Start
+
+If all of the prerequisites (see below) are already installed:
+
+```bash
+git clone https://github.com/wolfssl/wolfBoot.git
+cd wolfBoot/IDE/VSCode
+git submodule update --init
+
+code wolfBoot.code-workspace
+```
+
+If all of the prerequisites are NOT installed, see the [install.sh](./install.sh) script.
+
+-----
+
 ## Additional Settings
 
 See the [cmake/config_defaults.cmake](../../cmake/config_defaults.cmake) file. Of particular interest
@@ -28,6 +46,8 @@ set(FOUND_HAL_BASE false)
 # optionally use .config files; See CMakePresets.json instead
 set(USE_DOT_CONFIG false)
 ```
+
+-----
 
 ## Requirements
 

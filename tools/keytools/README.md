@@ -101,6 +101,8 @@ The wolfBoot SPKI DER file can be used to verify an image:
 
 ## Local Visual Studio Projects
 
+Project files can be found in [`[WOLFBOOT_ROOT]/IDE/VisualStudio`](../../IDE/VisualStudio/README.md).
+
 There are three projects to:
 
 1. Generate a new signing key

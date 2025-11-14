@@ -1,4 +1,4 @@
-# wolfBoot Key Tools
+﻿# wolfBoot Key Tools
 
 `keygen` and `sign` are two command line tools to be used on a PC (or automated
 server) environment to manage wolfBoot private keys and sign the initial
@@ -11,6 +11,8 @@ A standalone C version of the key tools is available in: `./tools/keytools`.
 These can be built in `tools/keytools` using `make` or from the wolfBoot root using `make keytools`.
 
 #### Windows Visual Studio
+
+Project files can be found in [`[WOLFBOOT_ROOT]/IDE/VisualStudio`](../IDE/VisualStudio/README.md).
 
 Use the `wolfBootSignTool.vcxproj` Visual Studio project to build the `sign.exe` and `keygen.exe` tools for use on Windows.
 
@@ -178,14 +180,14 @@ is provided:
     `BASE_SIGNED_IMG.BIN` and the new image signed starting from `IMAGE.BIN`. The
 result is stored in a file ending in `_signed_diff.bin`.
 
-The compression scheme used is Bentley–McIlroy.
+The compression scheme used is Bentleyâ€“McIlroy.
 
 Options:
   * `--no-base-sha` : Avoid adding the sha of the base image to the manifest header.
     By default, the sign tool appends the sha of the base image to the manifest header,
     so wolfBoot will refuse to start a delta update if the sha does not match the
     one of the existing image. However, this takes up 32 to 48 bytes extra in the
-    manifest header, so this option is available to provide compatibility on 
+    manifest header, so this option is available to provide compatibility on
     existing installations without this feature, where the header size does not
     allow to accommodate the field
 

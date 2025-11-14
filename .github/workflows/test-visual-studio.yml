@@ -67,7 +67,7 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          pushd tools\keytools\
+          pushd IDE\VisualStudio
 
           msbuild wolfBootKeygenTool.vcxproj   ^
             /t:Rebuild                         ^
@@ -93,7 +93,7 @@ jobs:
           echo "ASYM=%ASYM%" >> .\config_params.txt
 
           echo "Calling keygen using --%ASYM%"
-          .\tools\keytools\%PLATFORM%\%CONFIG%\keygen.exe --%ASYM% -g wolfboot_signing_private_key.der
+          .\IDE\VisualStudio%PLATFORM%\%CONFIG%\keygen.exe --%ASYM% -g wolfboot_signing_private_key.der
           if errorlevel 1 (
             echo keygen.exe failed with ERRORLEVEL %ERRORLEVEL%
             exit /b %ERRORLEVEL%
@@ -110,7 +110,7 @@ jobs:
         shell: cmd
         working-directory: .\
         run: |
-          pushd tools\keytools\
+          pushd IDE\VisualStudio
 
           msbuild wolfBootSignTool.vcxproj     ^
             /t:Rebuild                         ^
@@ -141,9 +141,9 @@ jobs:
           echo %cd%
 
           echo "Calling sign using --%ASYM% --%HASH%"
-          echo Running .\tools\keytools\%PLATFORM%\%CONFIG%\sign.exe  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
+          echo Running .\IDE\VisualStudio%PLATFORM%\%CONFIG%\sign.exe  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
 
-          .\tools\keytools\%PLATFORM%\%CONFIG%\sign.exe               --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
+          .\IDE\VisualStudio%PLATFORM%\%CONFIG%\sign.exe               --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
 
           if errorlevel 1 (
             echo sign.exe failed with ERRORLEVEL %ERRORLEVEL%
@@ -185,7 +185,7 @@ jobs:
         shell: cmd
         working-directory: .\
         run: |
-          pushd tools\keytools\
+          pushd IDE\VisualStudio
 
           msbuild wolfBootTestLib.vcxproj      ^
             /t:Rebuild                         ^
@@ -210,7 +210,7 @@ jobs:
           echo %cd%
 
           :: # Paths
-          set "EXE=tools\keytools\%PLATFORM%\%CONFIG%\test-lib.exe"
+          set "EXE=IDE\VisualStudio%PLATFORM%\%CONFIG%\test-lib.exe"
           set "BIN=test_v1_signed.bin"
 
           :: # Validate required env vars
@@ -269,7 +269,7 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          pushd tools\keytools\
+          pushd IDE\VisualStudio
 
           msbuild wolfBootFlashOTP.vcxproj   ^
             /t:Rebuild                         ^
@@ -290,7 +290,7 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          .\tools\keytools\%PLATFORM%\%CONFIG%\otp-keystore-gen.exe
+          .\IDE\VisualStudio%PLATFORM%\%CONFIG%\otp-keystore-gen.exe
 
           if errorlevel 1 (
             echo otp-keystore-gen.exe failed with ERRORLEVEL %ERRORLEVEL%
@@ -310,7 +310,7 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          pushd tools\keytools\
+          pushd IDE\VisualStudio
 
           msbuild wolfBootFlashPrimerOTP.vcxproj   ^
             /t:Rebuild                         ^
@@ -331,7 +331,7 @@ jobs:
           echo Current directory:
           echo %cd%
 
-          .\tools\keytools\%PLATFORM%\%CONFIG%\otp-keystore-primer.exe
+          .\IDE\VisualStudio%PLATFORM%\%CONFIG%\otp-keystore-primer.exe
 
           if errorlevel 1 (
             echo otp-keystore-primer.exe failed with ERRORLEVEL %ERRORLEVEL%

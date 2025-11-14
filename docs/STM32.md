@@ -70,6 +70,13 @@ code ./IDE/VSCode/wolfBoot.code-workspace
 
 ### Visual Studio IDE
 
+Project files can be found in [`[WOLFBOOT_ROOT]/IDE/VisualStudio`](../IDE/VisualStudio/README.md).
+
+
+### Visual Studio CMake
+
+Open the directory at `[WOLFBOOT_ROOT]`.
+
 For the `Select Startup Item`, leave at default. Do not select `image`, wolfboot_name[], etc.
 
 Right click on `CMakeLists.txt` and select `Delete Cache and Reconfigure`.

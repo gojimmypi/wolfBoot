@@ -1,6 +1,6 @@
 ﻿# Visual Studio Workspace Files
 
-Normally excludes from source control, but here for a Visual Studio CMake project workaround:
+Normally excluded from source control, but here for a Visual Studio CMake project workaround:
 
 ## VSWorkspaceSettings.json
 
