@@ -1,9 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="wolfBoot_Paths">
+    <THIS_PRIVATE_KEY_DER>wolfboot_signing_private_key.der</THIS_PRIVATE_KEY_DER>  
+    <THIS_WOLFBOOT_PROJECT_PROPS>wolfBootKeygen.props</THIS_WOLFBOOT_PROJECT_PROPS>
+
     <!-- Prefer env var WOLFBOOT_ROOT; otherwise default to ..\..  (2 directories up from IDE/VisualStudio) -->
     <THIS_WOLFBOOT_ROOT Condition="'$(WOLFBOOT_ROOT)'          != ''">$(WOLFBOOT_ROOT)</THIS_WOLFBOOT_ROOT>
     <THIS_WOLFBOOT_ROOT Condition="'$(THIS_WOLFBOOT_ROOT)'     == ''">$(MSBuildThisFileDirectory)..\..</THIS_WOLFBOOT_ROOT>
+
+    <!-- Keystore -->
+    <!-- See keygen app param: -keystoreDir -->
+    <!-- Prefer env var KEYSTORE_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\src -->
+    <THIS_KEYSTORE_ROOT_RAW Condition="'$(KEYSTORE_ROOT)'              != ''">$(KEYSTORE_ROOT)</THIS_KEYSTORE_ROOT_RAW>
+    <THIS_KEYSTORE_ROOT_RAW Condition="'$(THIS_KEYSTORE_ROOT_RAW)'     == ''">$([System.IO.Path]::Combine('$(THIS_WOLFBOOT_ROOT)', 'src'))</THIS_KEYSTORE_ROOT_RAW>
+    <THIS_KEYSTORE_ROOT>$([MSBuild]::NormalizePath('$(THIS_KEYSTORE_ROOT_RAW)'))</THIS_KEYSTORE_ROOT>
 
     <!-- Keygen -->
     <!-- Prefer env var KEYGEN_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\tools\keygen -->
@@ -17,17 +27,17 @@
     <THIS_WOLFSSL_ROOT Condition="'$(THIS_WOLFSSL_ROOT)'       == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfssl</THIS_WOLFSSL_ROOT>
 
     <!-- wolfTPM -->
-    <!-- Prefer env var WOLFTPM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfssl -->
+    <!-- Prefer env var WOLFTPM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfTPM -->
     <THIS_WOLFTPM_ROOT Condition="'$(WOLFTPM_ROOT)'            != ''">$(WOLFTPM_ROOT)</THIS_WOLFTPM_ROOT>
     <THIS_WOLFTPM_ROOT Condition="'$(THIS_WOLFTPM_ROOT)'       == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfTPM</THIS_WOLFTPM_ROOT>
 
     <!-- wolfPKCS11 -->
-    <!-- Prefer env var WOLFPKCS11_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfssl -->
+    <!-- Prefer env var WOLFPKCS11_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfPKCS11 -->
     <THIS_WOLFPKCS11_ROOT Condition="'$(WOLFPKCS11_ROOT)'      != ''">$(WOLFPKCS11_ROOT)</THIS_WOLFPKCS11_ROOT>
     <THIS_WOLFPKCS11_ROOT Condition="'$(THIS_WOLFPKCS11_ROOT)' == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfPKCS11</THIS_WOLFPKCS11_ROOT>
 
     <!-- wolfHSM -->
-    <!-- Prefer env var WOLFHSM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfssl -->
+    <!-- Prefer env var WOLFHSM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfHSM -->
     <THIS_WOLFHSM_ROOT Condition="'$(WOLFHSM_ROOT)'            != ''">$(WOLFHSM_ROOT)</THIS_WOLFHSM_ROOT>
     <THIS_WOLFHSM_ROOT Condition="'$(THIS_WOLFHSM_ROOT)'       == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfHSM</THIS_WOLFHSM_ROOT>
   </PropertyGroup>
@@ -40,10 +50,10 @@
     </ClCompile>
   </ItemDefinitionGroup>
 
-    <!-- Make our target run as part of Build -->
-    <PropertyGroup>
-      <BuildDependsOn>EnsureTargetHeader;$(BuildDependsOn)</BuildDependsOn>
-    </PropertyGroup>
+  <!-- Make our target run as part of Build -->
+  <PropertyGroup>
+    <BuildDependsOn>EnsureTargetHeader;$(BuildDependsOn)</BuildDependsOn>
+  </PropertyGroup>
 
   <Target Name="EnsureTargetHeader" BeforeTargets="ClCompile">
     <!-- Source and destination for target.h -->
@@ -53,24 +63,13 @@
     </PropertyGroup>
 
     <!-- Always show a clear message -->
-    <Message Importance="High"
-             Text="Checking target.h. Destination: $(TargetHeaderDest)  Source: $(UnitTestsTargetHeader)" />
-
+    <Message Importance="High" Text="Checking target.h. Destination: $(TargetHeaderDest)  Source: $(UnitTestsTargetHeader)" />
     <!-- Make sure the intermediate directory exists -->
     <MakeDir Directories="$(IntDir)" />
-
     <!-- Copy only if destination is missing -->
-    <Copy
-      SourceFiles="$(UnitTestsTargetHeader)"
-      DestinationFiles="$(TargetHeaderDest)"
-      SkipUnchangedFiles="true"
-      Condition="!Exists('$(TargetHeaderDest)') AND Exists('$(UnitTestsTargetHeader)')" />
-
+    <Copy SourceFiles="$(UnitTestsTargetHeader)" DestinationFiles="$(TargetHeaderDest)" SkipUnchangedFiles="true" Condition="!Exists('$(TargetHeaderDest)') AND Exists('$(UnitTestsTargetHeader)')" />
     <!-- If both are missing, fail early with a clear error -->
-    <Error
-      Condition="!Exists('$(TargetHeaderDest)') AND !Exists('$(UnitTestsTargetHeader)')"
-      Text="target.h not found. Expected source at $(UnitTestsTargetHeader)" />
-
+    <Error Condition="!Exists('$(TargetHeaderDest)') AND !Exists('$(UnitTestsTargetHeader)')" Text="target.h not found. Expected source at $(UnitTestsTargetHeader)" />
     <Message Importance="High" Text="THIS_KEYGEN_ROOT=$(THIS_KEYGEN_ROOT)" />
     <Message Importance="High" Text="THIS_WOLFSSL_ROOT=$(THIS_WOLFSSL_ROOT)" />
     <Message Importance="High" Text="THIS_WOLFBOOT_ROOT=$(THIS_WOLFBOOT_ROOT)" />
@@ -78,10 +77,8 @@
     <Message Importance="High" Text="OutDir=$(OutDir)" />
     <Message Importance="High" Text="Include path will include $(IntDir)" />
   </Target>
-
   <Target Name="ShowPaths" BeforeTargets="ClCompile">
   </Target>
-
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -105,7 +102,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>wolfBootKeygenTool</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-	<ProjectName>wolfBootKeygenTool</ProjectName>
+    <ProjectName>wolfBootKeygenTool</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -134,7 +131,9 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -207,7 +206,7 @@
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -300,22 +299,31 @@
     <ClCompile Include="$(THIS_WOLFSSL_ROOT)\wolfcrypt\src\wc_xmss_impl.c" />
     <ClCompile Include="$(THIS_WOLFSSL_ROOT)\wolfcrypt\src\wolfmath.c" />
 
+    <ClCompile Include="$(THIS_KEYGEN_ROOT)\keystore.c" Condition="Exists('$(THIS_KEYGEN_ROOT)\keystore.c')" />
+
     <!-- NOTE: Other compilers may generate default keystore files in [WOLFBOOT_ROOT]/src -->
     <!--       keygen uses the user_settings.h in [THIS_KEYGEN_ROOT], and NOT [THIS_WOLFBOOT_ROOT]/include -->
     <!-- The main() app -->
     <ClCompile Include="$(THIS_KEYGEN_ROOT)\keygen.c" />
   </ItemGroup>
 
+  <!-- Project include AFTER Microsoft.Cpp.prop but BEFORE Microsoft.Cpp.targets -->
+  <Import Project="$(MSBuildThisFileDirectory)$(THIS_WOLFBOOT_PROJECT_PROPS)" Condition="Exists('$(MSBuildThisFileDirectory)$(THIS_WOLFBOOT_PROJECT_PROPS)')" />
+
+  <!-- ================================================================= -->
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <!-- ================================================================= -->
+
+
+  <!--  <Import Project="wolfBootTarget.props" Condition="Exists('wolfBootTarget.props')" /> -->
+
+  <ImportGroup Label="ExtensionTargets"></ImportGroup>
 
   <!-- Show the project-level preprocessor definitions-->
   <PropertyGroup>
     <!-- Where to write it; change if you prefer another path -->
     <PreprocDefsFile>$(TargetDir)$(TargetName)-preprocessor-defs.$(Configuration).$(Platform).txt</PreprocDefsFile>
   </PropertyGroup>
-
   <Target Name="SaveAndShowPreprocessorDefinitions" BeforeTargets="ClCompile">
     <!-- Collect all PreprocessorDefinitions visible to ClCompile -->
     <ItemGroup>
@@ -323,7 +331,6 @@
       <!-- Split semicolon list into individual items -->
       <_DefRaw Include="$([System.String]::Copy('%(_AllDefs.Identity)').Split(';'))" />
     </ItemGroup>
-
     <!-- Clean up empties and dedupe -->
     <ItemGroup>
       <_Def Include="@(_DefRaw)" Condition="'%(_DefRaw.Identity)' != ''" />
@@ -331,30 +338,20 @@
     <RemoveDuplicates Inputs="@(_Def)">
       <Output TaskParameter="Filtered" ItemName="_DefDistinct" />
     </RemoveDuplicates>
-
     <!-- Ensure output directory exists -->
     <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(PreprocDefsFile)'))" />
-
     <!-- Write one per line, overwrite each build -->
-    <WriteLinesToFile
-        File="$(PreprocDefsFile)"
-        Lines="@(_DefDistinct)"
-        Overwrite="true"
-        Encoding="UTF-8" />
-
+    <WriteLinesToFile File="$(PreprocDefsFile)" Lines="@(_DefDistinct)" Overwrite="true" Encoding="UTF-8" />
     <!-- Also echo to build log -->
     <Message Importance="High" Text="PreprocessorDefinitions written to: $(PreprocDefsFile)" />
     <Message Importance="High" Text="  %(_DefDistinct.Identity)" />
-
     <Message Importance="High" Text="THIS_KEYGEN_ROOT=$(THIS_KEYGEN_ROOT)" />
     <Message Importance="High" Text="THIS_WOLFSSL_ROOT=$(THIS_WOLFSSL_ROOT)" />
     <Message Importance="High" Text="THIS_WOLFBOOT_ROOT=$(THIS_WOLFBOOT_ROOT)" />
     <Message Importance="High" Text="IntDir=$(IntDir)" />
     <Message Importance="High" Text="OutDir=$(OutDir)" />
     <Message Importance="High" Text="Include path will include $(IntDir)" />
-
   </Target>
-
   <!-- Show debugging params -->
   <Target Name="ShowDebugArgs" BeforeTargets="Build">
     <Message Importance="High" Text="Args: $(LocalDebuggerCommandArguments)" />

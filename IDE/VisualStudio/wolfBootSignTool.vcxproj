@@ -1,9 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="wolfBoot_Paths">
+  <THIS_PRIVATE_KEY_DER>wolfboot_signing_private_key.der</THIS_PRIVATE_KEY_DER>
+  <THIS_WOLFBOOT_PROJECT_PROPS>wolfBootSign.props</THIS_WOLFBOOT_PROJECT_PROPS>
     <!-- Prefer env var WOLFBOOT_ROOT; otherwise default to ..\..  (2 directories up from IDE/VisualStudio) -->
     <THIS_WOLFBOOT_ROOT Condition="'$(WOLFBOOT_ROOT)'          != ''">$(WOLFBOOT_ROOT)</THIS_WOLFBOOT_ROOT>
     <THIS_WOLFBOOT_ROOT Condition="'$(THIS_WOLFBOOT_ROOT)'     == ''">$(MSBuildThisFileDirectory)..\..</THIS_WOLFBOOT_ROOT>
+
+    <!-- Keystore -->
+    <!-- See keygen app param: -keystoreDir -->
+    <!-- Prefer env var KEYSTORE_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\src -->
+    <THIS_KEYSTORE_ROOT_RAW Condition="'$(KEYSTORE_ROOT)'              != ''">$(KEYSTORE_ROOT)</THIS_KEYSTORE_ROOT_RAW>
+    <THIS_KEYSTORE_ROOT_RAW Condition="'$(THIS_KEYSTORE_ROOT_RAW)'     == ''">$([System.IO.Path]::Combine('$(THIS_WOLFBOOT_ROOT)', 'src'))</THIS_KEYSTORE_ROOT_RAW>
+    <THIS_KEYSTORE_ROOT>$([MSBuild]::NormalizePath('$(THIS_KEYSTORE_ROOT_RAW)'))</THIS_KEYSTORE_ROOT>
 
     <!-- Keygen -->
     <!-- Prefer env var KEYGEN_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\tools\keygen -->
@@ -17,17 +26,17 @@
     <THIS_WOLFSSL_ROOT Condition="'$(THIS_WOLFSSL_ROOT)'       == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfssl</THIS_WOLFSSL_ROOT>
 
     <!-- wolfTPM -->
-    <!-- Prefer env var WOLFTPM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfssl -->
+    <!-- Prefer env var WOLFTPM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfTPM -->
     <THIS_WOLFTPM_ROOT Condition="'$(WOLFTPM_ROOT)'            != ''">$(WOLFTPM_ROOT)</THIS_WOLFTPM_ROOT>
     <THIS_WOLFTPM_ROOT Condition="'$(THIS_WOLFTPM_ROOT)'       == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfTPM</THIS_WOLFTPM_ROOT>
 
     <!-- wolfPKCS11 -->
-    <!-- Prefer env var WOLFPKCS11_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfssl -->
+    <!-- Prefer env var WOLFPKCS11_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfPKCS11 -->
     <THIS_WOLFPKCS11_ROOT Condition="'$(WOLFPKCS11_ROOT)'      != ''">$(WOLFPKCS11_ROOT)</THIS_WOLFPKCS11_ROOT>
     <THIS_WOLFPKCS11_ROOT Condition="'$(THIS_WOLFPKCS11_ROOT)' == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfPKCS11</THIS_WOLFPKCS11_ROOT>
 
     <!-- wolfHSM -->
-    <!-- Prefer env var WOLFHSM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfssl -->
+    <!-- Prefer env var WOLFHSM_ROOT; otherwise default to [THIS_WOLFBOOT_ROOT]\lib\wolfHSM -->
     <THIS_WOLFHSM_ROOT Condition="'$(WOLFHSM_ROOT)'            != ''">$(WOLFHSM_ROOT)</THIS_WOLFHSM_ROOT>
     <THIS_WOLFHSM_ROOT Condition="'$(THIS_WOLFHSM_ROOT)'       == ''">$(THIS_WOLFBOOT_ROOT)\lib\wolfHSM</THIS_WOLFHSM_ROOT>
   </PropertyGroup>
@@ -40,10 +49,10 @@
     </ClCompile>
   </ItemDefinitionGroup>
 
-    <!-- Make our target run as part of Build -->
-    <PropertyGroup>
-      <BuildDependsOn>EnsureTargetHeader;$(BuildDependsOn)</BuildDependsOn>
-    </PropertyGroup>
+  <!-- Make our target run as part of Build -->
+  <PropertyGroup>
+    <BuildDependsOn>EnsureTargetHeader;$(BuildDependsOn)</BuildDependsOn>
+  </PropertyGroup>
 
   <Target Name="EnsureTargetHeader" BeforeTargets="ClCompile">
     <!-- Source and destination for target.h -->
@@ -78,7 +87,8 @@
     <Message Importance="High" Text="OutDir=$(OutDir)" />
     <Message Importance="High" Text="Include path will include $(IntDir)" />
   </Target>
-
+  <Target Name="ShowPaths" BeforeTargets="ClCompile">
+  </Target>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -301,9 +311,18 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.;$(THIS_WOLFSSL_ROOT)\wolfssl;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemGroup>
+
+  <!-- Project include AFTER Microsoft.Cpp.prop but BEFORE Microsoft.Cpp.targets -->
+  <Import Project="$(MSBuildThisFileDirectory)$(THIS_WOLFBOOT_PROJECT_PROPS)" Condition="Exists('$(MSBuildThisFileDirectory)$(THIS_WOLFBOOT_PROJECT_PROPS)')" />
+
+  <!-- ================================================================= -->
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <!-- ================================================================= -->
+
+  <!--  <Import Project="wolfBootTarget.props" Condition="Exists('wolfBootTarget.props')" /> -->
+
+  <ImportGroup Label="ExtensionTargets"></ImportGroup>
+
 
   <!-- Show the project-level preprocessor definitions-->
   <PropertyGroup>

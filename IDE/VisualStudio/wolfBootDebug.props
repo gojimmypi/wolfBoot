@@ -13,21 +13,4 @@
     </ClCompile>
   </ItemDefinitionGroup>
 
-  <PropertyGroup Label="SignedImage">
-    <SIGNED_IMAGE>$(ProjectDir)..\..\test_v1_signed.bin</SIGNED_IMAGE>
-  </PropertyGroup>
-
-  <!-- Debugger settings (no Condition here; inherit from ImportGroup) -->
-  <PropertyGroup>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerCommandArguments>$(SIGNED_IMAGE)</LocalDebuggerCommandArguments>
-  </PropertyGroup>
-
-<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-  <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-  <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
-  <LocalDebuggerCommandArguments>$(SIGNED_IMAGE)</LocalDebuggerCommandArguments>
-</PropertyGroup>
-
 </Project>

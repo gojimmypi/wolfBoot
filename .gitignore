@@ -311,3 +311,10 @@ language.settings.xml
 /IDE/VisualStudio/wolfboot
 /IDE/CMakeProject
 /.vs.bad
+/.vscode.disabled
+/IDE/VisualStudio.cmake
+/CMakePresets.json.all.WIP
+/PR_COMMENT.md
+/run.log
+/TextFile2.txt
+/Untitled-1.yaml

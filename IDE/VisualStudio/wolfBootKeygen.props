@@ -12,15 +12,13 @@
 
         <!-- Default args only for Debug|x64 (match your original intent) -->
         <_DefaultArgs></_DefaultArgs>
-        <!-- Default SIGNED_IMAGE only when user did not set args and SIGNED_IMAGE is empty -->
-        <_DefaultSignedImage>$(ProjectDir)\test_v1_signed.bin</_DefaultSignedImage>
-        <SIGNED_IMAGE Condition="'$(_UserSetArgs)' == 'false' and '$(SIGNED_IMAGE)' == ''">$(_DefaultSignedImage)</SIGNED_IMAGE>
 
         <!-- Effective debugger args are either the user-provided args or the SIGNED_IMAGE fallback -->
-        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SIGNED_IMAGE)</_DefaultArgs>
+        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">--no-overwrite --ed25519 -g "$(THIS_KEYSTORE_ROOT)\$(THIS_PRIVATE_KEY_DER)" -keystoreDir "$(THIS_KEYSTORE_ROOT)"</_DefaultArgs>
+
         <!-- Effective arguments: user-provided wins; otherwise defaults -->
         <EFFECTIVE_DEBUG_ARGS Condition="'$(_UserSetArgs)' == 'true'">$(LocalDebuggerCommandArguments)</EFFECTIVE_DEBUG_ARGS>
-        <EFFECTIVE_DEBUG_ARGS Condition="'$(_UserSetArgs)' == 'false'">$(SIGNED_IMAGE)</EFFECTIVE_DEBUG_ARGS>
+        <EFFECTIVE_DEBUG_ARGS Condition="'$(_UserSetArgs)' == 'false'">$(_DefaultArgs)</EFFECTIVE_DEBUG_ARGS>
 
         <!-- Simple boolean for Debug config (handy for messages/defines if needed) -->
         <IS_DEBUG_CONFIG>false</IS_DEBUG_CONFIG>
@@ -52,16 +50,15 @@
     <PropertyGroup Condition="'$(_UserSetArgs)' == 'false' and '$(_DefaultArgs)' != ''">
         <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
         <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
-        <!-- Use the computed value -->
         <LocalDebuggerCommandArguments>$(EFFECTIVE_DEBUG_ARGS)</LocalDebuggerCommandArguments>
     </PropertyGroup>
 
     <!-- Echo for sanity during build -->
-    <Target Name="EchoImageDebuggerParams" BeforeTargets="Build">
-        <Message Importance="High" Text="Image: UserSetArgs=$(_UserSetArgs)" />
-        <Message Importance="High" Text="Image: Effective Debug Args=$(EFFECTIVE_DEBUG_ARGS)" />
-        <Message Importance="High" Text="Image: WorkDir=$(LocalDebuggerWorkingDirectory)" />
-        <Message Importance="Low"  Text="Image: Config=$(Configuration) Platform=$(Platform) IsDebug=$(IS_DEBUG_CONFIG)" />
+    <Target Name="EchoKeygenDebuggerParams" BeforeTargets="Build">
+        <Message Importance="High" Text="Keygen: UserSetArgs=$(_UserSetArgs)" />
+        <Message Importance="High" Text="Keygen: Effective Debug Args=$(EFFECTIVE_DEBUG_ARGS)" />
+        <Message Importance="High" Text="Keygen: WorkDir=$(LocalDebuggerWorkingDirectory)" />
+        <Message Importance="Low"  Text="Keygen: Config=$(Configuration) Platform=$(Platform) IsDebug=$(IS_DEBUG_CONFIG)" />
     </Target>
 
 </Project>
