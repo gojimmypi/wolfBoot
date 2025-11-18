@@ -27,11 +27,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <errno.h>
+#ifndef _WIN32
+#include <sys/mman.h>
+#include <unistd.h>
+#endif
 
 #ifdef __APPLE__
 #include <mach-o/loader.h>
@@ -204,6 +206,7 @@ static int mmap_file(const char *path, uint8_t *address, uint8_t** ret_address)
 {
     struct stat st = { 0 };
     uint8_t *mmaped_addr;
+
     int ret;
     int fd;
 
@@ -216,21 +219,32 @@ static int mmap_file(const char *path, uint8_t *address, uint8_t** ret_address)
 
     fd = open(path, O_RDWR);
     if (fd == -1) {
-        wolfBoot_printf( "can't open %s\n", path);
+        wolfBoot_printf("can't open %s\n", path);
         return -1;
     }
 
+#ifndef _WIN32
     mmaped_addr = mmap(address, st.st_size, PROT_READ | PROT_WRITE,
                        MAP_SHARED, fd, 0);
-    if (mmaped_addr == MAP_FAILED)
+    if (mmaped_addr == MAP_FAILED) {
+        close(fd);
         return -1;
+    }
 
-    wolfBoot_printf( "Simulator assigned %s to base %p\n", path, mmaped_addr);
+    wolfBoot_printf("Simulator assigned %s to base %p\n", path, mmaped_addr);
 
     *ret_address = mmaped_addr;
 
     close(fd);
     return 0;
+#else
+    /* No mmap() on Windows: fail cleanly. If you actually need a
+     * Windows simulator, this needs a CreateFileMapping/MapViewOfFile
+     * implementation instead. */
+    wolfBoot_printf("mmap_file() not supported on this platform: %s\n", path);
+    close(fd);
+    return -1;
+#endif
 }
 
 #ifdef DUALBANK_SWAP
@@ -557,23 +571,30 @@ void do_boot(const uint32_t *app_offset)
     wolfBoot_printf("Simulator for ELF_FLASH_SCATTER image not implemented yet. Exiting...\n");
     exit(0);
 #else
+#ifndef _WIN32
     char *envp[1] = {NULL};
     int fd = memfd_create("test_app", 0);
     size_t wret;
     if (fd == -1) {
-        wolfBoot_printf( "memfd error\n");
+        wolfBoot_printf("memfd error\n");
         exit(-1);
     }
 
     wret = write(fd, app_offset, app_size);
     if (wret != app_size) {
-        wolfBoot_printf( "can't write test-app to memfd, address %p\n", app_offset);
+        wolfBoot_printf("can't write test-app to memfd, address %p\n", app_offset);
         exit(-1);
     }
     wolfBoot_printf("Stored test-app to memfd, address %p (%zu bytes)\n", app_offset, wret);
 
     ret = fexecve(fd, main_argv, envp);
-    wolfBoot_printf( "fexecve error\n");
+    wolfBoot_printf("fexecve error\n");
+#else
+    wolfBoot_printf("do_boot is not implemented for Windows sim target.\n");
+    wolfBoot_printf("app_offset=%p, app_size=%zu\n", app_offset, app_size);
+    (void)app_offset;
+    ret = -1;
+#endif
 #endif
     exit(1);
 }

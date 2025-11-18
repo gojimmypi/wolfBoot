@@ -25,7 +25,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
+#ifdef _WIN32
+    #define _CRT_SECURE_NO_WARNINGS
+    #define _CRT_NONSTDC_NO_DEPRECATE /* unlink */
+#else
+    #include <unistd.h>
+#endif
 #include "target.h"
 
 #include "wolfboot/wolfboot.h"

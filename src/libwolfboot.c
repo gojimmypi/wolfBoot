@@ -201,7 +201,11 @@ static const uint32_t wolfboot_magic_trail = WOLFBOOT_MAGIC_TRAIL;
 
 #include <stddef.h>
 #include <string.h>
+#if defined(_MSC_VER)
+static __declspec(align(16)) uint8_t NVM_CACHE[NVM_CACHE_SIZE];
+#else
 static uint8_t NVM_CACHE[NVM_CACHE_SIZE] XALIGNED(16);
+#endif
 static int nvm_cached_sector = 0;
 static uint8_t get_base_offset(uint8_t *base, uintptr_t off)
 {
@@ -2088,7 +2092,7 @@ int wolfBoot_nsc_write_update(uint32_t address, const uint8_t *buf, uint32_t len
         return -1;
     if (address + len > WOLFBOOT_PARTITION_SIZE)
         return -1;
-    
+
     hal_flash_unlock();
     ret = hal_flash_write(address + WOLFBOOT_PARTITION_UPDATE_ADDRESS, buf, len);
     hal_flash_lock();

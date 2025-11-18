@@ -120,8 +120,14 @@ if(BUILD_TEST_APPS)
     target_compile_definitions(image PRIVATE TARGET_${WOLFBOOT_TARGET}
                                                 ${TEST_APP_COMPILE_DEFINITIONS} ${WOLFBOOT_DEFS})
 
-    target_compile_options(image PRIVATE -Wall -Wstack-usage=1024 -ffreestanding -Wno-unused -fomit-frame-pointer
-                                            -nostartfiles)
+    if(MSVC)
+        target_compile_options(image PRIVATE
+            /W4
+        )
+    else()
+        target_compile_options(image PRIVATE -Wall -Wstack-usage=1024 -ffreestanding -Wno-unused -fomit-frame-pointer
+                                                -nostartfiles)
+    endif()
 
     if(WOLFBOOT_TARGET STREQUAL "sim")
         target_link_options(image PRIVATE -Wl,-gc-sections -Wl,-Map=image.map)
