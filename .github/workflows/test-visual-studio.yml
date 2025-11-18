@@ -25,8 +25,9 @@ jobs:
       APP_KEYGEN:  keygen
       APP_SIGN:    sign
       APP_TESTLIB: test-lib
-      APP_OTP:     otp-keystore-gen
-      APP_PRIMER:  otp-keystore-primer
+      # OTP Visual Studio not supported at this time
+      # APP_OTP:     otp-keystore-gen
+      # APP_PRIMER:  otp-keystore-primer
 
     steps:
       # Adds MSBuild to PATH
@@ -79,6 +80,44 @@ jobs:
 
           popd
 
+      - name: Export EFFECTIVE_DEBUG_ARGS to env
+        id: export-keygen-debug-args
+        shell: bash
+        run: |
+          # MSBuid should have written the generated default debug args to a file in wolfBootKeygen.props
+          args_file="IDE/VisualStudio/${CONFIG}/${PLATFORM}/wolfBootKeygenTool/effective-debug-args.txt"
+
+          echo "Checking args file: ${args_file}"
+
+          # 1) File must exist and be non-empty
+          if [ ! -s "$args_file" ]; then
+              echo "WARNING: args file missing or empty: $args_file" >&2
+              exit 0
+          fi
+
+          # 2) Read value and check it is non-empty
+          value="$(cat "$args_file")"
+          if [ -z "$value" ]; then
+              echo "WARNING: args file has no value: $args_file" >&2
+              exit 0
+          fi
+
+          echo "Found debug args: $value"
+
+          # 3) Export to GITHUB_ENV, preserving spaces and quotes
+          {
+            echo "DEBUG_ARGS_MSBUILD<<EOF"
+            printf "%s\n" "$value"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+          # Reminder that the args found are the default, and not matrix values to be tested here
+          echo "Found msbuild debug args DEBUG_ARGS_MSBUILD: $DEBUG_ARGS_MSBUILD"
+
+        env:
+          CONFIG: ${{ env.CONFIG }}
+          PLATFORM: ${{ env.PLATFORM }}
+
       - name: Run KeygenTool keygen.exe
         shell: cmd
         working-directory: .\
@@ -93,7 +132,9 @@ jobs:
           echo "ASYM=%ASYM%" >> .\config_params.txt
 
           echo "Calling keygen using --%ASYM%"
-          .\IDE\VisualStudio%PLATFORM%\%CONFIG%\keygen.exe --%ASYM% -g wolfboot_signing_private_key.der
+          echo "Running .\IDE\VisualStudio\%PLATFORM%\%CONFIG%\keygen.exe --%ASYM% -g wolfboot_signing_private_key.der"
+                        .\IDE\VisualStudio\%PLATFORM%\%CONFIG%\keygen.exe --%ASYM% -g wolfboot_signing_private_key.der
+
           if errorlevel 1 (
             echo keygen.exe failed with ERRORLEVEL %ERRORLEVEL%
             exit /b %ERRORLEVEL%
@@ -141,9 +182,9 @@ jobs:
           echo %cd%
 
           echo "Calling sign using --%ASYM% --%HASH%"
-          echo Running .\IDE\VisualStudio%PLATFORM%\%CONFIG%\sign.exe  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
+          echo Running .\IDE\VisualStudio\%PLATFORM%\%CONFIG%\sign.exe  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
 
-          .\IDE\VisualStudio%PLATFORM%\%CONFIG%\sign.exe               --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
+                       .\IDE\VisualStudio\%PLATFORM%\%CONFIG%\sign.exe  --%ASYM%  --%HASH%  test.bin  wolfboot_signing_private_key.der  1
 
           if errorlevel 1 (
             echo sign.exe failed with ERRORLEVEL %ERRORLEVEL%
