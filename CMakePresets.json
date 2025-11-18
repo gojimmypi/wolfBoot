@@ -8,6 +8,8 @@
   "configurePresets": [
     {
       "name": "sign_hash_config",
+      "displayName": "Common Sign and Hash command-line params",
+      "hidden": true,
       "cacheVariables": {
         "SIGN": "ED25519",
         "HASH": "SHA256"
