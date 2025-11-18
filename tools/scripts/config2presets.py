@@ -67,9 +67,9 @@ def to_cache_vars(kv):
     return cache
 
 
-def ensure_base_vars(cache, toolchain_path):
-    # Always ensure toolchain file is set
-    cache.setdefault("CMAKE_TOOLCHAIN_FILE", toolchain_path)
+def ensure_base_vars(cache, toolchain_value):
+    # Always ensure toolchain file is set using the literal value passed in
+    cache.setdefault("CMAKE_TOOLCHAIN_FILE", toolchain_value)
     # Typically desired
     cache.setdefault("BUILD_TEST_APPS", "ON")
     # Force preset mode when generating from .config into presets
@@ -132,7 +132,7 @@ def _merge_build_preset_list(preset_list, bld_preset):
     Update or append a build preset, without reordering existing entries.
 
     - If a preset with the same name exists:
-      * Preserve existing jobs/verbose/targets (and any other fields).
+      * Preserve existing jobs/verbose/targets and any other fields.
       * Only ensure configurePreset is set if it was missing.
     - If it does not exist:
       * Append the new preset at the end of the list.
@@ -141,7 +141,7 @@ def _merge_build_preset_list(preset_list, bld_preset):
     for idx, existing in enumerate(preset_list):
         if existing.get("name") == name:
             merged = existing.copy()
-            if "configurePreset" not in existing and "configurePreset" in bld_preset:
+            if "configurePreset" not in merged and "configurePreset" in bld_preset:
                 merged["configurePreset"] = bld_preset["configurePreset"]
             merged["name"] = name
             preset_list[idx] = merged
@@ -188,7 +188,7 @@ def main():
     ap.add_argument(
         "--toolchain",
         default="cmake/toolchain_arm-none-eabi.cmake",
-        help="Path to toolchain file (relative to repo root if not absolute)",
+        help="Path to toolchain file as it should appear in CMAKE_TOOLCHAIN_FILE",
     )
     ap.add_argument(
         "--presets",
@@ -244,14 +244,10 @@ def main():
 
     # Resolve paths:
     # - config: relative to caller's CWD (so user can pass local relative paths naturally)
-    # - toolchain/presets: relative to repo root (we already chdir there)
+    # - presets: relative to repo root (we already chdir there)
     config_path = Path(args.config)
     if not config_path.is_absolute():
         config_path = (caller_cwd / config_path).resolve()
-
-    toolchain_path = Path(args.toolchain)
-    if not toolchain_path.is_absolute():
-        toolchain_path = (repo_root / toolchain_path).resolve()
 
     presets_path = Path(args.presets)
     if not presets_path.is_absolute():
@@ -264,8 +260,11 @@ def main():
 
     target = choose_target(kv)
     cache = to_cache_vars(kv)
-    # Use forward slashes in JSON for better CMake portability
-    cache = ensure_base_vars(cache, toolchain_path.as_posix())
+
+    # Use the toolchain value exactly as passed on the command line,
+    # but normalize backslashes for JSON/CMake friendliness.
+    toolchain_value = args.toolchain.replace("\\", "/")
+    cache = ensure_base_vars(cache, toolchain_value)
 
     # Build preset objects
     source_dir = "${sourceDir}"  # CMake variable; leave literal

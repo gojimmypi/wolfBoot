@@ -90,6 +90,39 @@
       }
     },
     {
+      "name": "stm32f7",
+      "displayName": "Linux/WSL ARM (stm32f7)",
+      "inherits": "base",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32f7",
+      "cacheVariables": {
+        "ARCH": "ARM",
+        "WOLFBOOT_TARGET": "stm32f7",
+        "SIGN": "ECC256",
+        "HASH": "SHA256",
+        "DEBUG": "OFF",
+        "VTOR": "ON",
+        "CORTEX_M0": "OFF",
+        "NO_ASM": "OFF",
+        "EXT_FLASH": "OFF",
+        "SPI_FLASH": "OFF",
+        "ALLOW_DOWNGRADE": "OFF",
+        "NVM_FLASH_WRITEONCE": "OFF",
+        "WOLFBOOT_VERSION": "ON",
+        "V": "OFF",
+        "SPMATH": "ON",
+        "RAM_CODE": "ON",
+        "WOLFBOOT_PARTITION_SIZE": "0x60000",
+        "WOLFBOOT_SECTOR_SIZE": "0x20000",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x8020000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x8080000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x80E0000",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
+        "BUILD_TEST_APPS": "ON",
+        "WOLFBOOT_CONFIG_MODE": "preset"
+      }
+    },
+    {
       "name": "vs-debug-trace",
       "displayName": "VS Debug Trace (STM32H7)",
       "inherits": [
@@ -334,6 +367,15 @@
     {
       "name": "stm32g0",
       "configurePreset": "stm32g0",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32f7",
+      "configurePreset": "stm32f7",
       "jobs": 4,
       "verbose": true,
       "targets": [
