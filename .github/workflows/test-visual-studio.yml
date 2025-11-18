@@ -26,6 +26,7 @@ jobs:
       APP_SIGN:    sign
       APP_TESTLIB: test-lib
       # OTP Visual Studio not supported at this time
+      OTP_SUPPORTED: 'false'
       # APP_OTP:     otp-keystore-gen
       # APP_PRIMER:  otp-keystore-primer
 
@@ -251,7 +252,7 @@ jobs:
           echo %cd%
 
           :: # Paths
-          set "EXE=IDE\VisualStudio%PLATFORM%\%CONFIG%\test-lib.exe"
+          set "EXE=IDE\VisualStudio\%PLATFORM%\%CONFIG%\test-lib.exe"
           set "BIN=test_v1_signed.bin"
 
           :: # Validate required env vars
@@ -302,6 +303,7 @@ jobs:
 
         # Build the OTP Flash otp-keystore-gen.exe that creates otp.bin
       - name: Build Flash OTP
+        if: ${{ env.OTP_SUPPORTED == 'true' }}
         shell: cmd
         working-directory: .\
         run: |
@@ -323,6 +325,7 @@ jobs:
           popd
 
       - name: Run Flash OTP otp-keystore-gen.exe
+        if: ${{ env.OTP_SUPPORTED == 'true' }}
         shell: cmd
         working-directory: .\
         run: |
@@ -343,6 +346,7 @@ jobs:
 
         # Build the OTP Keystore Primer otp-keystore-primer.exe
       - name: Build  OTP Keystore Primer
+        if: ${{ env.OTP_SUPPORTED == 'true' }}
         shell: cmd
         working-directory: .\
         run: |
@@ -364,6 +368,7 @@ jobs:
           popd
 
       - name: Run Flash OTP otp-keystore-primer.exe
+        if: ${{ env.OTP_SUPPORTED == 'true' }}
         shell: cmd
         working-directory: .\
         run: |
@@ -403,14 +408,14 @@ jobs:
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_KEYGEN  }}.exe
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}.exe
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}.exe
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}.exe
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_PRIMER  }}.exe
+            #./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}.exe
+            #./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_PRIMER  }}.exe
 
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_KEYGEN  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_SIGN    }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
             ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_TESTLIB }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
-            ./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_PRIMER  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            #./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_OTP     }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
+            #./tools/keytools/${{ env.PLATFORM }}/${{ env.CONFIG }}/${{ env.APP_PRIMER  }}-preprocessor-defs.${{ env.CONFIG }}.${{ env.PLATFORM }}.txt
 
             # sample files
             ./test.bin
