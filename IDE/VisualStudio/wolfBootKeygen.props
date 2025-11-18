@@ -61,4 +61,19 @@
         <Message Importance="Low"  Text="Keygen: Config=$(Configuration) Platform=$(Platform) IsDebug=$(IS_DEBUG_CONFIG)" />
     </Target>
 
+    <!-- Write EFFECTIVE_DEBUG_ARGS to a simple text file under IntDir -->
+    <Target Name="WriteEffectiveDebugArgsToFile" AfterTargets="Build">
+        <PropertyGroup>
+            <!-- IntDir is already printed in your log, so this should be valid -->
+            <EffectiveArgsFile>$(IntDir)effective-debug-args.txt</EffectiveArgsFile>
+        </PropertyGroup>
+
+        <WriteLinesToFile
+          File="$(EffectiveArgsFile)"
+          Lines="$(EFFECTIVE_DEBUG_ARGS)"
+          Overwrite="true" />
+
+        <Message Importance="High"
+                 Text="MSBuild: Wrote EFFECTIVE_DEBUG_ARGS to $(EffectiveArgsFile)" />
+    </Target>
 </Project>
