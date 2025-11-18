@@ -5,7 +5,11 @@
 # Example:
 #   python3 ./tools/scripts/config2presets.py ./config/examples/stm32h7.config
 
-import argparse, json, os, re, sys
+import argparse
+import json
+import os
+import re
+import sys
 from collections import OrderedDict
 from pathlib import Path
 
@@ -89,7 +93,74 @@ def load_existing_presets(presets_path: Path):
         return None
 
 
+def _merge_configure_preset_list(preset_list, cfg_preset):
+    """
+    Update or append a configure preset, without reordering existing entries.
+
+    - If a preset with the same name exists:
+      * Preserve all top-level keys (inherits, environment, binaryDir, etc.)
+      * Merge cacheVariables: existing keys plus new ones, with new values winning.
+    - If it does not exist:
+      * Append the new preset at the end of the list.
+    """
+    name = cfg_preset.get("name")
+    for idx, existing in enumerate(preset_list):
+        if existing.get("name") == name:
+            merged = existing.copy()
+
+            existing_cache = existing.get("cacheVariables", {})
+            new_cache = cfg_preset.get("cacheVariables", {})
+
+            merged_cache = {}
+            if isinstance(existing_cache, dict):
+                merged_cache.update(existing_cache)
+            if isinstance(new_cache, dict):
+                merged_cache.update(new_cache)
+
+            merged["cacheVariables"] = merged_cache
+            merged["name"] = name
+            preset_list[idx] = merged
+            return preset_list
+
+    # Not found: append, do not reorder existing presets
+    preset_list.append(cfg_preset)
+    return preset_list
+
+
+def _merge_build_preset_list(preset_list, bld_preset):
+    """
+    Update or append a build preset, without reordering existing entries.
+
+    - If a preset with the same name exists:
+      * Preserve existing jobs/verbose/targets (and any other fields).
+      * Only ensure configurePreset is set if it was missing.
+    - If it does not exist:
+      * Append the new preset at the end of the list.
+    """
+    name = bld_preset.get("name")
+    for idx, existing in enumerate(preset_list):
+        if existing.get("name") == name:
+            merged = existing.copy()
+            if "configurePreset" not in existing and "configurePreset" in bld_preset:
+                merged["configurePreset"] = bld_preset["configurePreset"]
+            merged["name"] = name
+            preset_list[idx] = merged
+            return preset_list
+
+    # Not found: append, do not reorder existing presets
+    preset_list.append(bld_preset)
+    return preset_list
+
+
 def merge_preset(doc, cfg_preset, bld_preset):
+    """
+    Merge a configure/build preset into an existing CMakePresets.json document.
+
+    - If doc is None, create a fresh schema v3 doc with just these presets.
+    - Otherwise:
+      * Ensure configurePresets/buildPresets arrays exist.
+      * Update or append the specific presets without reordering any others.
+    """
     if doc is None:
         return {
             "version": 3,
@@ -97,48 +168,60 @@ def merge_preset(doc, cfg_preset, bld_preset):
             "buildPresets": [bld_preset],
         }
 
-    # If file has newer schema that your CMake can't handle, you can still append,
-    # but CMake 3.22.1 will choke. We keep the existing version as-is.
-    if "configurePresets" not in doc:
+    if "configurePresets" not in doc or not isinstance(doc["configurePresets"], list):
         doc["configurePresets"] = []
-    if "buildPresets" not in doc:
+    if "buildPresets" not in doc or not isinstance(doc["buildPresets"], list):
         doc["buildPresets"] = []
 
-    # Replace presets with same name
-    doc["configurePresets"] = [p for p in doc["configurePresets"] if p.get("name") != cfg_preset["name"]] + [cfg_preset]
-    doc["buildPresets"] = [p for p in doc["buildPresets"] if p.get("name") != bld_preset["name"]] + [bld_preset]
+    _merge_configure_preset_list(doc["configurePresets"], cfg_preset)
+    _merge_build_preset_list(doc["buildPresets"], bld_preset)
+
     return doc
 
 
 def main():
     ap = argparse.ArgumentParser(description="Generate or merge a CMakePresets.json from a .config file")
-    ap.add_argument("config",
-                    help="Path to .config (relative to your current directory if not absolute)")
-    ap.add_argument("--toolchain",
-                    default="cmake/toolchain_arm-none-eabi.cmake",
-                    help="Path to toolchain file (relative to repo root if not absolute)")
-    ap.add_argument("--presets",
-                    default="CMakePresets.json",
-                    help="Path to CMakePresets.json to create/merge (relative to repo root if not absolute)")
-    ap.add_argument("--generator",
-                    default="Ninja",
-                    help="CMake generator")
-    ap.add_argument("--preset-name",
-                    default=None,
-                    help="Override preset name")
-    ap.add_argument("--binary-dir",
-                    default=None,
-                    help="Override binaryDir")
-    ap.add_argument("--display-name",
-                    default=None,
-                    help="Override displayName")
+    ap.add_argument(
+        "config",
+        help="Path to .config (relative to your current directory if not absolute)",
+    )
+    ap.add_argument(
+        "--toolchain",
+        default="cmake/toolchain_arm-none-eabi.cmake",
+        help="Path to toolchain file (relative to repo root if not absolute)",
+    )
+    ap.add_argument(
+        "--presets",
+        default="CMakePresets.json",
+        help="Path to CMakePresets.json to create/merge (relative to repo root if not absolute)",
+    )
+    ap.add_argument(
+        "--generator",
+        default="Ninja",
+        help="CMake generator",
+    )
+    ap.add_argument(
+        "--preset-name",
+        default=None,
+        help="Override preset name",
+    )
+    ap.add_argument(
+        "--binary-dir",
+        default=None,
+        help="Override binaryDir",
+    )
+    ap.add_argument(
+        "--display-name",
+        default=None,
+        help="Override displayName",
+    )
     args = ap.parse_args()
 
     # Begin common dir init, for /tools/scripts
     script_path = Path(__file__).resolve()
     script_dir = script_path.parent.resolve()
 
-    # repo root is parent of tools/scripts Ã¢â€ â€™ go up two levels
+    # repo root is parent of tools/scripts -- go up two levels
     repo_root = (script_dir / ".." / "..").resolve()
 
     caller_cwd = Path.cwd().resolve()
@@ -190,21 +273,25 @@ def main():
     binary_dir = args.binary_dir or make_binary_dir(source_dir, target)
     display_name = args.display_name or f"Linux/WSL ARM ({target})"
 
-    cfg_preset = OrderedDict([
-        ("name", preset_name),
-        ("displayName", display_name),
-        ("inherits", "base"),
-        ("generator", args.generator),
-        ("binaryDir", binary_dir),
-        ("cacheVariables", cache),
-    ])
-    bld_preset = OrderedDict([
-        ("name", preset_name),
-        ("configurePreset", preset_name),
-        ("jobs", 4),
-        ("verbose", True),
-        ("targets", ["all"]),
-    ])
+    cfg_preset = OrderedDict(
+        [
+            ("name", preset_name),
+            ("displayName", display_name),
+            ("inherits", "base"),
+            ("generator", args.generator),
+            ("binaryDir", binary_dir),
+            ("cacheVariables", cache),
+        ]
+    )
+    bld_preset = OrderedDict(
+        [
+            ("name", preset_name),
+            ("configurePreset", preset_name),
+            ("jobs", 4),
+            ("verbose", True),
+            ("targets", ["all"]),
+        ]
+    )
 
     # Ensure schema v3 unless existing file says otherwise
     doc = load_existing_presets(presets_path)
