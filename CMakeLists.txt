@@ -1218,8 +1218,14 @@ set(SIGN_OBJDIR "${CMAKE_CURRENT_BINARY_DIR}/obj_sign")
 if(HOST_IS_MSVC)
     # isolate objs only for Windows (.exe)
     set(HOST_FO_SIGN "/Fo$<SHELL_PATH:${SIGN_OBJDIR}/>")
+    set(HOST_UNDEF /Umin /Umax /USIGN /UHASH /TC)   # /TC = compile as C
 else()
     set(HOST_FO_SIGN "") # No /Fo for most environments
+
+    # Optional strict mode (-std=c11) fails on WSL, missing include files
+    # set(HOST_UNDEF -Umin -Umax -USIGN -UHASH -std=c11)
+    message(STATUS "Setting -std=gnu11 for HOST_CC=${HOST_CC}")
+    set(HOST_UNDEF -Umin -Umax -USIGN -UHASH -std=gnu11)
 endif()
 
 # After you set HOST_IS_MSVC / HOST_CC, add:
