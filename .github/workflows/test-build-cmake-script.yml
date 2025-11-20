@@ -70,8 +70,8 @@ jobs:
         run: |
           rm -rf ./build
 
-          ./tools/scripts/wolfboot_build.sh --CLEAN  "stm32l4"
-          ./tools/scripts/wolfboot_build.sh --target "stm32l4"
+          ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  "stm32l4"
+          ./tools/scripts/wolfboot_cmake_full_build.sh --target "stm32l4"
 
-          ./tools/scripts/wolfboot_build.sh --CLEAN  "stm32g0"
-          ./tools/scripts/wolfboot_build.sh --target "stm32g0"
+          ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  "stm32g0"
+          ./tools/scripts/wolfboot_cmake_full_build.sh --target "stm32g0"
