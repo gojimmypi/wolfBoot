@@ -22,50 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
-#ifndef WOLFBOOT_USER_SETTINGS_H
-#define WOLFBOOT_USER_SETTINGS_H
-
-/* This is the wolfBoot embedded target user settings.
- *
- * See also settings in [WOLFBOOT_ROOT]/tools/keytools
- *
- * When in question, define DEBUG_SIGNTOOL and optionally WOLFBOOT_SHOW_INCLUDE
- */
-
-/* During development in new environment, ensure the expected user settings is used: */
-#ifdef WOLFBOOT_SHOW_INCLUDE
-    #ifdef __GNUC__  /* GCC compiler */
-        #pragma message "===============include/user_settings.h"
-    #elif defined(_MSC_VER) /* Microsoft Visual C++ compiler */
-        #pragma message("===============include/user_settings.h")
-    #else
-        #warning "===============include/user_settings.h"
-    #endif
-#endif /* WOLFBOOT_SHOW_INCLUDE user_settings message */
-
-#if defined(_MSC_VER)
-    /* MSVC and clang-cl both define _MSC_VER */
-    #ifndef WOLFSSL_HAVE_MIN
-        #define WOLFSSL_HAVE_MIN
-    #endif
-    #ifndef WOLFSSL_HAVE_MAX
-        #define WOLFSSL_HAVE_MAX
-    #endif
-
-    /* Really keep Windows headers from redefining min/max */
-    #ifndef NOMINMAX
-        #define NOMINMAX 1
-    #endif
-#endif
+#ifndef _WOLFBOOT_USER_SETTINGS_H_
+#define _WOLFBOOT_USER_SETTINGS_H_
 
 #ifdef WOLFBOOT_PKCS11_APP
 # include "test-app/wcs/user_settings.h"
 #else
 
-/* The target.h is a device-specific, typically a generated file.
- * CMake configures from `include/target.h.in` into ${CMAKE_CURRENT_BINARY_DIR}
- *
- * See also the sample in [WOLFBOOT_ROOT]/tools/unit-tests/target.h */
 #include <target.h>
 
 /* System */
@@ -367,9 +330,7 @@ extern int tolower(int c);
 
     /* SP Math needs to understand long long */
 #   ifndef ULLONG_MAX
-#       ifndef _MSC_VER
-#           define ULLONG_MAX 18446744073709551615ULL
-#       endif
+#       define ULLONG_MAX 18446744073709551615ULL
 #   endif
 #endif
 
@@ -449,6 +410,7 @@ extern int tolower(int c);
     #ifndef XTPM_WAIT
         #define XTPM_WAIT() /* no delay */
     #endif
+    #define HASH_COUNT 3 /* enable more PCR hash types */
 
     /* TPM remap printf */
     #if defined(DEBUG_WOLFTPM) && !defined(ARCH_SIM)
@@ -625,48 +587,8 @@ extern int tolower(int c);
 #   define WOLFSSL_PEM_TO_DER
 #endif
 
-#ifdef DISABLED // test
-/* Base wolfCrypt (no TLS) */
-#define WOLFCRYPT_ONLY
-
-/* Hashes */
-#define WOLFSSL_SHA512
-
-#define WOLFSSL_SHA256
-#define WOLFSSL_SHA384
-#define WOLFSSL_SHA3
-
-/* Public-key algos */
-#define WOLFSSL_HAVE_ECC
-#define HAVE_ECC
-#define HAVE_ED25519
-#define HAVE_ED448
-#define WOLFSSL_RSA
-
-/* PQ / stateful */
-#define WOLFSSL_HAVE_DILITHIUM
-#define WOLFSSL_WC_LMS
-#define WOLFSSL_WC_XMSS
-
-/* Symmetric (for header encryption paths) */
-#define WOLFSSL_AES_DIRECT
-#define WOLFSSL_AES_COUNTER
-#define HAVE_CHACHA
-
-/* RNG */
-// #define WC_NO_HASHDRBG /* optional; default RNG on Windows uses Advapi32 */
-                       /* you can omit this if not needed */
-
-/* Host build quality-of-life */
-#define WOLFSSL_GENERAL_ALIGNMENT 4
-// #define WOLFSSL_SMALL_STACK       /* optional */
-#define SINGLE_THREADED
-
-/* Avoid redefining standard macros  */
-#ifndef ULLONG_MAX
-/* do NOT define it here let <limits.h> own it */
+#ifdef WOLFSSL_STM32_PKA
+#define HAVE_UINTPTR_T /* make sure stdint.h is included */
 #endif
 
-#endif // test
-
-#endif /* !WOLFBOOT_USER_SETTINGS_H */
+#endif /* !_WOLFBOOT_USER_SETTINGS_H_ */
