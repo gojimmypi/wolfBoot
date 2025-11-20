@@ -34,9 +34,9 @@ make
 
 # use cmake via wolfbuild.sh script:
 
-./tools/scripts/wolfboot_build.sh --CLEAN
-./tools/scripts/wolfboot_build.sh --CLEAN  stm32h7
-./tools/scripts/wolfboot_build.sh --target stm32h7
+./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN
+./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  stm32h7
+./tools/scripts/wolfboot_cmake_full_build.sh --target stm32h7
 ```
 
 ### VS Code
