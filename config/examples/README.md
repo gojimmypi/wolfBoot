@@ -17,7 +17,7 @@ python3 ./tools/scripts/config2presets.py ./config/examples/stm32h7.config
 
 # then test it:
 
-./tools/scripts/wolfboot_build.sh --target stm32h7
+./tools/scripts/wolfboot_cmake_full_build.sh --target stm32h7
 ```
 
 ## Troubleshooting

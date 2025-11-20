@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(USE_WOLFBOOT false)
-
 set(WOLFBOOT_TARGET "stm32l4")
+
+message(STATUS "Begin app CMakeLists.txt for $WOLFBOOT_TARGET")
 
 if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     add_compile_definitions(STM32L475xx)
@@ -35,20 +35,35 @@ if(USE_WOLFBOOT)
 endif()
 
 # Application firmware target
-add_executable(app.elf
-    app/startup_stm32l4.c
-    app/stm32l4.c
-    app/led.c
-    app/main.c
-)
+if(USE_WOLFBOOT)
+    add_executable(app.elf
+        # with wolfBoot, the app is exciting: blinky!
+        app/startup_stm32l4.c
+        ${WOLFBOOT_ROOT}/hal/stm32l4.c
+        ${WOLFBOOT_ROOT}/test-app/led.c
+        app/main.c
+    )
 
-# Includes: local app headers + wolfBoot headers
-target_include_directories(app.elf PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/app"
-    "${CMAKE_CURRENT_SOURCE_DIR}/app/include"
-    "${WOLFBOOT_ROOT}/include"
-    "${WOLFBOOT_ROOT}/hal"
-)
+    # Includes: local app headers + wolfBoot headers
+    target_include_directories(app.elf PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/app"
+        "${CMAKE_CURRENT_SOURCE_DIR}/app/include"
+        "${WOLFBOOT_ROOT}/include"
+        "${WOLFBOOT_ROOT}/hal"
+    )
+
+else()
+    add_executable(app.elf
+        # without wolfBoot, the app is boring: no blinky
+        app/main.c
+    )
+
+    # Includes: local app headers only
+    target_include_directories(app.elf PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/app"
+        "${CMAKE_CURRENT_SOURCE_DIR}/app/include"
+    )
+endif()
 
 # Match your source: #ifdef TARGET_stm32l4
 target_compile_definitions(app.elf PRIVATE TARGET_stm32l4)
@@ -120,8 +135,10 @@ endif()
 # Helpful status messages
 message(STATUS "WOLFBOOT_ROOT          = ${WOLFBOOT_ROOT}")
 message(STATUS "CMAKE_TOOLCHAIN_FILE   = ${CMAKE_TOOLCHAIN_FILE}")
-message(STATUS "WOLFBOOT_SIGN_SCRIPT   = ${WOLFBOOT_SIGN_SCRIPT}")
-message(STATUS "WOLFBOOT_SIGN_KEY      = ${WOLFBOOT_SIGN_KEY}")
+if(USE_WOLFBOOT)
+    message(STATUS "WOLFBOOT_SIGN_SCRIPT   = ${WOLFBOOT_SIGN_SCRIPT}")
+    message(STATUS "WOLFBOOT_SIGN_KEY      = ${WOLFBOOT_SIGN_KEY}")
+    message(STATUS "Signed firmware output = ${APP_SIGNED_BIN}")
+endif()
 message(STATUS "Unsigned firmware bin  = ${APP_BIN}")
-message(STATUS "Signed firmware output = ${APP_SIGNED_BIN}")
 message(STATUS "End App CMakeLists.txt")

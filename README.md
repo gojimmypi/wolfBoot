@@ -29,7 +29,7 @@ Some interim notes on progress in various environments:
 |Status | Environment               | Test With
 |-------| ------------------------- | --------
 |   ?   | VS 2022                   | N/A (?)
-|  ✅   | WSL                       | `./tools/scripts/wolfboot_build.sh --target stm32l4`
+|  ✅   | WSL                       | `./tools/scripts/wolfboot_cmake_full_build.sh --target stm32l4`
 |  ⚠️   | Mac                       | [test-build-cmake-mac.yml](./github/workflows/test-build-cmake-mac.yml)
 |   ?   | VS Code, Dev Prompt       | N/A (?)
 |  ❌   | DOS Prompt, Dev Prompt    |

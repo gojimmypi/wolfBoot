@@ -21,14 +21,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
 
+#define BLINK_DELAY 8000000
 
-#include "led.h"
-#include "hal.h"
-#include "wolfboot/wolfboot.h"
-#include "target.h"
+#ifdef HAS_WOLFBOOT_FEATURES
+    #include "led.h"
+    #include "hal.h"
+    #include "wolfboot/wolfboot.h"
+    #include "target.h"
+#endif
 
-
-static void delay(volatile uint32_t t) {
+static void delay(volatile unsigned int t) {
     while (t--)
     {
         __asm__ volatile("nop");
@@ -37,11 +39,19 @@ static void delay(volatile uint32_t t) {
 
 void main(void)
 {
+#ifdef HAS_WOLFBOOT_FEATURES
     hal_init();
     for (;;) {
-        led_on();  delay(8000000);
-        led_off(); delay(8000000);
-        led_off(); delay(8000000);
+        led_on();
+        delay(BLINK_DELAY);
+        led_off();
+        delay(BLINK_DELAY);
+        delay(BLINK_DELAY);
     }
+#else
+    while (1) {
+        delay(BLINK_DELAY);
+    }
+#endif
 }
 

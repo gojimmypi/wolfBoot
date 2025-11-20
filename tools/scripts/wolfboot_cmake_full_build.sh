@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# wolfboot_build.sh
+# wolfboot_cmake_full_build.sh
 #
-#   ./tools/scripts/wolfboot_build.sh --CLEAN  [your target]
-#   ./tools/scripts/wolfboot_build.sh --target [your target]
-#   ./tools/scripts/wolfboot_build.sh --flash  [your target]
+#   ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  [your target]
+#   ./tools/scripts/wolfboot_cmake_full_build.sh --target [your target]
+#   ./tools/scripts/wolfboot_cmake_full_build.sh --flash  [your target]
 #
 # Options:
 #   Set WOLFBOOT_CLEAN_STRICT=1 to error is any other build directories found
 #
 # Reminder for WSL:
-# git update-index --chmod=+x wolfboot_build.sh
-# git commit -m "Make wolfboot_build.sh executable"
+# git update-index --chmod=+x wolfboot_cmake_full_build.sh
+# git commit -m "Make wolfboot_cmake_full_build.sh executable"
 # git push
 
 # Specify the executable shell checker you want to use:

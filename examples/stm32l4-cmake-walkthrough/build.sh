@@ -11,10 +11,10 @@ MY_TARGET=$WOLFBOOT_TARGET
 BUILD_WOLFBOOT=1
 
 # 1 to sign, 0 to just compile
-SIGN_APP=1
+SIGN_APP=0
 
 # 1 to flasg, 0 to skip
-FLASH_APP=0
+FLASH_APP=1
 
 # 1 to clean, 0 to use prior Build
 CLEAN_APP=0
@@ -33,7 +33,26 @@ fi
 # Where are we?
 ROOT_DIR=$(cd "$(dirname "$0")" && pwd)
 
+echo "MY_TARGET:      $MY_TARGET"
+echo "BUILD_WOLFBOOT: $BUILD_WOLFBOOT"
+echo "SIGN_APP:       $SIGN_APP"
+echo "CLEAN_APP:      $CLEAN_APP"
+echo "FLASH_APP:      $FLASH_APP"
 
+# TODO conditionally check in the app if using wolfBoot (e.g. "wolfboot/wolfboot.h")
+# TODO allow WOLFBOOT_ROOT environment variable to point at wolfBoot anywhere.
+# Note this patter of build-[device] is also used in cmake presets:
+BUILD_DIR="${ROOT_DIR}/build-$MY_TARGET"
+rm -rf    "${BUILD_DIR}"
+mkdir -p  "${BUILD_DIR}"
+
+echo "Current dir: $(pwd)"
+echo "BUILD_DIR:   ${BUILD_DIR}"
+# Recommended: explicitly pass the toolchain to wolfBoot as needed
+echo "Toolchain:   ${ROOT_DIR}/wolfBoot/cmake/toolchain_arm-none-eabi.cmake"
+
+SIGN_SCRIPT="${ROOT_DIR}/wolfBoot/tools/keytools/sign.py"
+SIGN_KEY="${ROOT_DIR}/wolfBoot/build-${WOLFBOOT_TARGET}/wolfboot_signing_private_key.der"
 
 check_wolfboot_file() {
     local file_path="$1"
@@ -72,15 +91,15 @@ if [ "${BUILD_WOLFBOOT}" = "1" ]; then
         # Optionally Clean and start fresh
         if [ "${CLEAN_APP}" = "1" ]; then
             echo "Clean..."
-            ./tools/scripts/wolfboot_build.sh --CLEAN  ${WOLFBOOT_TARGET}
+            ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  ${WOLFBOOT_TARGET}
         else
             echo "Clean skipped"
         fi
         echo "Build  --target ${WOLFBOOT_TARGET}"
-        ./tools/scripts/wolfboot_build.sh --target ${WOLFBOOT_TARGET}
+        ./tools/scripts/wolfboot_cmake_full_build.sh --target ${WOLFBOOT_TARGET}
 
         # Optionally flash a sample
-        # ./tools/scripts/wolfboot_build.sh --flash  ${WOLFBOOT_TARGET}
+        # ./tools/scripts/wolfboot_cmake_full_build.sh --flash  ${WOLFBOOT_TARGET}
 
         check_wolfboot_file "./build-${WOLFBOOT_TARGET}/wolfboot_signing_private_key.der" "private key file:  "
         check_wolfboot_file "./build-${WOLFBOOT_TARGET}/keystore.der"                     "keystore der file: "
@@ -95,21 +114,6 @@ echo "--------------------------------------------------------------------------
 echo "Example App CMake Build"
 echo "--------------------------------------------------------------------------"
 # The current example app assumes wolfBoot is already available in the current directory
-# TODO conditionally check in the app if using wolfBoot (e.g. "wolfboot/wolfboot.h")
-# TODO allow WOLFBOOT_ROOT environment variable to point at wolfBoot anywhere.
-BUILD_DIR="${ROOT_DIR}/build-$MY_TARGET"
-rm -rf   "${BUILD_DIR}"
-mkdir -p "${BUILD_DIR}"
-cmake --build --preset "$MY_TARGET" "${BUILD_DIR}"
-
-echo "Current directory: $(pwd)"
-
-# Recommended: explicitly pass the toolchain to wolfBoot as needed
-echo "Toolchain:"
-ls "${ROOT_DIR}/wolfBoot/cmake/toolchain_arm-none-eabi.cmake"
-
-SIGN_SCRIPT="${ROOT_DIR}/wolfBoot/tools/keytools/sign.py"
-SIGN_KEY="${ROOT_DIR}/wolfBoot/build-${WOLFBOOT_TARGET}/wolfboot_signing_private_key.der"
 
 if [ "${SIGN_APP}" = "1" ]; then
     echo "--------------------------------------------------------------------------"
@@ -118,22 +122,35 @@ if [ "${SIGN_APP}" = "1" ]; then
     cmake -S "${ROOT_DIR}"  \
           -B "${BUILD_DIR}" \
           -DCMAKE_TOOLCHAIN_FILE="${ROOT_DIR}/cmake/toolchain_arm-none-eabi.cmake" \
-          -DWOLFBOOT_TARGET=${WOLFBOOT_TARGET}    \
+          -DWOLFBOOT_TARGET="${WOLFBOOT_TARGET}"  \
           -DWOLFBOOT_SECTOR_SIZE=256              \
           -DWOLFBOOT_SIGN_SCRIPT="${SIGN_SCRIPT}" \
-          -DWOLFBOOT_SIGN_KEY="${SIGN_KEY}"
+          -DWOLFBOOT_SIGN_KEY="${SIGN_KEY}"       \
+          -DUSE_WOLFBOOT=ON
+
+    echo "--------------------------------------------------------------------------"
+    echo "Example App CMake Build --target app_signed"
+    echo "--------------------------------------------------------------------------"
+    cmake --build "${BUILD_DIR}" --target app_signed
 else
     echo "--------------------------------------------------------------------------"
     echo "Example App CMake Configure (not signed)"
     echo "--------------------------------------------------------------------------"
     cmake -S "${ROOT_DIR}"  \
           -B "${BUILD_DIR}" \
-          -DCMAKE_TOOLCHAIN_FILE="${ROOT_DIR}/cmake/toolchain_arm-none-eabi.cmake"
+          -DCMAKE_TOOLCHAIN_FILE="${ROOT_DIR}/cmake/toolchain_arm-none-eabi.cmake" \
+          -DUSE_WOLFBOOT=OFF
+
+    echo "--------------------------------------------------------------------------"
+    echo "Example App CMake Build (not signed)"
+    echo "--------------------------------------------------------------------------"
+    cmake --build "${BUILD_DIR}"
 fi
+
 
 if [ "${FLASH_APP}" = "1" ]; then
     echo "--------------------------------------------------------------------------"
     echo Flash
     echo "--------------------------------------------------------------------------"
-    "${ROOT_DIR}/wolfBoot/tools/scripts/wolfboot_build.sh" --flash-unsigned ${WOLFBOOT_TARGET}
+    "${ROOT_DIR}/wolfBoot/tools/scripts/wolfboot_cmake_full_build.sh" --flash-unsigned ${WOLFBOOT_TARGET}
 fi
