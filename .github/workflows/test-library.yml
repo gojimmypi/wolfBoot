@@ -187,9 +187,9 @@ jobs:
         run: |
           # Corrupt signed binary
           truncate -s -1 test_v1_signed.bin
-          echo "A" >> test_v1_signed.bin
+          printf "A" >> test_v1_signed.bin
 
-          # Run once, capture output and status
+          # Run once, capture output and status (temporarily disable errexit)
           set +e
           output=$(./test-lib test_v1_signed.bin 2>&1)
           status=$?
