@@ -16,13 +16,14 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - sim
-          - stm32c0
-          - stm32f1
-          - stm32g0
-          - stm32l4
-          - stm32h5
-          - stm32h7
+          # These are exact file names from config/examples
+          - sim.config
+          - stm32c0.config
+          - stm32f1.config
+          - stm32g0.config
+          - stm32l4-cube.config
+          - stm32h5.config
+          - stm32h7.config
 
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +96,7 @@ jobs:
             echo "Build dir: ${BUILD_DIR}"
             echo "Saving output to ${LOG_FILE}"
 
-            CONFIG_SRC="./config/examples/${TARGET}.config"
+            CONFIG_SRC="./config/examples/${TARGET}"
 
             echo "Fetch ${TARGET} example .config (source: ${CONFIG_SRC})"
             if [ ! -f "${CONFIG_SRC}" ]; then
