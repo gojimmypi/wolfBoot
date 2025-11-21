@@ -10,6 +10,7 @@ import json
 import os
 import re
 import sys
+import subprocess
 from collections import OrderedDict
 from pathlib import Path
 
@@ -179,6 +180,90 @@ def merge_preset(doc, cfg_preset, bld_preset):
     return doc
 
 
+def extract_unused_vars(output: str):
+    """
+    Parse CMake output and return a list of
+    'Manually-specified variables were not used by the project' names.
+    """
+    lines = output.splitlines()
+    unused = []
+    capture = False
+
+    for line in lines:
+        if "Manually-specified variables were not used by the project:" in line:
+            capture = True
+            continue
+
+        if not capture:
+            continue
+
+        stripped = line.strip()
+
+        # Skip leading blank lines after the header
+        if stripped == "":
+            # If we have already collected some variables, a blank line
+            # means the list is over.
+            if unused:
+                break
+            continue
+
+        # Only take reasonably-indented lines as variable names
+        if line.startswith("    ") or line.startswith("  "):
+            unused.append(stripped)
+        else:
+            # Non-indented line once capture has started means the block is over
+            if unused:
+                break
+
+    return unused
+
+
+def run_cmake_and_report_unused(preset_name: str, repo_root: Path):
+    """
+    Run 'cmake --preset <preset_name>' from repo_root and
+    print any unused manually-specified variables reported.
+    """
+    print("")
+    print("Running CMake configure to check for unused manually-specified variables...")
+    cmd = ["cmake", "--preset", preset_name]
+    print("Command:", " ".join(cmd))
+
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(repo_root),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except FileNotFoundError:
+        print("cmake not found on PATH; skipping unused-variable check.", file=sys.stderr)
+        return
+
+    combined = ""
+    if proc.stdout:
+        combined += proc.stdout
+    if proc.stderr:
+        if combined:
+            combined += "\n"
+        combined += proc.stderr
+
+    unused = extract_unused_vars(combined)
+
+    if unused:
+        print("")
+        print("CMake reported unused manually-specified variables for preset '{}' :".format(preset_name))
+        for name in unused:
+            print("  {}".format(name))
+    else:
+        print("")
+        print("No unused manually-specified CMake variables detected for preset '{}'.".format(preset_name))
+
+    if proc.returncode != 0:
+        print("")
+        print("Note: 'cmake --preset {}' exited with code {}.".format(preset_name, proc.returncode))
+
+
 def main():
     ap = argparse.ArgumentParser(description="Generate or merge a CMakePresets.json from a .config file")
     ap.add_argument(
@@ -307,6 +392,9 @@ def main():
         f.write("\n")
 
     print(f"Updated {presets_path} with preset '{preset_name}' targeting '{target}'")
+
+    # After updating presets, run cmake and show any unused variables
+    run_cmake_and_report_unused(preset_name, repo_root)
 
 
 if __name__ == "__main__":
