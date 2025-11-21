@@ -168,15 +168,20 @@ def load_existing_presets(presets_path: Path):
 
 def _merge_configure_preset_list(preset_list, cfg_preset):
     """
-    Update or append a configure preset, without reordering existing entries.
+    Update or insert a configure preset.
 
     - If a preset with the same name exists:
       * Preserve all top-level keys (inherits, environment, binaryDir, etc.)
       * Merge cacheVariables: existing keys plus new ones, with new values winning.
+
     - If it does not exist:
-      * Append the new preset at the end of the list.
+      * Insert the new preset among the non-hidden presets in a best-fit
+        alphabetical position, ignoring hidden presets when choosing where
+        to insert. Existing entries (hidden or not) are not reordered.
     """
     name = cfg_preset.get("name")
+
+    # First: update existing entry if present
     for idx, existing in enumerate(preset_list):
         if existing.get("name") == name:
             merged = existing.copy()
@@ -195,22 +200,58 @@ def _merge_configure_preset_list(preset_list, cfg_preset):
             preset_list[idx] = merged
             return preset_list
 
-    # Not found: append, do not reorder existing presets
-    preset_list.append(cfg_preset)
+    # Only reach here if this is a new preset
+
+    if not isinstance(name, str):
+        # Fallback: no sensible name to compare; just append
+        preset_list.append(cfg_preset)
+        return preset_list
+
+    # Build a list of (real_index, preset_name) for NON-hidden presets
+    visible = []
+    for idx, existing in enumerate(preset_list):
+        # Treat missing "hidden" as visible
+        if existing.get("hidden") is True:
+            continue
+        existing_name = existing.get("name")
+        if isinstance(existing_name, str):
+            visible.append((idx, existing_name))
+
+    # Decide insertion point among visible presets
+    insert_at_real_index = None
+    for real_idx, existing_name in visible:
+        if name < existing_name:
+            insert_at_real_index = real_idx
+            break
+
+    if insert_at_real_index is None:
+        if visible:
+            # After the last visible preset
+            last_visible_index = visible[-1][0]
+            insert_at_real_index = last_visible_index + 1
+        else:
+            # No visible presets at all: append
+            insert_at_real_index = len(preset_list)
+
+    preset_list.insert(insert_at_real_index, cfg_preset)
     return preset_list
 
 
 def _merge_build_preset_list(preset_list, bld_preset):
     """
-    Update or append a build preset, without reordering existing entries.
+    Update or insert a build preset, keeping existing entries in their
+    current order and placing new ones in a reasonable alphabetical position.
 
     - If a preset with the same name exists:
       * Preserve existing jobs/verbose/targets and any other fields.
       * Only ensure configurePreset is set if it was missing.
     - If it does not exist:
-      * Append the new preset at the end of the list.
+      * Insert the new preset before the first preset whose name is
+        lexicographically greater; if none, append at the end.
     """
     name = bld_preset.get("name")
+
+    # First pass: update existing entry if present
     for idx, existing in enumerate(preset_list):
         if existing.get("name") == name:
             merged = existing.copy()
@@ -220,7 +261,20 @@ def _merge_build_preset_list(preset_list, bld_preset):
             preset_list[idx] = merged
             return preset_list
 
-    # Not found: append, do not reorder existing presets
+    # Second pass: insert new entry in best alphabetical position
+    if isinstance(name, str):
+        insert_at = None
+        for idx, existing in enumerate(preset_list):
+            existing_name = existing.get("name")
+            if isinstance(existing_name, str) and name < existing_name:
+                insert_at = idx
+                break
+
+        if insert_at is not None:
+            preset_list.insert(insert_at, bld_preset)
+            return preset_list
+
+    # Fallback: append if no suitable insertion point was found
     preset_list.append(bld_preset)
     return preset_list
 
