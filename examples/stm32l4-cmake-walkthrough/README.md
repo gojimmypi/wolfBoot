@@ -1,6 +1,6 @@
 ﻿# Sample Application
 
-Take a single, simple, stand-alone `blinky` example from [wolfBoot/test-app](https://github.com/wolfSSL/wolfBoot/tree/master/test-app)
+Take a single, simple, stand-alone `blinky` example adapted from [wolfBoot/test-app](https://github.com/wolfSSL/wolfBoot/tree/master/test-app)
 and document the steps needs to add wolfBoot as a secure bootloader.
 
 See the sample `build.sh` - meant to be a stand-alone example, it downloads a local `wolfBoot` and submodules (wolfssl, wolfHSM, etc)
@@ -17,11 +17,11 @@ See the sample `build.sh` - meant to be a stand-alone example, it downloads a lo
   - `stm32l4.ld` linker
   - `toolchain_arm-none-eabi.cmake` sample app toolchain, separate from wolfBoot.
 
-- [build.sh](./build/sh) example usage.
+- [build.sh](./build.sh) example usage.
 
 - [CMakeLists.txt](./CMakeLists.txt) - Application CMake, separate from wolfBoot.
 
-- [CMakePresets.json](./CCMakePresets.json) - Application CMake presets, separate from wolfBoot.
+- [CMakePresets.json](./CMakePresets.json) - Application CMake presets, separate from wolfBoot.
 Shown for reference only. Note application build script is not using the presets that wolfBoot uses.
 
 

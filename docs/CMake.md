@@ -1,11 +1,11 @@
-# wolfBoot CMake
+ï»¿# wolfBoot CMake
 
 See the [`WOLFBOOT_ROOT`/cmake/README.md](../cmake/README.md) file.
 
 ### CMake - Presets
 
 This section explains how to build wolfBoot using CMake Presets.
-Presets let you keep repeatable build settings in a single JSON file ([CMakePresets.json](./CMakePresets.json)) so
+Presets let you keep repeatable build settings in a single JSON file ([`[WOLFBOOT_ROOT]/CMakePresets.json`](../CMakePresets.json)) so
 you can configure and build with short, memorable commands like:
 
 ```
@@ -18,8 +18,8 @@ See the `WOLFBOOT_ROOT`/[config_defaults.cmake](./config_defaults.cmake) file.
 
 #### Convert existing `.config` to CMake Presets
 
-The [tools/scripts/config2presets.py](./tools/scripts/config2presets.py) script cam
-convert existing [config/examples](./config/examples) to CMake presets.
+The [`[WOLFBOOT_ROOT]`/tools/scripts/config2presets.py](../tools/scripts/config2presets.py) script cam
+convert existing [config/examples](../config/examples) to CMake presets.
 
 For example:
 
@@ -181,14 +181,14 @@ C:\Users\%USERNAME%\AppData\Local\CMakeTools
 
 #### Tips & Gotchas
 
-Out-of-source enforced: wolfBoot’s CMakeLists.txt blocks in-source builds;
+Out-of-source enforced: wolfBootâ€™s CMakeLists.txt blocks in-source builds;
 presets default to `build-${presetName}` anyway.
 
 Toolchain auto-select: If `WOLFBOOT_TARGET` is not x86_64_efi or sim,
 CMAKE_TOOLCHAIN_FILE defaults to `cmake/toolchain_arm-none-eabi.cmake`.
 
 Windows host tools: When HOST_CC is `cl.exe`, CMakeLists.txt creates a
-lightweight `unistd.h` shim and adjusts flags—no manual changes needed.
+lightweight `unistd.h` shim and adjusts flagsâ€”no manual changes needed.
 
 `$penv` vs `$env`: Use `$penv{VAR}` in environment to append to the existing
 process environment (keeps your PATH). `$env{VAR}` replaces it.
@@ -198,11 +198,11 @@ select the preset from the status bar or CMake menu, then build.
 
 `--fresh`: Re-configure from scratch without deleting the build directory.
 
-For further details, see the [cmake/README](./cmake/README.md)
+For further details, see the [cmake/README](../cmake/README.md)
 
 ### CMake - Read .config file
 
-See [cmake/README](./cmake/README.md#build-with-cmake-using-config-files).
+See [cmake/README](../cmake/README.md#build-with-cmake-using-config-files).
 
 ### CMake - Command-line Settings
 

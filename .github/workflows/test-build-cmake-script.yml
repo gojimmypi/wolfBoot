@@ -69,6 +69,7 @@ jobs:
       - name: Run wolfboot_build script
         run: |
           rm -rf ./build
+          chmod +x ./tools/scripts/wolfboot_cmake_full_build.sh
 
           ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  "stm32l4"
           ./tools/scripts/wolfboot_cmake_full_build.sh --target "stm32l4"
