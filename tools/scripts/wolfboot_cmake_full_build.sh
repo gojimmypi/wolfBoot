@@ -2,6 +2,8 @@
 
 # wolfboot_cmake_full_build.sh
 #
+#   >>>>> EDIT WITH CAUTION: Used by ./github/workflow tests <<<<<
+#
 #   ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  [your target]
 #   ./tools/scripts/wolfboot_cmake_full_build.sh --target [your target]
 #   ./tools/scripts/wolfboot_cmake_full_build.sh --flash  [your target]

@@ -1,14 +1,34 @@
+# Tests the /tools/scripts/wolfboot_cmake_full_build.sh
+# See also test-build-cmake-presets.yml
+# Presets are found in /CMakePresets.json
+#
 name: wolfboot CMake Script
 on:
   push:
     # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ '*' ]
+    branches: [ "master", "main", "release/**" ]
   pull_request:
-    branches: [ '*' ]
+    branches: [ "*" ]
+
 jobs:
   wolfboot_build_script_test:
+    name: Build wolfBoot (target=${{ matrix.target }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - "~No config (wolfBoot sim)"
+          - stm32c0
+          - stm32f1
+          - stm32g0
+          - stm32h7
+          - stm32l4
+          # add more targets here later, e.g.:
+          # - stm32h7
+          # - sim
 
     steps:
       - uses: actions/checkout@v4
@@ -60,19 +80,23 @@ jobs:
             echo "--- apt-mirrors.txt ---"
             cat /etc/apt/apt-mirrors.txt || true
 
-
       - name: Install requirements
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi gcc-powerpc-linux-gnu cmake
 
-      - name: Run wolfboot_build script
+      - name: View Presets
         run: |
-          rm -rf ./build
+          # Use CMake to list all presets defined in CMakePresets.json
+          echo "All presets:"
+          cmake -S . -B build --list-presets=configure
+
           chmod +x ./tools/scripts/wolfboot_cmake_full_build.sh
 
-          ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  "stm32l4"
-          ./tools/scripts/wolfboot_cmake_full_build.sh --target "stm32l4"
+      - name: Run wolfboot_cmake_full_build script
+        run: |
+          rm -rf ./build
+          rm -rf ./build-"${{ matrix.target }}"
 
-          ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  "stm32g0"
-          ./tools/scripts/wolfboot_cmake_full_build.sh --target "stm32g0"
+          ./tools/scripts/wolfboot_cmake_full_build.sh --CLEAN  "${{ matrix.target }}"
+          ./tools/scripts/wolfboot_cmake_full_build.sh --target "${{ matrix.target }}"
