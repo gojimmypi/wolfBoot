@@ -23,9 +23,14 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - stm32l4
-          - stm32h7
+          - sim
+          - stm32c0
+          - stm32f1
           - stm32g0
+          - stm32l4
+          - stm32h5
+          - stm32h7
+
         include:
           # Optional per-target cache variables you might want to pass later.
           # Keep empty for now to avoid guessing addresses.
@@ -48,6 +53,7 @@ jobs:
 
       # ARM GCC toolchain (adds the bin dir to PATH)
       - name: Set up ARM none-eabi GCC 14.x
+        if: matrix.target != 'sim'
         uses: carlosperate/arm-none-eabi-gcc-action@v1
         with:
           release: "14.2.Rel1" # <-- use 'release', not 'version'
