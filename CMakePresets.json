@@ -171,6 +171,50 @@
       }
     },
     {
+      "name": "stm32h5",
+      "displayName": "stm32h5",
+      "inherits": [
+        "base",
+        "stm32",
+        "sign_hash_config"
+      ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32h5",
+      "cacheVariables": {
+        "ARCH": "ARM",
+        "TZEN": "ON",
+        "WOLFBOOT_TARGET": "stm32h5",
+        "DEBUG": "OFF",
+        "VTOR": "ON",
+        "CORTEX_M0": "OFF",
+        "CORTEX_M33": "ON",
+        "NO_ASM": "OFF",
+        "NO_MPU": "ON",
+        "EXT_FLASH": "OFF",
+        "SPI_FLASH": "OFF",
+        "ALLOW_DOWNGRADE": "OFF",
+        "NVM_FLASH_WRITEONCE": "ON",
+        "WOLFBOOT_VERSION": "ON",
+        "V": "OFF",
+        "SPMATH": "ON",
+        "RAM_CODE": "OFF",
+        "DUALBANK_SWAP": "OFF",
+        "WOLFBOOT_PARTITION_SIZE": "0xA0000",
+        "WOLFBOOT_SECTOR_SIZE": "0x2000",
+        "WOLFBOOT_KEYVAULT_ADDRESS": "0x0C040000",
+        "WOLFBOOT_KEYVAULT_SIZE": "0x1C000",
+        "WOLFBOOT_NSC_ADDRESS": "0x0C05C000",
+        "WOLFBOOT_NSC_SIZE": "0x4000",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08060000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08100000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x081A0000",
+        "FLAGS_HOME": "OFF",
+        "DISABLE_BACKUP": "OFF",
+        "IMAGE_HEADER_SIZE": "1024",
+        "ARMORED": "ON"
+      }
+    },
+    {
       "name": "stm32h7",
       "displayName": "stm32h7",
       "inherits": [
@@ -283,6 +327,15 @@
     {
       "name": "stm32g0",
       "configurePreset": "stm32g0",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32h5",
+      "configurePreset": "stm32h5",
       "jobs": 4,
       "verbose": true,
       "targets": [
