@@ -94,20 +94,6 @@
       }
     },
     {
-      "name": "vs-debug-trace",
-      "displayName": "VS Debug Trace (STM32H7)",
-      "inherits": [
-        "base",
-        "stm32h7"
-      ],
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_VERBOSE_MAKEFILE": "ON",
-        "CMAKE_FIND_DEBUG_MODE": "ON"
-      }
-    },
-    {
       "name": "stm32c0",
       "displayName": "STM32C0",
       "inherits": [
@@ -249,6 +235,20 @@
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x0800A000",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08084000",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x080FE000"
+      }
+    },
+    {
+      "name": "vs-debug-trace",
+      "displayName": "VS Debug Trace (STM32H7)",
+      "inherits": [
+        "base",
+        "stm32h7"
+      ],
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_VERBOSE_MAKEFILE": "ON",
+        "CMAKE_FIND_DEBUG_MODE": "ON"
       }
     }
   ],
