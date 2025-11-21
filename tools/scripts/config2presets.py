@@ -566,7 +566,7 @@ def main():
     source_dir = "${sourceDir}"  # CMake variable; leave literal
     preset_name = args.preset_name or make_preset_name(target)
     binary_dir = args.binary_dir or make_binary_dir(source_dir, target)
-    display_name = args.display_name or f"Linux/WSL ARM ({target})"
+    display_name = args.display_name or f"{target}"
 
     # For STM32 boards, inherit like stm32g0:
     #   [ "base", "stm32", "sign_hash_config" ]
