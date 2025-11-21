@@ -181,7 +181,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32h5",
       "cacheVariables": {
-        "BUILD_TEST_APPS": "ON",
+        "BUILD_TEST_APPS": "OFF",
         "ARCH": "ARM",
         "TZEN": "ON",
         "WOLFBOOT_TARGET": "stm32h5",
