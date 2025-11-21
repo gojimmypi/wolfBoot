@@ -1010,21 +1010,29 @@ list(TRANSFORM WOLFBOOT_SOURCES PREPEND ${WOLFBOOT_ROOT}/)
 # Hash settings
 #---------------------------------------------------------------------------------------------
 if(HASH STREQUAL "SHA256")
-    list(APPEND WOLFBOOT_DEFS WOLFBOOT_HASH_SHA256)
+    list(APPEND WOLFBOOT_DEFS  WOLFBOOT_HASH_SHA256)
     list(APPEND SIGN_OPTIONS   WOLFBOOT_HASH_SHA256)
     message(STATUS "Using SHA256 hash")
 endif()
 
 if(HASH STREQUAL "SHA384")
-    list(APPEND WOLFBOOT_DEFS WOLFBOOT_HASH_SHA384)
+    list(APPEND WOLFBOOT_DEFS  WOLFBOOT_HASH_SHA384)
     list(APPEND SIGN_OPTIONS   WOLFBOOT_HASH_SHA384)
-    list(APPEND KEYTOOL_OPTIONS --sha384)
+    # Note: the keygen tool in this tree does not accept a --sha384 CLI flag.
+    # Hash selection is controlled via WOLFBOOT_HASH_SHA384 in the image header,
+    # so do not append a hash option to KEYTOOL_OPTIONS here.
+    # list(APPEND KEYTOOL_OPTIONS --sha384)
+    message(STATUS "Using SHA384 hash")
 endif()
 
 if(HASH STREQUAL "SHA3")
-    list(APPEND WOLFBOOT_DEFS WOLFBOOT_HASH_SHA3_384)
+    list(APPEND WOLFBOOT_DEFS  WOLFBOOT_HASH_SHA3_384)
     list(APPEND SIGN_OPTIONS   WOLFBOOT_HASH_SHA3_384)
-    list(APPEND KEYTOOL_OPTIONS --sha3)
+    # Note: the keygen tool in this tree does not accept a --sha3 CLI flag.
+    # Hash selection is controlled via WOLFBOOT_HASH_SHA3_384 in the image header,
+    # so do not append a hash option to KEYTOOL_OPTIONS here.
+    # list(APPEND KEYTOOL_OPTIONS --sha3)
+    message(STATUS "Using SHA3_384 hash")
 endif()
 
 #---------------------------------------------------------------------------------------------
