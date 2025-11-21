@@ -251,6 +251,36 @@
       }
     },
     {
+      "name": "stm32l0",
+      "displayName": "stm32l0",
+      "inherits": [
+        "base",
+        "stm32",
+        "sign_hash_config"
+      ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32l0",
+      "cacheVariables": {
+        "ARCH": "ARM",
+        "WOLFBOOT_TARGET": "stm32l0",
+        "SIGN": "SHA256",
+        "NO_ASM": "OFF",
+        "EXT_FLASH": "OFF",
+        "SPI_FLASH": "OFF",
+        "ALLOW_DOWNGRADE": "OFF",
+        "NVM_FLASH_WRITEONCE": "ON",
+        "FLAGS_INVERT": "ON",
+        "WOLFBOOT_VERSION": "OFF",
+        "SPMATH": "ON",
+        "RAM_CODE": "OFF",
+        "WOLFBOOT_PARTITION_SIZE": "0x10000",
+        "WOLFBOOT_SECTOR_SIZE": "0x1000",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x8000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x18000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x28000"
+      }
+    },
+    {
       "name": "stm32l4",
       "displayName": "stm32l4",
       "inherits": [
@@ -344,6 +374,15 @@
     {
       "name": "stm32h7",
       "configurePreset": "stm32h7",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32l0",
+      "configurePreset": "stm32l0",
       "jobs": 4,
       "verbose": true,
       "targets": [

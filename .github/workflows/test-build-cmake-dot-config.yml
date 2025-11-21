@@ -21,6 +21,7 @@ jobs:
           - stm32c0.config
           - stm32f1.config
           - stm32g0.config
+          - stm32l0.config
           - stm32l4-cube.config
           - stm32h5.config
           - stm32h7.config

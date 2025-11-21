@@ -27,6 +27,7 @@ jobs:
           - stm32c0
           - stm32f1
           - stm32g0
+          - stm32l0
           - stm32l4
           - stm32h5
           - stm32h7
