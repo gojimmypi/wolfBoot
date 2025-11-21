@@ -95,7 +95,7 @@
     },
     {
       "name": "stm32c0",
-      "displayName": "STM32C0",
+      "displayName": "stm32c0",
       "inherits": [
         "base",
         "sign_hash_config",
@@ -172,7 +172,7 @@
     },
     {
       "name": "stm32h7",
-      "displayName": "STM32H7",
+      "displayName": "stm32h7",
       "inherits": [
         "base",
         "stm32",
@@ -209,7 +209,7 @@
     },
     {
       "name": "stm32l4",
-      "displayName": "STM32L4",
+      "displayName": "stm32l4",
       "inherits": [
         "base",
         "stm32",
