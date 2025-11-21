@@ -131,6 +131,32 @@ def make_binary_dir(source_dir, target):
     return os.path.join(source_dir, f"build-{target}")
 
 
+def validate_presets_json(presets_path: Path):
+    """
+    If the presets file exists but is not valid JSON, print a clear message
+    and exit with a non-zero status instead of raising an exception.
+    """
+    if not presets_path.exists():
+        return
+
+    try:
+        with presets_path.open("r", encoding="utf-8") as f:
+            json.load(f)
+    except json.JSONDecodeError as e:
+        print(
+            "Error: '{}' exists but is not valid JSON (CMakePresets.json is malformed).".format(
+                presets_path
+            ),
+            file=sys.stderr,
+        )
+        print("Details: {}".format(e), file=sys.stderr)
+        print(
+            "Please fix the JSON (for example, remove any trailing commas) and rerun this script.",
+            file=sys.stderr,
+        )
+        sys.exit(3)
+
+
 def load_existing_presets(presets_path: Path):
     try:
         with presets_path.open("r", encoding="utf-8") as f:
@@ -392,6 +418,10 @@ def main():
     presets_path = Path(args.presets)
     if not presets_path.is_absolute():
         presets_path = (repo_root / presets_path).resolve()
+
+    # Pre-validate the existing presets JSON so we can show a clear message
+    # instead of crashing on a JSONDecodeError later.
+    validate_presets_json(presets_path)
 
     kv = parse_config(config_path)
     if not kv:

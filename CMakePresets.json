@@ -131,7 +131,7 @@
         "WOLFBOOT_SECTOR_SIZE": "0x800",
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08002800",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08005000",
-        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x08007800",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x08007800"
       }
     },
     {
@@ -215,7 +215,10 @@
         "DEBUG": "OFF",
         "VTOR": "ON",
         "V": "OFF",
-        "DUALBANK_SWAP": "OFF"
+        "DUALBANK_SWAP": "OFF",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
+        "BUILD_TEST_APPS": "ON",
+        "WOLFBOOT_CONFIG_MODE": "preset"
       }
     },
     {
@@ -245,7 +248,7 @@
         "WOLFBOOT_PARTITION_SIZE": "0x7A000",
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x0800A000",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08084000",
-        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x080FE000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x080FE000"
       }
     }
   ],
