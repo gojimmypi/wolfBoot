@@ -164,10 +164,10 @@
         "WOLFBOOT_PARTITION_SIZE": "0xB000",
         "WOLFBOOT_SECTOR_SIZE": "0x800",
         "ARCH_FLASH_OFFSET": "0x08000000",
+        "WOLFBOOT_ORIGIN": "0x08000000",
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08008000",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08013000",
-        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0801E000",
-        "BUILD_TEST_APPS": "ON"
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0801E000"
       }
     },
     {
@@ -181,7 +181,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32h5",
       "cacheVariables": {
-        "BUILD_TEST_APPS": "OFF",
+        "BUILD_TEST_APPS": "ON",
         "ARCH": "ARM",
         "TZEN": "ON",
         "WOLFBOOT_TARGET": "stm32h5",
@@ -226,7 +226,6 @@
       "generator": "Ninja",
       "cacheVariables": {
         "WOLFBOOT_TARGET": "stm32h7",
-        "ARCH": "ARM",
         "DEBUG_UART": "OFF",
         "NO_ASM": "OFF",
         "EXT_FLASH": "OFF",
@@ -240,16 +239,15 @@
         "RAM_CODE": "OFF",
         "WOLFBOOT_PARTITION_SIZE": "0xD0000",
         "WOLFBOOT_SECTOR_SIZE": "0x20000",
+        "ARCH_FLASH_OFFSET": "0x08000000",
+        "WOLFBOOT_ORIGIN": "0x08000000",
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x8020000",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x80F0000",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x81C0000",
         "DEBUG": "OFF",
         "VTOR": "ON",
         "V": "OFF",
-        "DUALBANK_SWAP": "OFF",
-        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
-        "BUILD_TEST_APPS": "ON",
-        "WOLFBOOT_CONFIG_MODE": "preset"
+        "DUALBANK_SWAP": "OFF"
       }
     },
     {

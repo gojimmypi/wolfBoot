@@ -634,6 +634,7 @@ set(UPDATE_SOURCES src/update_flash.c)
 
 # Default flash offset
 if(NOT DEFINED ARCH_FLASH_OFFSET)
+    message(STATUS "WARNING: ARCH_FLASH_OFFSET not defined, setting t0 default 0x0")
     set(ARCH_FLASH_OFFSET 0x0)
 endif()
 
