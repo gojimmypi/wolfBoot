@@ -16,8 +16,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [stm32l4, stm32h7, stm32c0, stm32g0]
-
+        target:
+          - sim
+          - stm32c0
+          - stm32f1
+          - stm32g0
+          - stm32l0
+          - stm32l4
+          - stm32h5
+          - stm32h7
     env:
       HOMEBREW_NO_AUTO_UPDATE: "1"    # avoid updating taps during install
       HOMEBREW_NO_ANALYTICS: "1"
