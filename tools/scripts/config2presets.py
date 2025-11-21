@@ -568,16 +568,24 @@ def main():
     binary_dir = args.binary_dir or make_binary_dir(source_dir, target)
     display_name = args.display_name or f"Linux/WSL ARM ({target})"
 
+    # For STM32 boards, inherit like stm32g0:
+    #   [ "base", "stm32", "sign_hash_config" ]
+    # For everything else, just inherit "base".
+    inherits_value = "base"
+    if isinstance(preset_name, str) and preset_name.startswith("stm32") and preset_name != "stm32":
+        inherits_value = ["base", "stm32", "sign_hash_config"]
+
     cfg_preset = OrderedDict(
         [
             ("name", preset_name),
             ("displayName", display_name),
-            ("inherits", "base"),
+            ("inherits", inherits_value),
             ("generator", args.generator),
             ("binaryDir", binary_dir),
             ("cacheVariables", cache),
         ]
     )
+
     bld_preset = OrderedDict(
         [
             ("name", preset_name),
