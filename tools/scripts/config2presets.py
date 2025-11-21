@@ -20,6 +20,14 @@ LINE_RE = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)\s*\??=\s*(.*)$')
 BOOL_TRUE = {"1", "on", "true", "yes", "y"}
 BOOL_FALSE = {"0", "off", "false", "no", "n"}
 
+# Known inherited values: these are provided implicitly by presets/build
+# If the .config value matches, do NOT write to cacheVariables.
+# If it differs, keep it and warn that it overrides the inherited default.
+KNOWN_INHERITED = {
+    "SIGN": "ECC256",
+    "HASH": "SHA256",
+}
+
 
 def normalize_bool(s: str):
     v = s.strip().lower()
@@ -43,6 +51,40 @@ def parse_config(path: Path):
             key, val = m.group(1), m.group(2).strip()
             kv[key] = val
     return kv
+
+
+def filter_inherited_values(kv):
+    """
+    Remove keys whose values match KNOWN_INHERITED defaults (do not
+    emit them into cacheVariables), and collect messages about
+    inherited/overridden values.
+    """
+    new_kv = OrderedDict()
+    messages = []
+
+    for k, v in kv.items():
+        if k in KNOWN_INHERITED:
+            expected = KNOWN_INHERITED[k]
+            v_stripped = v.strip()
+            if v_stripped == expected:
+                messages.append(
+                    "Note: '{}' is an inherited value with default '{}'; "
+                    "omitting from preset cacheVariables.".format(k, expected)
+                )
+                # Do not add to new_kv; rely on inherited value
+                continue
+            else:
+                messages.append(
+                    "WARNING: '{}' in .config is '{}', overriding inherited "
+                    "default '{}' in preset cacheVariables.".format(
+                        k, v_stripped, expected
+                    )
+                )
+                # Fall through to keep the override
+
+        new_kv[k] = v
+
+    return new_kv, messages
 
 
 def choose_target(kv):
@@ -252,16 +294,26 @@ def run_cmake_and_report_unused(preset_name: str, repo_root: Path):
 
     if unused:
         print("")
-        print("CMake reported unused manually-specified variables for preset '{}' :".format(preset_name))
+        print(
+            "CMake reported unused manually-specified variables for preset '{}' :".format(
+                preset_name
+            )
+        )
         for name in unused:
             print("  {}".format(name))
     else:
         print("")
-        print("No unused manually-specified CMake variables detected for preset '{}'.".format(preset_name))
+        print(
+            "No unused manually-specified CMake variables detected for preset '{}'.".format(
+                preset_name
+            )
+        )
 
     if proc.returncode != 0:
         print("")
-        print("Note: 'cmake --preset {}' exited with code {}.".format(preset_name, proc.returncode))
+        print("Note: 'cmake --preset {}' exited with code {}.".format(
+            preset_name, proc.returncode
+        ))
 
 
 def main():
@@ -343,6 +395,9 @@ def main():
         print(f"No settings parsed from .config: {config_path}", file=sys.stderr)
         sys.exit(2)
 
+    # Handle inherited values like SIGN/HASH before converting to cache vars
+    kv, inherited_messages = filter_inherited_values(kv)
+
     target = choose_target(kv)
     cache = to_cache_vars(kv)
 
@@ -392,6 +447,12 @@ def main():
         f.write("\n")
 
     print(f"Updated {presets_path} with preset '{preset_name}' targeting '{target}'")
+
+    if inherited_messages:
+        print("")
+        print("Inherited .config values summary:")
+        for msg in inherited_messages:
+            print("  " + msg)
 
     # After updating presets, run cmake and show any unused variables
     run_cmake_and_report_unused(preset_name, repo_root)
