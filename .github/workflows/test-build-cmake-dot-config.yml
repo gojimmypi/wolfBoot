@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          # These are exact file names from config/examples
+          # These are exact file names from config/examples, minus the "-something.config" extension
           - sim.config
           - stm32c0.config
           - stm32f1.config
@@ -87,7 +87,13 @@ jobs:
 
             set -euo pipefail
 
+            # Target file names are expected to be [WOLFBOOT_TARGET]-something.config
             TARGET="${{ matrix.target }}"
+            # Strip the trailing ".config"
+            TARGET="${TARGET%.config}"
+            # Strip everything after first "-"
+            TARGET="${TARGET%%-*}"
+
             BUILD_DIR="build-${TARGET}"
             LOG_FILE="run-${TARGET}.log"
             KEYWORD="Config mode: dot"
