@@ -114,12 +114,13 @@ def to_cache_vars(kv):
 
 
 def ensure_base_vars(cache, toolchain_value):
+    # These should be inherited from [base] in the JSON presets:
     # Always ensure toolchain file is set using the literal value passed in
-    cache.setdefault("CMAKE_TOOLCHAIN_FILE", toolchain_value)
+    # cache.setdefault("CMAKE_TOOLCHAIN_FILE", toolchain_value)
     # Typically desired
-    cache.setdefault("BUILD_TEST_APPS", "ON")
+    # cache.setdefault("BUILD_TEST_APPS", "ON")
     # Force preset mode when generating from .config into presets
-    cache["WOLFBOOT_CONFIG_MODE"] = "preset"
+    # cache["WOLFBOOT_CONFIG_MODE"] = "preset"
     return cache
 
 
@@ -345,6 +346,47 @@ def run_cmake_and_report_unused(preset_name: str, repo_root: Path):
         ))
 
 
+def check_workflow_for_preset(workflow_path: Path, preset_name: str):
+    """
+    Best-effort check: does the given workflow YAML mention this preset/target
+    name anywhere? If not, print a warning so it is clear the CI matrix will
+    not build it.
+    """
+    if not workflow_path.exists():
+        print(
+            "Note: workflow YAML '{}' not found; skipping workflow check.".format(
+                workflow_path
+            )
+        )
+        return
+
+    try:
+        text = workflow_path.read_text(encoding="utf-8")
+    except OSError as e:
+        print(
+            "Warning: could not read workflow YAML '{}': {}".format(
+                workflow_path, e
+            ),
+            file=sys.stderr,
+        )
+        return
+
+    if preset_name in text:
+        print(
+            "Workflow check: preset/target '{}' is referenced in '{}'.".format(
+                preset_name, workflow_path
+            )
+        )
+    else:
+        print(
+            "WARNING: preset/target '{}' was NOT found in workflow '{}'. "
+            "CI will not build this target until you add it to the matrix.".format(
+                preset_name, workflow_path
+            ),
+            file=sys.stderr,
+        )
+
+
 def main():
     ap = argparse.ArgumentParser(description="Generate or merge a CMakePresets.json from a .config file")
     ap.add_argument(
@@ -380,6 +422,11 @@ def main():
         "--display-name",
         default=None,
         help="Override displayName",
+    )
+    ap.add_argument(
+        "--workflow",
+        default=".github/workflows/test-build-cmake-presets.yml",
+        help="Optional GitHub Actions workflow YAML to check for this preset name",
     )
     args = ap.parse_args()
 
@@ -481,6 +528,11 @@ def main():
 
     print(f"Updated {presets_path} with preset '{preset_name}' targeting '{target}'")
 
+    # Best-effort: check if this preset/target name appears in the workflow matrix
+    workflow_path = Path(args.workflow)
+    if not workflow_path.is_absolute():
+        workflow_path = (repo_root / workflow_path).resolve()
+    check_workflow_for_preset(workflow_path, preset_name)
     if inherited_messages:
         print("")
         print("Inherited .config values summary:")
