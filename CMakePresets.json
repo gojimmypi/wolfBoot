@@ -63,7 +63,8 @@
       "inherits": "base_build_presetName",
       "cacheVariables": {
         "WOLFBOOT_CONFIG_MODE": "preset",
-        "WOLFBOOT_HAS_BASE_PRESET": true
+        "WOLFBOOT_HAS_BASE_PRESET": true,
+        "BUILD_TEST_APPS": "ON"
       }
     },
     {
@@ -71,6 +72,8 @@
       "hidden": true,
       "generator": "Ninja",
       "cacheVariables": {
+        "ARCH": "ARM",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake"
       }
     },
     {
@@ -129,8 +132,6 @@
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08002800",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08005000",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x08007800",
-        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
-        "BUILD_TEST_APPS": "ON"
       }
     },
     {
@@ -138,7 +139,8 @@
       "displayName": "stm32f1",
       "inherits": [
         "base",
-        "stm32"
+        "stm32",
+        "sign_hash_config"
       ],
       "cacheVariables": {
         "WOLFBOOT_TARGET": "stm32f1",
@@ -150,9 +152,7 @@
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08009400",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0800F800",
         "WOLFBOOT_PARTITION_SIZE": "0x6400",
-        "WOLFBOOT_SECTOR_SIZE": "0x400",
-        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
-        "BUILD_TEST_APPS": "ON"
+        "WOLFBOOT_SECTOR_SIZE": "0x400"
       }
     },
     {
@@ -160,8 +160,8 @@
       "displayName": "stm32g0",
       "inherits": [
         "base",
-        "sign_hash_config",
-        "stm32"
+        "stm32",
+        "sign_hash_config"
       ],
       "cacheVariables": {
         "WOLFBOOT_TARGET": "stm32g0",
@@ -189,13 +189,12 @@
       "displayName": "STM32H7",
       "inherits": [
         "base",
-        "sign_hash_config",
-        "stm32"
+        "stm32",
+        "sign_hash_config"
       ],
       "generator": "Ninja",
       "cacheVariables": {
         "WOLFBOOT_TARGET": "stm32h7",
-        "BUILD_TEST_APPS": "yes",
         "ARCH": "ARM",
         "DEBUG_UART": "OFF",
         "NO_ASM": "OFF",
@@ -212,7 +211,11 @@
         "WOLFBOOT_SECTOR_SIZE": "0x20000",
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x8020000",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x80F0000",
-        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x81C0000"
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x81C0000",
+        "DEBUG": "OFF",
+        "VTOR": "ON",
+        "V": "OFF",
+        "DUALBANK_SWAP": "OFF"
       }
     },
     {
@@ -220,15 +223,14 @@
       "displayName": "STM32L4",
       "inherits": [
         "base",
-        "sign_hash_config",
-        "stm32"
+        "stm32",
+        "sign_hash_config"
       ],
       "environment": {
         "VSCMD_DEBUG": "3"
       },
       "cacheVariables": {
         "WOLFBOOT_TARGET": "stm32l4",
-        "ARCH": "ARM",
         "VTOR": "ON",
         "NO_ASM": "OFF",
         "EXT_FLASH": "OFF",
@@ -244,8 +246,6 @@
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x0800A000",
         "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08084000",
         "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x080FE000",
-        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
-        "BUILD_TEST_APPS": "ON"
       }
     }
   ],

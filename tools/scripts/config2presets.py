@@ -24,8 +24,11 @@ BOOL_FALSE = {"0", "off", "false", "no", "n"}
 # If the .config value matches, do NOT write to cacheVariables.
 # If it differs, keep it and warn that it overrides the inherited default.
 KNOWN_INHERITED = {
+    "WOLFBOOT_CONFIG_MODE": "preset",
+    "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
     "SIGN": "ECC256",
     "HASH": "SHA256",
+    "BUILD_TEST_APPS": "ON"
 }
 
 
