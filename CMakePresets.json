@@ -263,7 +263,7 @@
       "cacheVariables": {
         "ARCH": "ARM",
         "WOLFBOOT_TARGET": "stm32l0",
-        "SIGN": "SHA256",
+        "SIGN": "ED25519",
         "NO_ASM": "OFF",
         "EXT_FLASH": "OFF",
         "SPI_FLASH": "OFF",
