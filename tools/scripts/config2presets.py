@@ -240,18 +240,21 @@ def _merge_configure_preset_list(preset_list, cfg_preset):
 def _merge_build_preset_list(preset_list, bld_preset):
     """
     Update or insert a build preset, keeping existing entries in their
-    current order and placing new ones in a reasonable alphabetical position.
+    current order and placing new ones in a best-fit alphabetical position.
 
     - If a preset with the same name exists:
       * Preserve existing jobs/verbose/targets and any other fields.
       * Only ensure configurePreset is set if it was missing.
+
     - If it does not exist:
-      * Insert the new preset before the first preset whose name is
-        lexicographically greater; if none, append at the end.
+      * Consider only entries whose configurePreset is NOT 'sim' when
+        choosing the insertion point.
+      * Insert the new preset before the first such entry whose name is
+        lexicographically greater; if none, insert after the last such entry.
     """
     name = bld_preset.get("name")
 
-    # First pass: update existing entry if present
+    # First: update existing entry if present
     for idx, existing in enumerate(preset_list):
         if existing.get("name") == name:
             merged = existing.copy()
@@ -261,21 +264,40 @@ def _merge_build_preset_list(preset_list, bld_preset):
             preset_list[idx] = merged
             return preset_list
 
-    # Second pass: insert new entry in best alphabetical position
-    if isinstance(name, str):
-        insert_at = None
-        for idx, existing in enumerate(preset_list):
-            existing_name = existing.get("name")
-            if isinstance(existing_name, str) and name < existing_name:
-                insert_at = idx
-                break
+    # Only reach here for a new preset
+    if not isinstance(name, str):
+        # No reasonable name to compare; just append
+        preset_list.append(bld_preset)
+        return preset_list
 
-        if insert_at is not None:
-            preset_list.insert(insert_at, bld_preset)
-            return preset_list
+    # Build list of (real_index, preset_name) for entries we care about
+    # Ignore any entry whose configurePreset is 'sim'.
+    visible = []
+    for idx, existing in enumerate(preset_list):
+        if existing.get("configurePreset") == "sim":
+            continue
+        existing_name = existing.get("name")
+        if isinstance(existing_name, str):
+            visible.append((idx, existing_name))
 
-    # Fallback: append if no suitable insertion point was found
-    preset_list.append(bld_preset)
+    insert_at_real_index = None
+
+    # Find first visible preset whose name is lexicographically greater
+    for real_idx, existing_name in visible:
+        if name < existing_name:
+            insert_at_real_index = real_idx
+            break
+
+    if insert_at_real_index is None:
+        if visible:
+            # After the last visible (non-sim) preset
+            last_visible_index = visible[-1][0]
+            insert_at_real_index = last_visible_index + 1
+        else:
+            # No visible presets at all: append to the end
+            insert_at_real_index = len(preset_list)
+
+    preset_list.insert(insert_at_real_index, bld_preset)
     return preset_list
 
 
