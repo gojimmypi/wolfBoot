@@ -8,8 +8,21 @@ on:
 
 jobs:
   wolfboot_dot_config_test:
+    name: cmake .config test (${{ matrix.target }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - sim
+          - stm32c0
+          - stm32f1
+          - stm32g0
+          - stm32l4
+          - stm32h5
+          - stm32h7
 
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +74,6 @@ jobs:
             echo "--- apt-mirrors.txt ---"
             cat /etc/apt/apt-mirrors.txt || true
 
-
       - name: Install requirements
         run: |
             # Run system updates and install toolchain
@@ -74,31 +86,43 @@ jobs:
 
             set -euo pipefail
 
-            LOG_FILE="run.log"
+            TARGET="${{ matrix.target }}"
+            BUILD_DIR="build-${TARGET}"
+            LOG_FILE="run-${TARGET}.log"
             KEYWORD="Config mode: dot"
-            echo "Saving output to $LOG_FILE"
 
-            echo "Fetch stm32h7 example .config"
-            cp   ./config/examples/stm32h7.config ./.config
-            ls   .config
-            cat  .config
+            echo "Target: ${TARGET}"
+            echo "Build dir: ${BUILD_DIR}"
+            echo "Saving output to ${LOG_FILE}"
+
+            CONFIG_SRC="./config/examples/${TARGET}.config"
+
+            echo "Fetch ${TARGET} example .config (source: ${CONFIG_SRC})"
+            if [ ! -f "${CONFIG_SRC}" ]; then
+                echo "Missing config file: ${CONFIG_SRC}" >&2
+                exit 1
+            fi
+
+            cp "${CONFIG_SRC}" ./.config
+            ls  .config
+            cat .config
             echo ""
 
             echo "Clean"
-            rm -rf ./build-stm32h7
+            rm -rf "./${BUILD_DIR}"
 
             # Here we should see the .config file values read and displayed:
-            cmake -S . -B build-stm32h7 \
+            cmake -S . -B "${BUILD_DIR}" \
               -DUSE_DOT_CONFIG=ON       \
-              -DWOLFBOOT_TARGET=stm32h7 2>&1 | tee "$LOG_FILE"
+              -DWOLFBOOT_TARGET="${TARGET}" 2>&1 | tee "${LOG_FILE}"
 
             # Config dot-config mode
-            if grep -q -- "$KEYWORD" "$LOG_FILE"; then
-                echo "Keyword found: $KEYWORD"
+            if grep -q -- "${KEYWORD}" "${LOG_FILE}"; then
+                echo "Keyword found: ${KEYWORD}"
             else
-                echo "Keyword not found: $KEYWORD" >&2
+                echo "Keyword not found: ${KEYWORD}" >&2
                 exit 1
             fi
 
             # Sample build
-            cmake --build build-stm32h7 --parallel 8
+            cmake --build "${BUILD_DIR}" --parallel 8
