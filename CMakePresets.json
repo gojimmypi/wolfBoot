@@ -142,6 +142,42 @@
       }
     },
     {
+      "name": "stm32f4",
+      "displayName": "stm32f4",
+      "inherits": [
+        "base",
+        "stm32",
+        "sign_hash_config"
+      ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32f4",
+      "cacheVariables": {
+        "WOLFBOOT_TARGET": "stm32f4",
+        "NO_ASM": "OFF",
+        "EXT_FLASH": "OFF",
+        "SPI_FLASH": "OFF",
+        "NO_XIP": "OFF",
+        "UART_FLASH": "ON",
+        "ALLOW_DOWNGRADE": "OFF",
+        "NVM_FLASH_WRITEONCE": "OFF",
+        "WOLFBOOT_VERSION": "OFF",
+        "SPMATH": "ON",
+        "RAM_CODE": "OFF",
+        "WOLFBOOT_PARTITION_SIZE": "0x4000",
+        "WOLFBOOT_SECTOR_SIZE": "0x4000",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x8000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x00000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x4000",
+        "WOLFBOOT_LOAD_ADDRESS": "0x200000",
+        "WOLFBOOT_LOAD_DTS_ADDRESS": "0x400000",
+        "CLOCK_SPEED": "160000000",
+        "STM32_PLLM": "8",
+        "STM32_PLLN": "336",
+        "STM32_PLLP": "2",
+        "STM32_PLLQ": "7"
+      }
+    },
+    {
       "name": "stm32g0",
       "displayName": "stm32g0",
       "inherits": [
@@ -347,6 +383,15 @@
     {
       "name": "stm32f1",
       "configurePreset": "stm32f1",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32f4",
+      "configurePreset": "stm32f4",
       "jobs": 4,
       "verbose": true,
       "targets": [

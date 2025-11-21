@@ -23,12 +23,15 @@ jobs:
           - "~No config (wolfBoot sim)"
           - stm32c0
           - stm32f1
+          - stm32f4
           - stm32g0
-          - stm32h7
+          - stm32l0
           - stm32l4
+          - stm32h5
+          - stm32h7
           # add more targets here later, e.g.:
-          # - stm32h7
-          # - sim
+          # - stm32v8
+          # - sim options, etc
 
     steps:
       - uses: actions/checkout@v4

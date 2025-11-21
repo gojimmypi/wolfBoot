@@ -20,6 +20,7 @@ jobs:
           - "~No config (wolfBoot sim)"
           - stm32c0
           - stm32f1
+          - stm32f4
           - stm32g0
           - stm32l0
           - stm32l4

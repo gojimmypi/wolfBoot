@@ -20,6 +20,7 @@ jobs:
           - sim.config
           - stm32c0.config
           - stm32f1.config
+          - stm32f4.config
           - stm32g0.config
           - stm32l0.config
           - stm32l4-cube.config
