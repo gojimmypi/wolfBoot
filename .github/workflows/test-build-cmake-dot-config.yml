@@ -24,8 +24,10 @@ jobs:
           - stm32g0.config
           - stm32l0.config
           - stm32l4-cube.config
+          - stm32l5.config
           - stm32h5.config
           - stm32h7.config
+          - stm32u5.config
 
     steps:
       - uses: actions/checkout@v4

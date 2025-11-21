@@ -27,8 +27,10 @@ jobs:
           - stm32g0
           - stm32l0
           - stm32l4
+          - stm32l5
           - stm32h5
           - stm32h7
+          - stm32u5
           # add more targets here later, e.g.:
           # - stm32v8
           # - sim options, etc

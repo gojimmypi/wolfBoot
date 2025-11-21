@@ -347,6 +347,76 @@
       }
     },
     {
+      "name": "stm32l5",
+      "displayName": "stm32l5",
+      "inherits": [
+        "base",
+        "stm32",
+        "sign_hash_config"
+      ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32l5",
+      "cacheVariables": {
+        "ARCH": "ARM",
+        "WOLFBOOT_TARGET": "stm32l5",
+        "NO_ASM": "OFF",
+        "NO_MPU": "ON",
+        "EXT_FLASH": "OFF",
+        "SPI_FLASH": "OFF",
+        "ALLOW_DOWNGRADE": "OFF",
+        "NVM_FLASH_WRITEONCE": "ON",
+        "WOLFBOOT_VERSION": "ON",
+        "SPMATH": "ON",
+        "RAM_CODE": "OFF",
+        "DUALBANK_SWAP": "ON",
+        "WOLFBOOT_PARTITION_SIZE": "0x30000",
+        "WOLFBOOT_SECTOR_SIZE": "0x2000",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08010000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x08110000",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0xFFFFFFFF",
+        "IMAGE_HEADER_SIZE": "1024"
+      }
+    },
+    {
+      "name": "stm32u5",
+      "displayName": "stm32u5",
+      "inherits": [
+        "base",
+        "stm32",
+        "sign_hash_config"
+      ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-stm32u5",
+      "cacheVariables": {
+        "ARCH": "ARM",
+        "TZEN": "ON",
+        "WOLFBOOT_TARGET": "stm32u5",
+        "NO_ASM": "OFF",
+        "NO_MPU": "ON",
+        "EXT_FLASH": "OFF",
+        "SPI_FLASH": "OFF",
+        "QSPI_FLASH": "OFF",
+        "OCTOSPI_FLASH": "OFF",
+        "ALLOW_DOWNGRADE": "OFF",
+        "NVM_FLASH_WRITEONCE": "ON",
+        "WOLFBOOT_VERSION": "ON",
+        "SPMATH": "ON",
+        "RAM_CODE": "OFF",
+        "DUALBANK_SWAP": "OFF",
+        "WOLFBOOT_PARTITION_SIZE": "0x1F800",
+        "WOLFBOOT_SECTOR_SIZE": "0x800",
+        "WOLFBOOT_KEYVAULT_ADDRESS": "0x0C020000",
+        "WOLFBOOT_KEYVAULT_SIZE": "0x18000",
+        "WOLFBOOT_NSC_ADDRESS": "0x0C038000",
+        "WOLFBOOT_NSC_SIZE": "0x8000",
+        "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08040000",
+        "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x805F800",
+        "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x0807F000",
+        "FLAGS_HOME": "OFF",
+        "DISABLE_BACKUP": "OFF"
+      }
+    },
+    {
       "name": "vs-debug-trace",
       "displayName": "VS Debug Trace (STM32H7)",
       "inherits": [
@@ -437,6 +507,24 @@
     {
       "name": "stm32l4",
       "configurePreset": "stm32l4",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32l5",
+      "configurePreset": "stm32l5",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "stm32u5",
+      "configurePreset": "stm32u5",
       "jobs": 4,
       "verbose": true,
       "targets": [

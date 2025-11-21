@@ -30,8 +30,10 @@ jobs:
           - stm32g0
           - stm32l0
           - stm32l4
+          - stm32l5
           - stm32h5
           - stm32h7
+          - stm32u5
 
         include:
           # Optional per-target cache variables you might want to pass later.
