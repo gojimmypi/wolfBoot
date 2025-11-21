@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          # These are exact file names from config/examples, minus the "-something.config" extension
+          # These are exact file names from config/examples (including .config)
           - sim.config
           - stm32c0.config
           - stm32f1.config
@@ -102,7 +102,7 @@ jobs:
             echo "Build dir: ${BUILD_DIR}"
             echo "Saving output to ${LOG_FILE}"
 
-            CONFIG_SRC="./config/examples/${TARGET}"
+            CONFIG_SRC="./config/examples/${{ matrix.target }}"
 
             echo "Fetch ${TARGET} example .config (source: ${CONFIG_SRC})"
             if [ ! -f "${CONFIG_SRC}" ]; then
