@@ -357,8 +357,12 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-stm32l5",
       "cacheVariables": {
-        "ARCH": "ARM",
+        "BUILD_TEST_APPS": "OFF",
         "WOLFBOOT_TARGET": "stm32l5",
+        "ARCH_FLASH_OFFSET": "0x08000000",
+        "WOLFBOOT_NSC_ADDRESS": "0x08110000",
+        "WOLFBOOT_NSC_SIZE": "0x00010000",
+
         "NO_ASM": "OFF",
         "NO_MPU": "ON",
         "EXT_FLASH": "OFF",
@@ -368,7 +372,7 @@
         "WOLFBOOT_VERSION": "ON",
         "SPMATH": "ON",
         "RAM_CODE": "OFF",
-        "DUALBANK_SWAP": "ON",
+
         "WOLFBOOT_PARTITION_SIZE": "0x30000",
         "WOLFBOOT_SECTOR_SIZE": "0x2000",
         "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x08010000",
