@@ -181,14 +181,14 @@ C:\Users\%USERNAME%\AppData\Local\CMakeTools
 
 #### Tips & Gotchas
 
-Out-of-source enforced: wolfBoot’s CMakeLists.txt blocks in-source builds;
+Out-of-source enforced: wolfBoot's CMakeLists.txt blocks in-source builds;
 presets default to `build-${presetName}` anyway.
 
 Toolchain auto-select: If `WOLFBOOT_TARGET` is not x86_64_efi or sim,
 CMAKE_TOOLCHAIN_FILE defaults to `cmake/toolchain_arm-none-eabi.cmake`.
 
 Windows host tools: When HOST_CC is `cl.exe`, CMakeLists.txt creates a
-lightweight `unistd.h` shim and adjusts flags—no manual changes needed.
+lightweight `unistd.h` shim and adjusts flags-no manual changes needed.
 
 `$penv` vs `$env`: Use `$penv{VAR}` in environment to append to the existing
 process environment (keeps your PATH). `$env{VAR}` replaces it.
