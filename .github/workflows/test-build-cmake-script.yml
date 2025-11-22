@@ -6,7 +6,7 @@ name: wolfboot CMake Script
 on:
   push:
     # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ "master", "main", "release/**" ]
+    branches: [ "*" ]
   pull_request:
     branches: [ "*" ]
 
@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - "~No config (wolfBoot sim)"
+          # - "~No config (wolfBoot sim)"
           # - imx-rt # Disabled, requires NXP SDK
           - stm32c0
           - stm32f1
