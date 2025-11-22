@@ -1,5 +1,8 @@
 @echo off
-rem keystore_file_check.bat
+rem keystore_file_check_x.bat
+
+rem Not part of wolfboot. See https://github.com/wolfSSL/wolfBoot/pull/628/
+
 rem Find files with the same name as given targets in any other local branch.
 
 rem Edit with caution, used by GitHub workflow: test-visual-studio.yml

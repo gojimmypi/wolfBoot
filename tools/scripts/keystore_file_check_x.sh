@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 #
+# Not part of wolfboot. See https://github.com/wolfSSL/wolfBoot/pull/628/
+#
 # keystore_file_check.sh
 # Find files with the same name as given targets in any other local branch.
 

@@ -1,4 +1,4 @@
-﻿# Key Tools for signing and key generation
+# Key Tools for signing and key generation
 
 ## Sign
 
@@ -57,9 +57,6 @@ Unless otherwise specified the `keygen` app will create:
 
 Common pitfalls: mismatched keystore files in different directories. There should be exactly one
 instance of each of the above files in the build tree.
-
-The `./tools/scripts/keystore_file_check.sh` may be helpful.
-
 
 ## Strip wolfBoot header
 
