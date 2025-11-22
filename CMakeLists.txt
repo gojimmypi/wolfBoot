@@ -283,6 +283,21 @@ endif()
 message(STATUS "Host CC: ${HOST_CC}")
 message(STATUS "Host compiler treated as MSVC: ${HOST_IS_MSVC}")
 
+if(WOLFBOOT_TARGET STREQUAL "imx_rt")
+    # This target depends on the NXP MCUXpresso SDK for EVKB-IMXRT1040.
+    # Without it, the build will fail anyway on missing fsl_* headers.
+    set(IMXRT_SDK_ROOT "" CACHE PATH "Path to MCUXpresso SDK for EVKB-IMXRT1040")
+
+    if(NOT IMXRT_SDK_ROOT OR NOT EXISTS "${IMXRT_SDK_ROOT}")
+        message(FATAL_ERROR
+            "WOLFBOOT_TARGET=imx_rt requires IMXRT_SDK_ROOT to point to a valid "
+            "MCUXpresso SDK for EVKB-IMXRT1040 (fsl_cache.h, etc.). "
+            "You currently do not have this SDK installed."
+        )
+    endif()
+endif()
+
+
 # TODO
 if (false)
 #if (CMAKE_HOST_WIN32)
