@@ -21,13 +21,15 @@ jobs:
           - stm32c0.config
           - stm32f1.config
           - stm32f4-small-blocks-uart-update.config
+          - stm32f7.config
           - stm32g0.config
+          - stm32h5.config
+          - stm32h7.config
           - stm32l0.config
           - stm32l4-cube.config
           - stm32l5.config
-          - stm32h5.config
-          - stm32h7.config
           - stm32u5.config
+          - stm32wb.config
 
     steps:
       - uses: actions/checkout@v4
@@ -91,11 +93,8 @@ jobs:
 
             set -euo pipefail
 
-            # Target file names are expected to be [WOLFBOOT_TARGET]-something.config
             TARGET="${{ matrix.target }}"
-            # Strip the trailing ".config"
             TARGET="${TARGET%.config}"
-            # Strip everything after first "-"
             TARGET="${TARGET%%-*}"
 
             BUILD_DIR="build-${TARGET}"
@@ -124,7 +123,7 @@ jobs:
 
             # Here we should see the .config file values read and displayed:
             cmake -S . -B "${BUILD_DIR}" \
-              -DUSE_DOT_CONFIG=ON       \
+              -DUSE_DOT_CONFIG=ON        \
               -DWOLFBOOT_TARGET="${TARGET}" 2>&1 | tee "${LOG_FILE}"
 
             # Config dot-config mode
@@ -135,5 +134,18 @@ jobs:
                 exit 1
             fi
 
-            # Sample build
+            # First: build keygen explicitly and inspect it
+            echo "Building keygen_build for ${TARGET}"
+            cmake --build "${BUILD_DIR}" --parallel 1 --target keygen_build
+
+            if [ -f "${BUILD_DIR}/keygen" ]; then
+                echo "Inspecting keygen:"
+                ls -l "${BUILD_DIR}/keygen"
+                file "${BUILD_DIR}/keygen" || true
+            else
+                echo "keygen not found at ${BUILD_DIR}/keygen"
+            fi
+
+            # Now run the normal build
+            echo "Running full build"
             cmake --build "${BUILD_DIR}" --parallel 8
