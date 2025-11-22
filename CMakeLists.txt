@@ -677,7 +677,7 @@ set(UPDATE_SOURCES src/update_flash.c)
 
 # Default flash offset
 if(NOT DEFINED ARCH_FLASH_OFFSET)
-    message(STATUS "WARNING: ARCH_FLASH_OFFSET not defined, setting t0 default 0x0")
+    message(STATUS "WARNING: ARCH_FLASH_OFFSET not defined, setting to default 0x0")
     set(ARCH_FLASH_OFFSET 0x0)
 endif()
 
@@ -954,11 +954,11 @@ list(APPEND WOLFBOOT_DEFS ${SIGN_OPTIONS})
 # Turn SIGN_OPTIONS (plain symbols) into real compiler -D flags for host tools
 set(SIGN_DEFS "")
 foreach(_opt IN LISTS SIGN_OPTIONS)
-  list(APPEND SIGN_DEFS ${HOST_D}${_opt})
+    list(APPEND SIGN_DEFS ${HOST_D}${_opt})
 endforeach()
 
 #---------------------------------------------------------------------------------------------
-#
+# Settings
 #---------------------------------------------------------------------------------------------
 
 if(PULL_LINKER_DEFINES)
@@ -1292,17 +1292,17 @@ if(true)
     endif()
 endif()
     add_custom_command(
-      OUTPUT ${SIGN_TOOL}
-      COMMAND "${CMAKE_COMMAND}" -E make_directory ${SIGN_OBJDIR}
-      COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
-              ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
-              ${HOST_FO_SIGN}
-              $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools/sign.c>
-              ${KEYTOOL_SOURCES_ABS}
-              ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
-              ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-      COMMENT "Building signing tool"
+        OUTPUT ${SIGN_TOOL}
+        COMMAND "${CMAKE_COMMAND}" -E make_directory ${SIGN_OBJDIR}
+        COMMAND "${HOST_CC}" ${HOST_O2} ${HOST_WARN} ${HOST_RUNTIME_FLAG}
+                ${HOST_INCLUDES} ${HOST_DEFS} ${HOST_UNDEF} ${SIGN_DEFS}
+                ${HOST_FO_SIGN}
+                $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/tools/keytools/sign.c>
+                ${KEYTOOL_SOURCES_ABS}
+                ${HOST_OUT}$<SHELL_PATH:${SIGN_TOOL}>
+                ${HOST_LINK_FLAG} ${HOST_LINK_LIBS}
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        COMMENT "Building signing tool"
     )
 
 add_custom_target(keytools ALL DEPENDS ${SIGN_TOOL} ${KEYGEN_TOOL})
@@ -1370,30 +1370,27 @@ endif()
 # ------------------------------------------------------
 
 add_subdirectory(lib)
-message(STATUS "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-if(true)
-    if (TARGET wolfcrypt)
-        set(WOLFSSL_TGT wolfcrypt)
-    elseif (TARGET wolfssl)
-        set(WOLFSSL_TGT wolfssl)
-    else()
-        message(FATAL_ERROR "wolfSSL submodule did not define a 'wolfcrypt' or 'wolfssl' target.")
-    endif()
-    message(STATUS "Using wolfSSL target: ${WOLFSSL_TGT}")
 
-
-    if (TARGET ${WOLFSSL_TGT})
-      target_compile_definitions(${WOLFSSL_TGT} PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
-      target_compile_options(${WOLFSSL_TGT} PRIVATE
-        $<$<C_COMPILER_ID:MSVC>:/Umin>
-        $<$<C_COMPILER_ID:MSVC>:/Umax>
-        $<$<C_COMPILER_ID:MSVC>:/USIGN>
-        $<$<C_COMPILER_ID:MSVC>:/UHASH>
-        $<$<C_COMPILER_ID:MSVC>:/Zc:preprocessor>
-      )
-    endif()
-
+if(TARGET wolfcrypt)
+    set(WOLFSSL_TGT wolfcrypt)
+elseif(TARGET wolfssl)
+    set(WOLFSSL_TGT wolfssl)
+else()
+    message(FATAL_ERROR "wolfSSL submodule did not define a 'wolfcrypt' or 'wolfssl' target.")
 endif()
+message(STATUS "Using wolfSSL target: ${WOLFSSL_TGT}")
+
+
+if(TARGET ${WOLFSSL_TGT})
+    target_compile_definitions(${WOLFSSL_TGT} PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_compile_options(${WOLFSSL_TGT} PRIVATE
+                            $<$<C_COMPILER_ID:MSVC>:/Umin>
+                            $<$<C_COMPILER_ID:MSVC>:/Umax>
+                            $<$<C_COMPILER_ID:MSVC>:/USIGN>
+                            $<$<C_COMPILER_ID:MSVC>:/UHASH>
+                            $<$<C_COMPILER_ID:MSVC>:/Zc:preprocessor>
+    )
+endif() # TARGET ${WOLFSSL_TGT}
 
 if(BUILD_TEST_APPS OR BUILD_IMAGE)
     message(STATUS "Building wolfBoot image")
