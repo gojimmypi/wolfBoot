@@ -419,7 +419,35 @@ if(NOT DEFINED WOLFBOOT_SECTOR_SIZE)
 endif()
 
 if(NOT DEFINED ARM_TARGETS)
-    list(APPEND ARM_TARGETS cypsoc6 imx kinetis lpc54606j512 mcxa mcxw nrf52 nrf52840 nrf5340 nrf5340_net rp2350 sama5d3 same51 stm32c0 stm32f1 stm32f4 stm32f7 stm32g0 stm32h5 stm32h7 stm32l0 stm32l4 stm32l5 stm32u5 stm32wb ti zynqmp)
+    list(APPEND ARM_TARGETS cypsoc6
+                            imx
+                            imx_rt
+                            kinetis
+                            lpc54606j512
+                            mcxa
+                            mcxw
+                            nrf52
+                            nrf52840
+                            nrf5340
+                            nrf5340_net
+                            rp2350
+                            sama5d3
+                            same51
+                            stm32c0
+                            stm32f1
+                            stm32f4
+                            stm32f7
+                            stm32g0
+                            stm32h5
+                            stm32h7
+                            stm32l0
+                            stm32l4
+                            stm32l5
+                            stm32u5
+                            stm32wb
+                            ti
+                            zynqmp
+    )
     set(ARM_TARGETS
         "${ARM_TARGETS}"
         CACHE INTERNAL "")
@@ -434,9 +462,9 @@ endif()
 
 if("${WOLFBOOT_TARGET}" IN_LIST ARM_TARGETS)
     set(ARCH ARM)
-elseif(WOLFBOOT_TARGET STREQUAL "x86_64_efi")
+elseif("${WOLFBOOT_TARGET}" STREQUAL "x86_64_efi")
     set(ARCH x86_64)
-elseif(WOLFBOOT_TARGET STREQUAL "sim")
+elseif("${WOLFBOOT_TARGET}" STREQUAL "sim")
     set(ARCH sim)
 else()
     message(FATAL_ERROR "Unable to configure ARCH for target ${WOLFBOOT_TARGET}")

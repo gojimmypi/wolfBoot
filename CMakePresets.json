@@ -68,6 +68,15 @@
       }
     },
     {
+      "name": "imx",
+      "hidden": true,
+      "generator": "Ninja",
+      "cacheVariables": {
+        "ARCH": "ARM",
+        "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake"
+      }
+    },
+    {
       "name": "stm32",
       "hidden": true,
       "generator": "Ninja",
@@ -92,6 +101,40 @@
         "CMAKE_TOOLCHAIN_FILE": "cmake/toolchain_arm-none-eabi.cmake",
         "WOLFBOOT_TARGET": "stm32l4"
       }
+    },
+    {
+        "name": "imx_rt",
+        "displayName": "imx_rt",
+        "inherits": [
+            "base",
+            "imx",
+            "sign_hash_config"
+        ],
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build-imx_rt",
+        "cacheVariables": {
+            "ARCH": "ARM",
+            "WOLFBOOT_TARGET": "imx_rt",
+            "MCUXSDK": "OFF",
+            "DEBUG": "OFF",
+            "CORTEX_M0": "OFF",
+            "NO_ASM": "OFF",
+            "NO_MPU": "ON",
+            "EXT_FLASH": "OFF",
+            "SPI_FLASH": "OFF",
+            "ALLOW_DOWNGRADE": "OFF",
+            "NVM_FLASH_WRITEONCE": "ON",
+            "WOLFBOOT_VERSION": "OFF",
+            "SPMATH": "ON",
+            "RAM_CODE": "ON",
+            "DUALBANK_SWAP": "OFF",
+            "WOLFBOOT_PARTITION_SIZE": "0x20000",
+            "WOLFBOOT_SECTOR_SIZE": "0x1000",
+            "WOLFBOOT_PARTITION_BOOT_ADDRESS": "0x60010000",
+            "WOLFBOOT_PARTITION_UPDATE_ADDRESS": "0x60030000",
+            "WOLFBOOT_PARTITION_SWAP_ADDRESS": "0x60050000",
+            "WOLFBOOT_SMALL_STACK": "ON"
+        }
     },
     {
       "name": "stm32c0",
@@ -489,6 +532,15 @@
     {
       "name": "~No config (wolfBoot sim)",
       "configurePreset": "sim",
+      "jobs": 4,
+      "verbose": true,
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "imx_rt",
+      "configurePreset": "imx_rt",
       "jobs": 4,
       "verbose": true,
       "targets": [

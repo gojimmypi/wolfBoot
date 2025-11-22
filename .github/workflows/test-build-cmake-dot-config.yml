@@ -17,6 +17,7 @@ jobs:
       matrix:
         target:
           # These are exact file names from config/examples (including .config)
+          # - imx-rt1040.config # Disabled, requires NXP SDK
           - sim.config
           - stm32c0.config
           - stm32f1.config
