@@ -1,4 +1,4 @@
-﻿# Sample Application
+# Sample Application
 
 Take a single, simple, stand-alone `blinky` example adapted from [wolfBoot/test-app](https://github.com/wolfSSL/wolfBoot/tree/master/test-app)
 and document the steps needs to add wolfBoot as a secure bootloader.

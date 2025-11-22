@@ -1,4 +1,4 @@
-﻿# Config Example Files
+# Config Example Files
 
 This directory contains example `.config` presets for various target devices.
 

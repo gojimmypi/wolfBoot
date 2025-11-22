@@ -1,4 +1,4 @@
-﻿# wolfBoot CMake
+# wolfBoot CMake
 
 Review the [Keystore Docs](../docs/keystore.md) and [Signing Docs](../docs/Signing.md)
 regarding backup and storage of the generated `src/keystore.c` file. This file
@@ -76,9 +76,159 @@ Controls IntelliSense, environment variables, and the preset shown in the VS CMa
 
 - [`WOLFBOOT_ROOT`/.vs/VSWorkspaceSettings.json](../.vs/VSWorkspaceSettings.json) - Exclusion directories: Visual Studio tries to be "helpful" and open a solution file. This is undesired when opening a directory as a CMake project.
 
+----
+
+### Build with cmake using `.config` files
+
+Presets are preferred instead of `.config`, see below.
+
+To use `.config` files instead of presets,
+
+```bash
+# cd your [WOLFBOOT_ROOT]
+
+# Backup current config
+mv ./.config ./.config.bak
+
+# Get an example config
+cp ./config/examples/stm32h7.config ./.config
+
+# Call cmake with -DUSE_DOT_CONFIG=ON
+cmake -S . -B build-stm32h7 -DUSE_DOT_CONFIG=ON
+
+# Sample build
+cmake --build build-stm32h7 -j
+```
+
+The output should look contain text like this:
+
+```text
+-- Found a .config file, will parse
+-- Config mode: dot (.config cache)
+-- Loading config from: /mnt/c/workspace/wolfBoot-gojimmypi
+-- Reading config file: /mnt/c/workspace/wolfBoot-gojimmypi/.config
+-- -- Parsing lines from config file...
+-- -- Found line: ARCH?=ARM
+-- -- Parsed key: ARCH
+-- -- Parsed op:  ?
+-- -- Parsed val: ARM
+-- -- Assignment: ARCH=ARM
+-- -- Found line: TARGET?=stm32h7
+-- -- Parsed key: TARGET
+-- -- Parsed op:  ?
+-- -- Parsed val: stm32h7
+-- -- Assignment: TARGET=stm32h7
+-- -- Found line: SIGN?=ECC256
+-- -- Parsed key: SIGN
+-- -- Parsed op:  ?
+-- -- Parsed val: ECC256
+  ...etc...
+```
+
+Calling `cmake` with an existing `.config` file will default to dot-config mode.
+
+```bash
+ls .config
+cmake -S . -B build-stm32h7
+```
+
+Specify additional directories, for example the STM32L4:
+
+```bash
+cmake -S . -B build-stm32l4 -DUSE_DOT_CONFIG=ON \
+  -DHAL_DRV="${VG_BASE}/Drivers/STM32L4xx_HAL_Driver" \
+  -DHAL_CMSIS_DEV="${VG_BASE}/Drivers/CMSIS/Device/ST/STM32L4xx/Include" \
+  -DHAL_CMSIS_CORE="${VG_BASE}/Drivers/CMSIS/Include" \
+  -DHAL_TEMPLATE_INC="${VG_BASE}/Drivers/STM32L4xx_HAL_Driver/Inc"
+
+cmake --build build-stm32l4 -j
+```
+
+### Build presets
+
+Each configure preset has a matching build preset with jobs=4, verbose=true, and targets=["all"].
+
+Example commands:
+
+```bash
+cmake --preset stm32l4
+cmake --build --preset stm32l4
+
+cmake --preset stm32h7
+cmake --build --preset stm32h7
+```
+
+### CMake User Presets.
+
+See the [preset-examples/CMakeUserPresets.json.sample(./preset-examples/CMakeUserPresets.json.sample).
+Copy the file to `WOLFBOOT_ROOT` and remove the`.sample` suffix: `CMakeUserPresets.json`.
+
+It is critically important that none the names of a user preset do not conflict with regular presets.
+
+For instance, the sample extends and overrides some of the `stm32l4` settings,
+using LLVM clang on Windows, and prefixes ALL the names with `my-`:
+
+```json
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "my-stm32l4",
+      "displayName": "my STM32L4",
+      "inherits": [
+        "stm32l4"
+      ],
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-my-stm32l4",
+      "cacheVariables": {
+        "ARM_GCC_BIN": "C:/SysGCC/arm-eabi/bin",
+        "HOST_CC": "C:/Program Files/LLVM/bin/clang.exe"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "my-stm32l4",
+      "configurePreset": "my-stm32l4"
+    }
+  ]
+}
+```
 
 
+From the [docs for CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html):
 
+>"Added in version 3.19.
+>
+>One problem that CMake users often face is sharing settings with other people for common ways to configure
+a project. This may be done to support CI builds, or for users who frequently use the same build. CMake
+supports two main files, `CMakePresets.json` and `CMakeUserPresets.json`, that allow users to specify common
+configure options and share them with others. CMake also supports files included with the include field.
+>
+>`CMakePresets.json` and` CMakeUserPresets.json` live in the project's root directory. They both have
+exactly the same format, and both are optional (though at least one must be present if `--preset` is
+specified). `CMakePresets.json` is meant to specify project-wide build details, while `CMakeUserPresets.json`
+is meant for developers to specify their own local build details.
+>
+>CMakePresets.json may be checked into a version control system, and `CMakeUserPresets.json` should NOT be
+checked in. For example, if a project is using Git, `CMakePresets.json` may be tracked, and
+`CMakeUserPresets.json` should be added to the .gitignore."
+
+## Troubleshooting
+
+The wrong toolchain is being used, or a target was not specified:
+
+```
+Error: no such instruction: `isb'
+```
+
+### Other log files
+
+Windows users may find cmake log files in this directory helpful:
+
+```
+C:\Users\%USERNAME%\AppData\Local\CMakeTools
+```
 
 ## CMake Logic Flow
 
