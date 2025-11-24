@@ -38,6 +38,7 @@ set(VERSION ${WOLFBOOT_VERSION})
 
 # generate a wolfboot executable with the flash partition addresses for the given target
 function(gen_wolfboot_platform_target PLATFORM_NAME LINKER_SCRIPT_TARGET)
+    message(STATUS "calling gen_wolfboot_platform_target for ${PLATFORM_NAME}")
 
     # generate target for bootloader
     add_executable(wolfboot_${PLATFORM_NAME})
@@ -48,7 +49,7 @@ function(gen_wolfboot_platform_target PLATFORM_NAME LINKER_SCRIPT_TARGET)
     target_include_directories(wolfboot_${PLATFORM_NAME} PRIVATE ${WOLFBOOT_INCLUDE_DIRS})
 
     # link with cryptography library, set linker options
-    target_link_libraries(wolfboot_${PLATFORM_NAME} wolfcrypt target wolfboot
+    target_link_libraries(wolfboot_${PLATFORM_NAME} wolfcrypt target libwolfboot
                           ${LINKER_SCRIPT_TARGET})
 
     # link with public key if signing is enabled
@@ -61,7 +62,7 @@ function(gen_wolfboot_platform_target PLATFORM_NAME LINKER_SCRIPT_TARGET)
                                                              ${EXTRA_COMPILE_OPTIONS})
     target_link_options(wolfboot_${PLATFORM_NAME} PRIVATE ${WOLFBOOT_LINK_OPTIONS})
 
-    if(WOLFBOOT_TARGET IN_LIST ARM_TARGETS)
+    if("${WOLFBOOT_TARGET}" IN_LIST ARM_TARGETS)
         # generate .bin file for bootloader
         gen_bin_target_outputs(wolfboot_${PLATFORM_NAME})
     endif()

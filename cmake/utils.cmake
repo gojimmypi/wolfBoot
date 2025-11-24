@@ -68,7 +68,7 @@ macro(gen_bin_target_outputs TARGET)
     # Create bin from elf target
     add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.bin"
-        COMMAND "${TOOLCHAIN_OBJCOPY}"
+        COMMAND "${CMAKE_OBJCOPY}"
                 -O binary "$<TARGET_FILE:${TARGET}>"
                 "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.bin"
         DEPENDS ${TARGET}

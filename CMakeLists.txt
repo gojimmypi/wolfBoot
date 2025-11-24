@@ -1002,12 +1002,17 @@ add_library(wolfboothal)
 target_sources(wolfboothal PRIVATE include/hal.h hal/${WOLFBOOT_TARGET}.c ${WOLFBOOT_FLASH_SOURCES}
                                    ${PARTITION_SOURCE})
 
+# set default linker script
+set(WOLFBOOT_LSCRIPT_TEMPLATE hal/${WOLFBOOT_TARGET}.ld)
 
 #---------------------------------------------------------------------------------------------
 # --- HAL for STM32L4 (only the pieces we need) ---
 #---------------------------------------------------------------------------------------------
 # TODO move this to preset and/or cmake dir
 if(WOLFBOOT_TARGET STREQUAL "stm32l4")
+    math(EXPR BOOTLOADER_PARTITION_SIZE "${WOLFBOOT_PARTITION_BOOT_ADDRESS} - ${ARCH_FLASH_OFFSET}" OUTPUT_FORMAT HEXADECIMAL)
+    configure_file(${WOLFBOOT_LSCRIPT_TEMPLATE} target.ld)
+
     message(STATUS "HAL_DRV=${HAL_DRV}")
     add_library(stm32l4_hal STATIC
         ${HAL_DRV}/Src/stm32l4xx_hal.c
@@ -1022,11 +1027,12 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     target_include_directories(stm32l4_hal BEFORE PUBLIC
         ${WOLFBOOT_ROOT}/hal
         ${HAL_DRV}/Inc
-        ${HAL_CMSIS_DEV}
-        ${HAL_CMSIS_CORE}
+        ${HAL_CMSIS_DEV}/Include
+        ${HAL_CMSIS_CORE}/Include
         ${HAL_TEMPLATE_INC}
     )
 
+    # TODO-KW: pass my options... 
     target_compile_definitions(stm32l4_hal PUBLIC
         USE_HAL_DRIVER
         STM32L475xx
@@ -1200,9 +1206,6 @@ set(KEYGEN_TOOL ${KEYGEN_TOOL} CACHE INTERNAL "")
 
 list(APPEND WOLFBOOT_INCLUDE_DIRS ${WOLFBOOT_ROOT} ${WOLFBOOT_ROOT}/include)
 
-# set default linker script
-set(WOLFBOOT_LSCRIPT_TEMPLATE hal/${WOLFBOOT_TARGET}.ld)
-
 #---------------------------------------------------------------------------------------------
 # wolfcrypt
 #---------------------------------------------------------------------------------------------
@@ -1344,12 +1347,12 @@ if(NOT SIGN STREQUAL "NONE")
 endif()
 
 # generate libwolfboot
-add_library(wolfboot)
-target_sources(wolfboot PRIVATE src/libwolfboot.c ${WOLFBOOT_FLASH_SOURCES})
-target_compile_definitions(wolfboot PUBLIC ${WOLFBOOT_DEFS})
-target_compile_options(wolfboot PUBLIC ${EXTRA_COMPILE_OPTIONS})
-target_include_directories(wolfboot PUBLIC ${WOLFBOOT_INCLUDE_DIRS})
-target_link_libraries(wolfboot wolfboothal target ${WOLFSSL_TGT})
+add_library(libwolfboot)
+target_sources(libwolfboot PRIVATE src/libwolfboot.c ${WOLFBOOT_FLASH_SOURCES})
+target_compile_definitions(libwolfboot PUBLIC ${WOLFBOOT_DEFS})
+target_compile_options(libwolfboot PUBLIC ${EXTRA_COMPILE_OPTIONS})
+target_include_directories(libwolfboot PUBLIC ${WOLFBOOT_INCLUDE_DIRS})
+target_link_libraries(libwolfboot wolfboothal target ${WOLFSSL_TGT})
 
 if(HOST_IS_MSVC) # Some VS2022 helpers
     message(STATUS "==============================================================================")
@@ -1381,12 +1384,14 @@ if(HOST_IS_MSVC) # Some VS2022 helpers
     message(STATUS "CMAKE_CXX_COMPILER_FRONTEND_VARIANT=${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
     message(STATUS "MSVC var = ${MSVC}")
 
-    target_compile_options(wolfboot PRIVATE  ${SIM_COMPILE_OPTIONS})
+    target_compile_options(libwolfboot PRIVATE  ${SIM_COMPILE_OPTIONS})
 
     set_property(TARGET sign_host PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS
                         "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256")
     set_property(TARGET sign_host PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
                         "${CMAKE_CURRENT_BINARY_DIR}")
 endif() # HOST_IS_MSVC VS2022 helpers
+
+include(cmake/wolfboot.cmake)
 
 message(STATUS "End [WOLFBOOT_ROOT]/CmakeLists.txt")
