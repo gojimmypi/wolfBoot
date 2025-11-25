@@ -1348,7 +1348,7 @@ if(NOT SIGN STREQUAL "NONE")
     add_dependencies(public_key keygen_build keystore)
 endif()
 
-# generate wolfboot
+# generate libwolfboot
 add_library(wolfboot)
 target_sources(wolfboot PRIVATE src/libwolfboot.c ${WOLFBOOT_FLASH_SOURCES})
 target_compile_definitions(wolfboot PUBLIC ${WOLFBOOT_DEFS})
