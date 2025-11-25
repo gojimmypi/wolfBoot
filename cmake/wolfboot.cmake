@@ -38,7 +38,6 @@ set(VERSION ${WOLFBOOT_VERSION})
 
 # generate a wolfboot executable with the flash partition addresses for the given target
 function(gen_wolfboot_platform_target PLATFORM_NAME LINKER_SCRIPT_TARGET)
-
     # generate target for bootloader
     add_executable(wolfboot_${PLATFORM_NAME})
     target_sources(wolfboot_${PLATFORM_NAME} PRIVATE ${WOLFBOOT_SOURCES})
@@ -61,7 +60,7 @@ function(gen_wolfboot_platform_target PLATFORM_NAME LINKER_SCRIPT_TARGET)
                                                              ${EXTRA_COMPILE_OPTIONS})
     target_link_options(wolfboot_${PLATFORM_NAME} PRIVATE ${WOLFBOOT_LINK_OPTIONS})
 
-    if(WOLFBOOT_TARGET IN_LIST ARM_TARGETS)
+    if("${WOLFBOOT_TARGET}" IN_LIST ARM_TARGETS)
         # generate .bin file for bootloader
         gen_bin_target_outputs(wolfboot_${PLATFORM_NAME})
     endif()
