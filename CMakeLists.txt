@@ -1348,13 +1348,13 @@ if(NOT SIGN STREQUAL "NONE")
     add_dependencies(public_key keygen_build keystore)
 endif()
 
-# generate libwolfboot
-add_library(libwolfboot)
-target_sources(libwolfboot PRIVATE src/libwolfboot.c ${WOLFBOOT_FLASH_SOURCES})
-target_compile_definitions(libwolfboot PUBLIC ${WOLFBOOT_DEFS})
-target_compile_options(libwolfboot PUBLIC ${EXTRA_COMPILE_OPTIONS})
-target_include_directories(libwolfboot PUBLIC ${WOLFBOOT_INCLUDE_DIRS})
-target_link_libraries(libwolfboot wolfboothal target ${WOLFSSL_TGT})
+# generate wolfboot
+add_library(wolfboot)
+target_sources(wolfboot PRIVATE src/libwolfboot.c ${WOLFBOOT_FLASH_SOURCES})
+target_compile_definitions(wolfboot PUBLIC ${WOLFBOOT_DEFS})
+target_compile_options(wolfboot PUBLIC ${EXTRA_COMPILE_OPTIONS})
+target_include_directories(wolfboot PUBLIC ${WOLFBOOT_INCLUDE_DIRS})
+target_link_libraries(wolfboot wolfboothal target ${WOLFSSL_TGT})
 
 if(HOST_IS_MSVC) # Some VS2022 helpers
     message(STATUS "==============================================================================")
@@ -1386,7 +1386,7 @@ if(HOST_IS_MSVC) # Some VS2022 helpers
     message(STATUS "CMAKE_CXX_COMPILER_FRONTEND_VARIANT=${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
     message(STATUS "MSVC var = ${MSVC}")
 
-    target_compile_options(libwolfboot PRIVATE  ${SIM_COMPILE_OPTIONS})
+    target_compile_options(wolfboot PRIVATE  ${SIM_COMPILE_OPTIONS})
 
     set_property(TARGET sign_host PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS
                         "test.bin wolfboot_signing_private_key.der 1 --ed25519 --sha256")

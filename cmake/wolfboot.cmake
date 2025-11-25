@@ -49,7 +49,7 @@ function(gen_wolfboot_platform_target PLATFORM_NAME LINKER_SCRIPT_TARGET)
     target_include_directories(wolfboot_${PLATFORM_NAME} PRIVATE ${WOLFBOOT_INCLUDE_DIRS})
 
     # link with cryptography library, set linker options
-    target_link_libraries(wolfboot_${PLATFORM_NAME} wolfcrypt target libwolfboot
+    target_link_libraries(wolfboot_${PLATFORM_NAME} wolfcrypt target wolfboot
                           ${LINKER_SCRIPT_TARGET})
 
     # link with public key if signing is enabled
