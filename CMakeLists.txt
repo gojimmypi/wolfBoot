@@ -1035,7 +1035,7 @@ if(WOLFBOOT_TARGET STREQUAL "stm32l4")
     # TODO-KW: pass my options... 
     target_compile_definitions(stm32l4_hal PUBLIC
         USE_HAL_DRIVER
-        STM32L475xx
+        STM32L476xx
         # If your stm32l4xx_hal_conf.h doesn't enable FLASH, you can force it:
         # HAL_FLASH_MODULE_ENABLED
     )
