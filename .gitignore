@@ -274,13 +274,17 @@ language.settings.xml
 *.bak
 
 # Any Visual Studio / VisualGDB
-/**/.vs
-/**/.visualgdb/*
+/**/.vs/**
+/**/.visualgdb/**
+
+# --- Whitelist specific files in the *root* .vs folder ---
+# Allow Git to descend into the root .vs directory
+!/.vs/
 
 # Defaults are set in files otherwise excluded:
-!/.vs/README.md
-!/.vs/VSWorkspaceState.json
-!/.vs/VSWorkspaceSettings.json
+!**/.vs/README.md
+!**/.vs/VSWorkspaceSettings.json
+
 
 # Any build directories
 /**/build
@@ -294,10 +298,6 @@ language.settings.xml
 .cproject
 .project
 .settings/
-
-# User config
-# See cmake/config_defaults_user.cmake.sample
-/**/cmake/config_defaults_user.cmake
 
 
 
@@ -318,3 +318,5 @@ language.settings.xml
 /run.log
 /TextFile2.txt
 /Untitled-1.yaml
+/IDE/VisualStudio/wolfBootFlashOTP.vcxproj.WIP
+/IDE/VisualStudio/wolfBootFlashPrimerOTP.vcxproj.WIP

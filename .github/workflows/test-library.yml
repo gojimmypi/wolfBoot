@@ -198,15 +198,16 @@ jobs:
           echo "$output"
 
           # Must have failed (non-zero exit)
-          if [ $status -eq 0 ]; then
+          if [ "$status" -eq 0 ]; then
             echo "Expected failure, but exit code was 0"
             exit 1
           fi
 
           # Must include the expected Failure message
-          echo "$output" | grep -F "Failure" >/dev/null || {
+          if ! echo "$output" | grep -F "Failure" >/dev/null; then
             echo "Expected 'Failure' not found in output"
             exit 1
-          }
+          fi
 
           echo "Got expected non-zero exit and 'Failure' message."
+

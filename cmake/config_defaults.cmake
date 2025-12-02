@@ -71,6 +71,8 @@ else()
     # Enable HAL download only implemented for STM devices at this time.
     # See [WOLFBOOT_ROOT]/cmake/stm32_hal_download.cmake
     # and [WOLFBOOT_ROOT]/cmake/downloads/stm32_hal_download.cmake
+
+    # TODO check if already downloaded
     set(ENABLE_HAL_DOWNLOAD true)
 
     # optionally use .config files; See CMakePresets.json instead

@@ -46,11 +46,10 @@ echo "Starting $0 from $(pwd -P)"
 # End common dir init
 
 pwd
-exit 0
 
-
-git clone https://github.com/gojimmypi/wolfBoot.git
+git clone https://github.com/wolfssl/wolfBoot.git
 cd wolfBoot
+git submodule update --init
 
 
 sudo apt-get update
