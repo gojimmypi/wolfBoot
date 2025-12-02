@@ -25,14 +25,6 @@
     "IDE/VisualStudio/**/*.csproj.filters",
     "IDE/VisualStudio/**/*.csproj.user",
 
-    "IDE/VisualStudio.bak/**/*.sln",
-    "IDE/VisualStudio.bak/**/*.vcxproj",
-    "IDE/VisualStudio.bak/**/*.vcxproj.filters",
-    "IDE/VisualStudio.bak/**/*.vcxproj.user",
-    "IDE/VisualStudio.bak/**/*.csproj",
-    "IDE/VisualStudio.bak/**/*.csproj.filters",
-    "IDE/VisualStudio.bak/**/*.csproj.user",
-
     "IDE/VisualStudio.cmake/**/*.sln",
     "IDE/VisualStudio.cmake/**/*.vcxproj",
     "IDE/VisualStudio.cmake/**/*.vcxproj.filters",

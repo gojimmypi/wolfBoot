@@ -596,7 +596,7 @@ endif
 # allow elf inclusion of debug symbols even with optimizations enabled
 # make DEBUG_SYMBOLS=1
 ifeq ($(DEBUG_SYMBOLS),1)
-  CFLAGS+=-g
+  CFLAGS+=-g -DDEBUG_SYMBOLS
   ifeq ($(USE_GCC),1)
     CFLAGS+=-ggdb3
   else ifneq ($(ARCH),AURIX_TC3)
@@ -950,6 +950,7 @@ ifeq ($(WOLFHSM_SERVER),1)
     $(WOLFBOOT_LIB_WOLFHSM)/src/wh_comm.o \
     $(WOLFBOOT_LIB_WOLFHSM)/src/wh_nvm.o \
     $(WOLFBOOT_LIB_WOLFHSM)/src/wh_nvm_flash.o \
+    $(WOLFBOOT_LIB_WOLFHSM)/src/wh_keyid.o \
     $(WOLFBOOT_LIB_WOLFHSM)/src/wh_flash_unit.o \
     $(WOLFBOOT_LIB_WOLFHSM)/src/wh_crypto.o \
     $(WOLFBOOT_LIB_WOLFHSM)/src/wh_server.o \

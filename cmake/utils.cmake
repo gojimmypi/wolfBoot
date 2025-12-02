@@ -65,18 +65,12 @@ endmacro()
 macro(gen_bin_target_outputs TARGET)
     get_filename_component(FILENAME ${TARGET} NAME_WE)
 
-    if(USE_CMAKE_CURRENT_BINARY_DIR)
-        set(TARGET_COPY ${CMAKE_CURRENT_BINARY_DIR}/${FILENAME})
-    else()
-        set(TARGET_COPY $<TARGET_FILE:${TARGET}>)
-    endif()
-
     # Create bin from elf target
     add_custom_command(
         OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.bin"
         COMMAND "${TOOLCHAIN_OBJCOPY}"
                 -O binary "$<TARGET_FILE:${TARGET}>"
-                ${TARGET_COPY}.bin
+                "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.bin"
         DEPENDS ${TARGET}
         VERBATIM
     )
@@ -89,7 +83,7 @@ macro(gen_bin_target_outputs TARGET)
         COMMAND "${CMAKE_COMMAND}"
                 -DTOOLCHAIN_SIZE=${TOOLCHAIN_SIZE}
                 -DINPUT=$<TARGET_FILE:${TARGET}>
-                -DOUT=${TARGET_COPY}.size
+                -DOUT=${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.size
                 -P "${SIZE_SCRIPT}"
         VERBATIM
     )

@@ -15,7 +15,7 @@ See documentation [docs/flash-OTP.md](../../docs/flash-OTP.md).
 ### Keystore Generation
 
 Pack public keys into a single binary (`otp.bin`) formatted the way wolfBoot expects for
-provisioning the deviceâ€™s OTP/NVM keystore. No signing, no encryptionâ€”just a correctly laid-out image
+provisioning the device’s OTP/NVM keystore. No signing, no encryption—just a correctly laid-out image
 with a header plus fixed-size "slots" for each key.
 
 See [code file `./tools/keytools/otp/otp-keystore-gen.c`](./otp/otp-keystore-gen.c)

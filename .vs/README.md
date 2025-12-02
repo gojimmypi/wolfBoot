@@ -1,4 +1,4 @@
-﻿# Visual Studio Workspace Files
+# Visual Studio Workspace Files
 
 Normally excluded from source control, but here for a Visual Studio CMake project workaround:
 

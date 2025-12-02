@@ -2,8 +2,7 @@ name: wolfBoot as Library test
 
 on:
   push:
-    # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ '*' ]
+    branches: [ 'master', 'main', 'release/**' ]
   pull_request:
     branches: [ '*' ]
 
@@ -35,10 +34,9 @@ jobs:
         hash: [sha256, sha384, sha3]
 
         # See https://github.com/wolfSSL/wolfBoot/issues/614 regarding exclusions:
-        # TODO disabled, expect failure until resolved:
         exclude:
-         - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
-         - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
+          - math: "SPMATH=1 WOLFBOOT_SMALL_STACK=1"
+          - math: "SPMATHALL=1 WOLFBOOT_SMALL_STACK=1"
 
     steps:
       - uses: actions/checkout@v4
@@ -46,30 +44,14 @@ jobs:
           clean: true
           submodules: true
 
-      - name: hard clean
+      - name: make clean
         run: |
-          # Ensure parallel build did not leave behind any debris
-          make clean || true
-          make keysclean || true
-          make -C tools/keytools clean || true
-
-          # The brute-force clean:
-          rm -rf build build-*     \
-                 test-app          \
-                 build/vis_hal     \
-                 build/vis_cmsis   \
-                 **/*.o            \
-                 **/*.d            \
-                 **/*.a            \
-                 include/target.h  \
-                 src/keystore.c    \
-                 keystore.der      \
-                 pubkey_*.der
+          make keysclean && make -C tools/keytools clean && rm -f include/target.h
 
       - name: Build test-lib
         env:
           shell: bash
-          ASYM: ${{ matrix.asym }} # MAKE_SIGN in upper case
+          ASYM: ${{ matrix.asym }}
           HASH: ${{ matrix.hash }}
           MATH: ${{ matrix.math }}
         run: |
@@ -196,6 +178,15 @@ jobs:
           set -e
 
           echo "$output"
+
+          # TODO hal/library.c does not currently return an error code during failure
+          # Test only looks for the word "Failure"
+          # See https://github.com/wolfSSL/wolfBoot/pull/625
+
+          # If the tool printed "Failure", treat it as a failure regardless of exit code
+          if echo "$output" | grep -F "Failure" >/dev/null; then
+              status=1
+          fi
 
           # Must have failed (non-zero exit)
           if [ "$status" -eq 0 ]; then

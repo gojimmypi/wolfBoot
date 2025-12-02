@@ -138,7 +138,6 @@ tools/squashelf/**
 
 # Generated configuration files
 .config
-.vs
 *.filters
 *.user
 
