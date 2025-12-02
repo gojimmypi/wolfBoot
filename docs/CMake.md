@@ -2,6 +2,12 @@
 
 See the [`WOLFBOOT_ROOT`/cmake/README.md](../cmake/README.md) file.
 
+## Important: No in-source builds.
+
+One of the first checks in the `[WOLFBOOT_ROOT]/CMakeLists.txt` is whether `CMAKE_SOURCE_DIR` == `CMAKE_BINARY_DIR`.
+In-source builds are not supported. The provided wolfSSL presets will typically prevent this.
+Beware when integrating with existing projects or creating custom presets.
+
 ### CMake - Presets
 
 This section explains how to build wolfBoot using CMake Presets.
