@@ -71,4 +71,15 @@
     </When>
   </Choose>
 
+    <!-- Debug: show effective SIGN/HASH and macros -->
+    <Target Name="ShowAlgConfig" BeforeTargets="ClCompile">
+        <Message Importance="High"
+                 Text="AlgConfig: SIGN=$(SIGN) HASH=$(HASH) SIGN_PREPROC=$(SIGN_PREPROC) HASH_PREPROC=$(HASH_PREPROC)" />
+    </Target>
+    <Target Name="ValidateAlgConfig" BeforeTargets="ClCompile">
+        <Error Condition="'$(SIGN_PREPROC)'==''"
+               Text="wolfBootSignHash.props: Unknown SIGN value '$(SIGN)'. Add a mapping." />
+        <Error Condition="'$(HASH_PREPROC)'==''"
+               Text="wolfBootSignHash.props: Unknown HASH value '$(HASH)'. Add a mapping." />
+    </Target>
 </Project>
