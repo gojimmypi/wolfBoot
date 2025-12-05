@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- wolfBootTestLib.vcxproj -->
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="wolfBoot_Paths">
     <THIS_PRIVATE_KEY_DER>wolfboot_signing_private_key.der</THIS_PRIVATE_KEY_DER>
@@ -45,7 +46,9 @@
       <TargetHeaderDest>$(IntDir)target.h</TargetHeaderDest>
     </PropertyGroup>
     <!-- Always show a clear message -->
-    <Message Importance="High" Text="Checking target.h. Destination: $(TargetHeaderDest)  Source: $(UnitTestsTargetHeader)" />
+    <Message Importance="High"
+             Text="Checking target.h. Destination: $(TargetHeaderDest)  Source: $(UnitTestsTargetHeader)" />
+
     <!-- Make sure the intermediate directory exists -->
     <MakeDir Directories="$(IntDir)" />
     <!-- Copy only if destination is missing -->
@@ -85,82 +88,22 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>wolfBootTestLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-  </PropertyGroup>
-    <!-- Algorithm selection driven by MSBuild properties SIGN and HASH -->
-  <!-- Algorithm selection driven by MSBuild properties SIGN and HASH -->
-  <PropertyGroup Label="AlgConfig">
-    <!-- Defaults used when SIGN/HASH are not passed via /p: -->
-    <SIGN Condition="'$(SIGN)'==''">ed25519</SIGN>
-    <HASH Condition="'$(HASH)'==''">sha256</HASH>
+    <ProjectName>wolfBootTestLib</ProjectName>
   </PropertyGroup>
 
-  <!-- Map SIGN string to WOLFBOOT_SIGN_* macro -->
-  <Choose>
-    <When Condition="'$(SIGN)'=='ed25519'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_ED25519</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(SIGN)'=='ecc256'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_ECC256</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(SIGN)'=='ecc384'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_ECC384</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(SIGN)'=='ecc521'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_ECC521</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(SIGN)'=='rsa2048'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_RSA2048</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(SIGN)'=='rsa3072'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_RSA3072</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(SIGN)'=='rsa4096'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_RSA4096</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(SIGN)'=='ed448'">
-      <PropertyGroup>
-        <SIGN_PREPROC>WOLFBOOT_SIGN_ED448</SIGN_PREPROC>
-      </PropertyGroup>
-    </When>
-  </Choose>
+  <!-- Shared alg config (SIGN/HASH -> SIGN_PREPROC/HASH_PREPROC) -->
+  <Import Project="$(MSBuildThisFileDirectory)wolfBootSignHash.props" />
+  <!-- Debug props (both x64 and x86 use the same file here) -->
+  <Import Project="$(MSBuildThisFileDirectory)wolfBootDebug.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|x64'" />
 
-  <!-- Map HASH string to WOLFBOOT_HASH_* macro -->
-  <Choose>
-    <When Condition="'$(HASH)'=='sha256'">
-      <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_HASH_SHA256</HASH_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(HASH)'=='sha384'">
-      <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_HASH_SHA384</HASH_PREPROC>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(HASH)'=='sha3'">
-      <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_HASH_SHA3</HASH_PREPROC>
-      </PropertyGroup>
-    </When>
-  </Choose>
+  <Import Project="$(MSBuildThisFileDirectory)wolfBootDebug.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|Win32'" />
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-        <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -250,7 +193,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;$(HASH_PREPROC);WOLFBOOT_HASH_SHA384; $(SIGN_PREPROC);WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;NO_ED25519_MAKE_KEY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;$(HASH_PREPROC);$(SIGN_PREPROC);WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;NO_ED25519_MAKE_KEY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Important: ensure ../../include is listed first to avoice user_settings.h conflict in other directories -->
       <AdditionalIncludeDirectories>
         $(THIS_WOLFBOOT_ROOT)/include;
@@ -371,9 +314,6 @@
   <Import Project="$(MSBuildThisFileDirectory)$(THIS_WOLFBOOT_PROJECT_PROPS)" Condition="Exists('$(MSBuildThisFileDirectory)$(THIS_WOLFBOOT_PROJECT_PROPS)')" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <!-- Set default debug properties for debug builds: See wolfBootDebug.props  -->
-  <Import Project="$(MSBuildThisFileDirectory)\wolfBootDebug.props" Condition="Exists('$(MSBuildThisFileDirectory)\wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|x64'" />
-  <Import Project="$(MSBuildThisFileDirectory)\VisualStudio\wolfBootDebug.props" Condition="Exists('$(MSBuildThisFileDirectory)\wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|x86'" />
   <PropertyGroup>
     <GeneratedIncludeDir>$(IntDir)generated</GeneratedIncludeDir>
     <GeneratedHeader>$(GeneratedIncludeDir)\target.h</GeneratedHeader>

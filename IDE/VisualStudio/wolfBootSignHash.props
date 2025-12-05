@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Algorithm selection driven by MSBuild properties SIGN and HASH -->
+  <PropertyGroup Label="AlgConfig">
+    <!-- Defaults used when SIGN/HASH are not passed via /p: -->
+    <SIGN Condition="'$(SIGN)'==''">ed25519</SIGN>
+    <HASH Condition="'$(HASH)'==''">sha256</HASH>
+  </PropertyGroup>
+
+  <!-- Map SIGN string to WOLFBOOT_SIGN_* macro -->
+  <Choose>
+    <When Condition="'$(SIGN)'=='ed25519'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_ED25519</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SIGN)'=='ecc256'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_ECC256</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SIGN)'=='ecc384'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_ECC384</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SIGN)'=='ecc521'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_ECC521</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SIGN)'=='rsa2048'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_RSA2048</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SIGN)'=='rsa3072'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_RSA3072</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SIGN)'=='rsa4096'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_RSA4096</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SIGN)'=='ed448'">
+      <PropertyGroup>
+        <SIGN_PREPROC>WOLFBOOT_SIGN_ED448</SIGN_PREPROC>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+  <!-- Map HASH string to WOLFBOOT_HASH_* macro -->
+  <Choose>
+    <When Condition="'$(HASH)'=='sha256'">
+      <PropertyGroup>
+        <HASH_PREPROC>WOLFBOOT_HASH_SHA256</HASH_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(HASH)'=='sha384'">
+      <PropertyGroup>
+        <HASH_PREPROC>WOLFBOOT_HASH_SHA384</HASH_PREPROC>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(HASH)'=='sha3'">
+      <PropertyGroup>
+        <HASH_PREPROC>WOLFBOOT_HASH_SHA3</HASH_PREPROC>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+</Project>

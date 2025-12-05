@@ -80,11 +80,7 @@ keygen.exe [ --ed25519 | --ed448 | --ecc256 | --ecc384 | --ecc521 | --rsa2048 | 
 
 WARNING: Key Generation will *overwrite* any prior keystore files.
 
-Right-click on `wolfBootKeygenTool` project, typically in:
-
-```text
-C:\workspace\wolfBoot-%USERNAME%\tools\keytools
-```
+Right-click on `wolfBootKeygenTool` project, typically in `%WOLFBOOT_ROOT%\tools\keytools`:
 
 Select: Properties - Configuration Properties - Debugging:
 
@@ -128,11 +124,7 @@ Done.
 
 Build the project. Sign an image with `sign.exe  [OPTIONS]  IMAGE.BIN  KEY.DER  VERSION`.
 
-Right-click on `wolfBootSignTool` project, typically in:
-
-```text
-C:\workspace\wolfBoot-%USERNAME%\tools\keytools
-```
+Right-click on `wolfBootSignTool` project, typically in `%WOLFBOOT_ROOT%\tools\keytools`
 
 Select: Properties - Configuration Properties - Debugging:
 
@@ -203,11 +195,7 @@ WOLFSSL_HAVE_MAX;
 
 Build the project. Verify an image with `sign.exe  [OPTIONS]  IMAGE.BIN  KEY.DER  VERSION`.
 
-Right-click on `wolfBootSignTool` project, typically in:
-
-```text
-C:\workspace\wolfBoot-%USERNAME%\tools\keytools
-```
+Right-click on `wolfBootSignTool` project, typically in `%WOLFBOOT_ROOT%\tools\keytools`.
 
 Select: Properties - Configuration Properties - Debugging:
 
