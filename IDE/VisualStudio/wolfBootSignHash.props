@@ -52,21 +52,21 @@
     </When>
   </Choose>
 
-  <!-- Map HASH string to WOLFBOOT_HASH_* macro -->
+  <!-- Map HASH string to both WOLFBOOT_SHA* and legacy WOLFBOOT_HASH_* macros -->
   <Choose>
     <When Condition="'$(HASH)'=='sha256'">
       <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_HASH_SHA256</HASH_PREPROC>
+        <HASH_PREPROC>WOLFBOOT_SHA256;WOLFBOOT_HASH_SHA256</HASH_PREPROC>
       </PropertyGroup>
     </When>
     <When Condition="'$(HASH)'=='sha384'">
       <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_HASH_SHA384</HASH_PREPROC>
+        <HASH_PREPROC>WOLFBOOT_SHA384;WOLFBOOT_HASH_SHA384</HASH_PREPROC>
       </PropertyGroup>
     </When>
     <When Condition="'$(HASH)'=='sha3'">
       <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_HASH_SHA3</HASH_PREPROC>
+        <HASH_PREPROC>WOLFBOOT_SHA3;WOLFBOOT_HASH_SHA3</HASH_PREPROC>
       </PropertyGroup>
     </When>
   </Choose>
