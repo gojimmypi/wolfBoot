@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- wolfBootSignHash.props -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Algorithm selection driven by MSBuild properties SIGN and HASH -->
@@ -52,34 +53,38 @@
     </When>
   </Choose>
 
-  <!-- Map HASH string to both WOLFBOOT_SHA* and legacy WOLFBOOT_HASH_* macros -->
+  <!-- Map HASH string to WOLFBOOT_HASH_* macro -->
   <Choose>
     <When Condition="'$(HASH)'=='sha256'">
       <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_SHA256;WOLFBOOT_HASH_SHA256</HASH_PREPROC>
+        <HASH_PREPROC>WOLFBOOT_HASH_SHA256</HASH_PREPROC>
       </PropertyGroup>
     </When>
     <When Condition="'$(HASH)'=='sha384'">
       <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_SHA384;WOLFBOOT_HASH_SHA384</HASH_PREPROC>
+        <HASH_PREPROC>WOLFBOOT_HASH_SHA384</HASH_PREPROC>
       </PropertyGroup>
     </When>
     <When Condition="'$(HASH)'=='sha3'">
       <PropertyGroup>
-        <HASH_PREPROC>WOLFBOOT_SHA3;WOLFBOOT_HASH_SHA3</HASH_PREPROC>
+        <!-- This is what wolfboot.h is checking for -->
+        <HASH_PREPROC>WOLFBOOT_HASH_SHA3_384</HASH_PREPROC>
       </PropertyGroup>
     </When>
   </Choose>
 
-    <!-- Debug: show effective SIGN/HASH and macros -->
-    <Target Name="ShowAlgConfig" BeforeTargets="ClCompile">
-        <Message Importance="High"
-                 Text="AlgConfig: SIGN=$(SIGN) HASH=$(HASH) SIGN_PREPROC=$(SIGN_PREPROC) HASH_PREPROC=$(HASH_PREPROC)" />
-    </Target>
-    <Target Name="ValidateAlgConfig" BeforeTargets="ClCompile">
-        <Error Condition="'$(SIGN_PREPROC)'==''"
-               Text="wolfBootSignHash.props: Unknown SIGN value '$(SIGN)'. Add a mapping." />
-        <Error Condition="'$(HASH_PREPROC)'==''"
-               Text="wolfBootSignHash.props: Unknown HASH value '$(HASH)'. Add a mapping." />
-    </Target>
+  <!-- Debug: show what MSBuild actually sees -->
+  <Target Name="ShowAlgConfig" BeforeTargets="ClCompile">
+    <Message Importance="High"
+             Text="AlgConfig: SIGN=$(SIGN) HASH=$(HASH) SIGN_PREPROC=$(SIGN_PREPROC) HASH_PREPROC=$(HASH_PREPROC)" />
+  </Target>
+
+  <!-- Fail fast if mapping is missing -->
+  <Target Name="ValidateAlgConfig" BeforeTargets="ClCompile">
+    <Error Condition="'$(SIGN_PREPROC)'==''"
+           Text="wolfBootSignHash.props: Unknown SIGN value '$(SIGN)'. Add a mapping." />
+    <Error Condition="'$(HASH_PREPROC)'==''"
+           Text="wolfBootSignHash.props: Unknown HASH value '$(HASH)'. Add a mapping." />
+  </Target>
+
 </Project>
