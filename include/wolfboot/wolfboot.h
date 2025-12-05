@@ -248,6 +248,13 @@ extern "C" {
 
 /* Hashing configuration */
 #if defined(WOLFBOOT_HASH_SHA256)
+#   ifdef WOLFBOOT_HASH_SHA384
+#       error "Found WOLFBOOT_HASH_SHA384 with WOLFBOOT_HASH_SHA256. Pick one"
+#   endif
+#   ifdef WOLFBOOT_HASH_SHA3_384
+#       error "Found WOLFBOOT_HASH_SHA3_384 with WOLFBOOT_HASH_SHA256. Pick one"
+#   endif
+
     #include "wolfssl/wolfcrypt/sha256.h"
 #   ifndef WOLFBOOT_SHA_BLOCK_SIZE
 #     define WOLFBOOT_SHA_BLOCK_SIZE (256)
@@ -263,6 +270,12 @@ extern "C" {
     typedef wc_Sha256 wolfBoot_hash_t;
 #   define HDR_HASH HDR_SHA256
 #elif defined(WOLFBOOT_HASH_SHA384)
+#ifdef WOLFBOOT_HASH_SHA256
+#   error "Found WOLFBOOT_HASH_SHA256 with WOLFBOOT_HASH_SHA384. Pick one"
+#endif
+#ifdef WOLFBOOT_HASH_SHA3_384
+#   error "Found WOLFBOOT_HASH_SHA3_384 with WOLFBOOT_HASH_SHA384. Pick one"
+#endif
     #include "wolfssl/wolfcrypt/sha512.h"
 #   ifndef WOLFBOOT_SHA_BLOCK_SIZE
 #     define WOLFBOOT_SHA_BLOCK_SIZE (256)
@@ -278,6 +291,12 @@ extern "C" {
     typedef wc_Sha384 wolfBoot_hash_t;
 #   define HDR_HASH HDR_SHA384
 #elif defined(WOLFBOOT_HASH_SHA3_384)
+#   ifdef WOLFBOOT_HASH_SHA256
+#       error "Found WOLFBOOT_HASH_SHA256 with WOLFBOOT_HASH_SHA3_384. Pick one"
+#   endif
+#   ifdef WOLFBOOT_HASH_SHA384
+#       error "Found WOLFBOOT_HASH_SHA384 with WOLFBOOT_HASH_SHA3_384. Pick one"
+#endif
     #include "wolfssl/wolfcrypt/sha3.h"
 #   ifndef WOLFBOOT_SHA_BLOCK_SIZE
 #     define WOLFBOOT_SHA_BLOCK_SIZE (256)
