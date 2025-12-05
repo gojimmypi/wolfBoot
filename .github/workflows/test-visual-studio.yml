@@ -316,6 +316,8 @@ jobs:
             /p:Configuration=%CONFIG%          ^
             /p:Platform=%PLATFORM%             ^
             /p:PreferredToolArchitecture=x64   ^
+            /p:SIGN=%SIGN%                     ^
+            /p:HASH=%HASH%                     ^
             /v:m
 
           popd
