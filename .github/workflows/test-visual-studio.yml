@@ -2,31 +2,36 @@ name: wolfBoot Visual Studio
 
 on:
   push:
-    # TODO: branches: [ 'master', 'main', 'release/**' ]
-    branches: [ '*' ]
+    branches: [ "master", "main", "release/**" ]
   pull_request:
-    branches: [ '*' ]
+    branches: [ "*" ]
 
 jobs:
   build:
-    name: Visual Studio Keytools Tests
+    name: Visual Studio Keytools Tests (sign=${{ matrix.sign }}, hash=${{ matrix.hash }})
     runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        sign: [ ed25519, ecc256, ecc384, ecc521, rsa2048, rsa3072, rsa4096, ed448 ]
+        hash: [ sha256, sha384, sha3 ]
 
     env:
       CONFIG:      Debug
       PLATFORM:    x64
 
-      # Note: project-level preprocessors made need to be adjusted when changing.
+      # Note: project-level preprocessors may need to be adjusted when changing.
       # These are the "--" params, case sensitive:
-      SIGN:        ed25519
-      HASH:        sha256
+      SIGN:        ${{ matrix.sign }}
+      HASH:        ${{ matrix.hash }}
 
       # Generated exe files, used for artifacts
       APP_KEYGEN:  keygen
       APP_SIGN:    sign
       APP_TESTLIB: test-lib
       # OTP Visual Studio not supported at this time
-      OTP_SUPPORTED: 'false'
+      OTP_SUPPORTED: "false"
       # APP_OTP:     otp-keystore-gen
       # APP_PRIMER:  otp-keystore-primer
 
@@ -283,7 +288,7 @@ jobs:
           echo test-lib.exe completed successfully.
           endlocal
 
-        # Build the OTP Flash otp-keystore-gen.exe that creates otp.bin
+      # Build the OTP Flash otp-keystore-gen.exe that creates otp.bin
       - name: Build Flash OTP
         if: ${{ env.OTP_SUPPORTED == 'true' }}
         shell: cmd
@@ -326,7 +331,7 @@ jobs:
           echo "otp-keystore-gen otp.bin file:"
           dir otp.bin /s
 
-        # Build the OTP Keystore Primer otp-keystore-primer.exe
+      # Build the OTP Keystore Primer otp-keystore-primer.exe
       - name: Build  OTP Keystore Primer
         if: ${{ env.OTP_SUPPORTED == 'true' }}
         shell: cmd
@@ -373,7 +378,7 @@ jobs:
         if:   always()
         uses: actions/upload-artifact@v4
         with:
-          name: wolfboot-visual-studio-${{ env.CONFIG }}-${{ env.PLATFORM }}
+          name: wolfboot-visual-studio-${{ env.CONFIG }}-${{ env.PLATFORM }}-${{ matrix.sign }}-${{ matrix.hash }}
           path: |
             # config params used
             ./config_params.txt
