@@ -2,7 +2,7 @@ name: wolfBoot Visual Studio
 
 on:
   push:
-    # TODO: branches: [ 'master', 'main', 'release/**' ]
+    # testing on Visual Studio TODO: branches: [ 'master', 'main', 'release/**' ]
     branches: [ '*' ]
   pull_request:
     branches: [ "*" ]
@@ -124,6 +124,14 @@ jobs:
         env:
           CONFIG: ${{ env.CONFIG }}
           PLATFORM: ${{ env.PLATFORM }}
+
+      - name: Clean workspace
+        shell: bash
+        run: |
+          :: # There may be leftover keystore.c, keystore.der, test_v1_signed.bin, etc. Ensure clean start
+          echo "Hard git clean and reset"
+          git clean -xdf
+          git reset --hard
 
       - name: Run KeygenTool keygen.exe
         shell: cmd

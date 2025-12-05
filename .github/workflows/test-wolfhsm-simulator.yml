@@ -2,8 +2,7 @@ name: wolfHSM simulator test
 
 on:
   push:
-   # TODO REMOVE \/
-    branches: [ '*', 'master', 'main', 'release/**' ]
+    branches: [ 'master', 'main', 'release/**' ]
   pull_request:
     branches: [ '*' ]
   workflow_dispatch:
