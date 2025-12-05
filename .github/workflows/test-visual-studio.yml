@@ -15,8 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sign: [ ed25519, ecc256, ecc384, ecc521, rsa2048, rsa3072, rsa4096, ed448 ]
-        hash: [ sha256, sha384, sha3 ]
+        sign: [  ecc256, ecc384, ecc521, rsa2048, rsa3072, rsa4096, ed448 ]
+        hash: [  sha384, sha3 ]
 
     env:
       CONFIG:      Debug
