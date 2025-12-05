@@ -47,6 +47,14 @@ jobs:
         with:
           submodules: true
 
+      - name: Clean workspace
+        shell: cmd
+        run: |
+          :: # There may be leftover keystore.c, keystore.der, test_v1_signed.bin, etc. Ensure clean start
+          echo "Hard git clean and reset"
+          git clean -xdf
+          git reset --hard
+
       - name: Fetch test target.h
         shell: cmd
         working-directory: .\
@@ -124,14 +132,6 @@ jobs:
         env:
           CONFIG: ${{ env.CONFIG }}
           PLATFORM: ${{ env.PLATFORM }}
-
-      - name: Clean workspace
-        shell: cmd
-        run: |
-          :: # There may be leftover keystore.c, keystore.der, test_v1_signed.bin, etc. Ensure clean start
-          echo "Hard git clean and reset"
-          git clean -xdf
-          git reset --hard
 
       - name: Run KeygenTool keygen.exe
         shell: cmd
