@@ -330,7 +330,9 @@ extern int tolower(int c);
 
     /* SP Math needs to understand long long */
 #   ifndef ULLONG_MAX
-#       define ULLONG_MAX 18446744073709551615ULL
+#       ifndef _WIN32
+#           define ULLONG_MAX 18446744073709551615ULL
+#       endif
 #   endif
 #endif
 
