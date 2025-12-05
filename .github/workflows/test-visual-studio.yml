@@ -126,7 +126,7 @@ jobs:
           PLATFORM: ${{ env.PLATFORM }}
 
       - name: Clean workspace
-        shell: bash
+        shell: cmd
         run: |
           :: # There may be leftover keystore.c, keystore.der, test_v1_signed.bin, etc. Ensure clean start
           echo "Hard git clean and reset"
