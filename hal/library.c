@@ -244,7 +244,7 @@ void wolfboot_debug_sign_hash(void)
 #ifndef WOLFBOOT_DEBUG_SIGN_HASH
 #define WOLFBOOT_DEBUG_SIGN_HASH
 
-#warning "=== wolfBoot SIGN/HASH DEBUG ==="
+#pragma message("=== wolfBoot SIGN/HASH DEBUG ===")
 
 /* HASH debugging */
 #if defined(WOLFBOOT_HASH_SHA256)
