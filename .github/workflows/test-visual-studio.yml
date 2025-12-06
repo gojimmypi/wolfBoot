@@ -15,10 +15,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # For default IMAGE_HEADER_SIZE values see include\wolfboot\wolfboot.h
+        # Incorrect or mismatch IMAGE_HEADER_SIZE values will result in validation failure.
         hash: [ sha256, sha384, sha3 ]
         sign: [ ed25519, ecc256, ecc384, ecc521, rsa2048, rsa3072, rsa4096, ed448 ]
-        # sign: [  ed25519  ]
-        # hash: [  sha256  ]
 
     env:
       CONFIG:      Debug

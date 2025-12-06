@@ -98,8 +98,8 @@ extern "C" {
 #endif
 
 /*
-#   elif defined(WOLFBOOT_SIGN_RSA3072) && defined(WOLFBOOT_HASH_SHA384)
-#       define IMAGE_HEADER_SIZE 256
+#   elif defined(WOLFBOOT_SIGN_RSA3072) && defined(WOLFBOOT_HASH_SHA3_384)
+#       define IMAGE_HEADER_SIZE 1024
 */
 
 #ifndef IMAGE_HEADER_SIZE
@@ -107,8 +107,12 @@ extern "C" {
 #       define IMAGE_HEADER_SIZE 1024
 #   elif defined(WOLFBOOT_SIGN_RSA3072) && defined(WOLFBOOT_HASH_SHA384)
 #       define IMAGE_HEADER_SIZE 1024
+#   elif defined(WOLFBOOT_SIGN_RSA3072) && defined(WOLFBOOT_HASH_SHA3_384)
+#       define IMAGE_HEADER_SIZE 1024
 #   elif defined(WOLFBOOT_SIGN_RSA2048) && defined(WOLFBOOT_HASH_SHA256)
 #       define IMAGE_HEADER_SIZE 512
+#   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA3_384)
+#       define IMAGE_HEADER_SIZE 256
 #   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA384)
 #       define IMAGE_HEADER_SIZE 256
 #   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA3)
@@ -116,6 +120,8 @@ extern "C" {
 #   elif defined(WOLFBOOT_SIGN_ECC384) && defined(WOLFBOOT_HASH_SHA256)
 #       define IMAGE_HEADER_SIZE 512
 #   elif defined(WOLFBOOT_SIGN_ECC256) && defined(WOLFBOOT_HASH_SHA384)
+#       define IMAGE_HEADER_SIZE 256
+#   elif defined(WOLFBOOT_SIGN_ECC256) && defined(WOLFBOOT_HASH_SHA3_384)
 #       define IMAGE_HEADER_SIZE 256
 #   elif defined(WOLFBOOT_SIGN_RSA3072) || \
       defined(WOLFBOOT_SIGN_ECC521)  || defined(WOLFBOOT_SIGN_ED448)   || \
