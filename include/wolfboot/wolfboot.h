@@ -104,7 +104,7 @@ extern "C" {
 #   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA384)
 #       define IMAGE_HEADER_SIZE 256
 #   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA3)
-#       define IMAGE_HEADER_SIZE 512
+#       define IMAGE_HEADER_SIZE 256
 #   elif defined(WOLFBOOT_SIGN_RSA3072) || \
       defined(WOLFBOOT_SIGN_ECC521)  || defined(WOLFBOOT_SIGN_ED448)   || \
       defined(WOLFBOOT_HASH_SHA384)  || defined(WOLFBOOT_HASH_SHA3_384)
