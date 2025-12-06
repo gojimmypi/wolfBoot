@@ -249,7 +249,7 @@ jobs:
         run: |
           :: # Run sign.exe
 
-          @echo on
+          :: # @echo on
           setlocal enableextensions
 
           echo Current directory:
@@ -258,6 +258,7 @@ jobs:
           :: # Paths
           set "EXE=IDE\VisualStudio\%PLATFORM%\%CONFIG%\test-lib.exe"
           set "BIN=test_v1_signed.bin"
+          dir test_v1_signed.bin /s
 
           :: # Validate required env vars
           if "%PLATFORM%"=="" (

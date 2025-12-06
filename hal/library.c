@@ -184,6 +184,109 @@ int wolfBoot_start(void)
 //    (void)logLevel;
 //    if (logMsg) { fprintf(stderr, "%s\n", logMsg); }
 //}
+/* Runtime debug: print which SIGN and HASH macros are active */
+
+void wolfboot_debug_sign_hash(void)
+{
+    wolfBoot_printf("IMAGE_HEADER_SIZE=%d\n", IMAGE_HEADER_SIZE);
+    wolfBoot_printf("=== wolfBoot SIGN/HASH RUNTIME DEBUG ===\n");
+
+    /* HASH */
+#ifdef WOLFBOOT_HASH_SHA256
+    wolfBoot_printf("HASH: WOLFBOOT_HASH_SHA256\n");
+#endif
+#ifdef WOLFBOOT_HASH_SHA384
+    wolfBoot_printf("HASH: WOLFBOOT_HASH_SHA384\n");
+#endif
+#ifdef WOLFBOOT_HASH_SHA3
+    wolfBoot_printf("HASH: WOLFBOOT_HASH_SHA3\n");
+#endif
+#ifdef WOLFBOOT_HASH_SHA3_384
+    wolfBoot_printf("HASH: WOLFBOOT_HASH_SHA3_384\n");
+#endif
+
+    /* SIGN */
+#ifdef WOLFBOOT_SIGN_ED25519
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_ED25519\n");
+#endif
+#ifdef WOLFBOOT_SIGN_ECC256
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_ECC256\n");
+#endif
+#ifdef WOLFBOOT_SIGN_ECC384
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_ECC384\n");
+#endif
+#ifdef WOLFBOOT_SIGN_ECC521
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_ECC521\n");
+#endif
+#ifdef WOLFBOOT_SIGN_RSA2048
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_RSA2048\n");
+#endif
+#ifdef WOLFBOOT_SIGN_RSA3072
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_RSA3072\n");
+#endif
+#ifdef WOLFBOOT_SIGN_RSA4096
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_RSA4096\n");
+#endif
+#ifdef WOLFBOOT_SIGN_ED448
+    wolfBoot_printf("SIGN: WOLFBOOT_SIGN_ED448\n");
+#endif
+
+    /* IMAGE_HEADER_SIZE (stringify) */
+#define _STR(x) #x
+#define STR(x) _STR(x)
+    wolfBoot_printf("IMAGE_HEADER_SIZE = %s\n", STR(IMAGE_HEADER_SIZE));
+
+    wolfBoot_printf("=== END SIGN/HASH RUNTIME DEBUG ===\n");
+}
+
+/* Debug which SIGN and HASH macros are defined */
+
+#ifndef WOLFBOOT_DEBUG_SIGN_HASH
+#define WOLFBOOT_DEBUG_SIGN_HASH
+
+#warning "=== wolfBoot SIGN/HASH DEBUG ==="
+
+/* HASH debugging */
+#if defined(WOLFBOOT_HASH_SHA256)
+#pragma message("HASH: WOLFBOOT_HASH_SHA256 is defined")
+#endif
+#if defined(WOLFBOOT_HASH_SHA384)
+#pragma message("HASH: WOLFBOOT_HASH_SHA384 is defined")
+#endif
+#if defined(WOLFBOOT_HASH_SHA3)
+#pragma message("HASH: WOLFBOOT_HASH_SHA3 is defined")
+#endif
+#if defined(WOLFBOOT_HASH_SHA3_384)
+#pragma message("HASH: WOLFBOOT_HASH_SHA3_384 is defined")
+#endif
+
+/* SIGN debugging */
+#if defined(WOLFBOOT_SIGN_ED25519)
+#pragma message("SIGN: WOLFBOOT_SIGN_ED25519 is defined")
+#endif
+#if defined(WOLFBOOT_SIGN_ECC256)
+#pragma message("SIGN: WOLFBOOT_SIGN_ECC256 is defined")
+#endif
+#if defined(WOLFBOOT_SIGN_ECC384)
+#pragma message("SIGN: WOLFBOOT_SIGN_ECC384 is defined")
+#endif
+#if defined(WOLFBOOT_SIGN_ECC521)
+#pragma message("SIGN: WOLFBOOT_SIGN_ECC521 is defined")
+#endif
+#if defined(WOLFBOOT_SIGN_RSA2048)
+#pragma message("SIGN: WOLFBOOT_SIGN_RSA2048 is defined")
+#endif
+#if defined(WOLFBOOT_SIGN_RSA3072)
+#pragma message("SIGN: WOLFBOOT_SIGN_RSA3072 is defined")
+#endif
+#if defined(WOLFBOOT_SIGN_RSA4096)
+#pragma message("SIGN: WOLFBOOT_SIGN_RSA4096 is defined")
+#endif
+#if defined(WOLFBOOT_SIGN_ED448)
+#pragma message("SIGN: WOLFBOOT_SIGN_ED448 is defined")
+#endif
+
+#endif /* WOLFBOOT_DEBUG_SIGN_HASH */
 
 
 int main(int argc, const char* argv[])
@@ -236,8 +339,8 @@ int main(int argc, const char* argv[])
     }
 #endif
     if (ret == 0) {
+        wolfboot_debug_sign_hash();
         wolfBoot_printf("Checking image... ");
-        wolfBoot_printf("IMAGE_HEADER_SIZE=%d", IMAGE_HEADER_SIZE);
         ret = wolfBoot_start();
     }
     if (ret == 0) {
