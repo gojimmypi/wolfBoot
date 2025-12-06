@@ -185,7 +185,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;$(HASH_PREPROC);$(SIGN_PREPROC);WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;NO_ED25519_MAKE_KEY;KEYSTORE_ANY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;$(HASH_PREPROC);$(SIGN_PREPROC);WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;NO_ED25519_MAKE_KEY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Important: ensure ../../include is listed first to avoice user_settings.h conflict in other directories -->
       <AdditionalIncludeDirectories>
         $(THIS_WOLFBOOT_ROOT)/include;

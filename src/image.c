@@ -1038,6 +1038,10 @@ static int header_sha384(wc_Sha384 *sha384_ctx, struct wolfBoot_image *img)
     uint8_t *stored_sha, *end_sha;
     uint8_t *p;
     int blksz;
+
+    int header_len;
+    uint8_t* hdr;
+
     if (!img)
         return -1;
 
@@ -1045,6 +1049,25 @@ static int header_sha384(wc_Sha384 *sha384_ctx, struct wolfBoot_image *img)
     stored_sha_len = get_header(img, HDR_SHA384, &stored_sha);
     if (stored_sha_len != WOLFBOOT_SHA_DIGEST_SIZE)
         return -1;
+
+    /* header_sha384(), after stored_sha_len check */
+    header_len = (unsigned)((stored_sha - (2U * (unsigned)sizeof(uint16_t))) - get_img_hdr(img));
+    hdr = get_img_hdr(img);
+    wolfBoot_printf("header_sha384: header_len=%u\n", (unsigned)header_len);
+    for (unsigned i = 0; i < header_len; i++) {
+        wolfBoot_printf("%02x", ((unsigned char*)hdr)[i]);
+        if ((i & 0x0f) == 0x0f)
+            wolfBoot_printf("\n");
+    }
+    wolfBoot_printf("\n");
+
+    wolfBoot_printf("header_sha384: hdr=%p, stored_sha=%p, end_sha=%p, header_len=%u\n",
+        (const void*)hdr,
+        (const void*)stored_sha,
+        (const void*)(stored_sha - (2U * (unsigned)sizeof(uint16_t))),
+        header_len);
+
+
 #ifdef WOLFBOOT_ENABLE_WOLFHSM_CLIENT
     (void)wc_InitSha384_ex(sha384_ctx, NULL, hsmDevIdHash);
 #else
@@ -1081,10 +1104,23 @@ static int image_sha384(struct wolfBoot_image *img, uint8_t *hash)
     if (header_sha384(&sha384_ctx, img) != 0)
         return -1;
     do {
+        wolfBoot_printf("image_sha384: fw_base=%p, fw_size=%u\n",
+            (const void*)img->fw_base,
+            (unsigned)img->fw_size);
         p = get_sha_block(img, position);
+
+        wolfBoot_printf("\n");
         if (p == NULL)
             break;
         blksz = WOLFBOOT_SHA_BLOCK_SIZE;
+        wolfBoot_printf("image_sha384: position=%u blksz=%d\n",
+            (unsigned)position, blksz);
+        for (int i = 0; i < blksz; i++) {
+            wolfBoot_printf("%02x", (unsigned)p[i]);
+            if ((i & 0x0f) == 0x0f)
+                wolfBoot_printf("\n");
+        }
+
         if (position + blksz > img->fw_size)
             blksz = img->fw_size - position;
         wc_Sha384Update(&sha384_ctx, p, blksz);
@@ -1424,6 +1460,21 @@ int wolfBoot_open_image_external(struct wolfBoot_image* img, uint8_t part,
 
 #endif /* WOLFBOOT_FIXED_PARTITIONS */
 
+void dump_hash_info(const char* tag)
+{
+    wolfBoot_printf("%s: WOLFBOOT_SHA_DIGEST_SIZE = %u\n",
+        tag, (unsigned int)WOLFBOOT_SHA_DIGEST_SIZE);
+#ifdef WOLFBOOT_HASH_SHA256
+    wolfBoot_printf("%s: using SHA-256\n", tag);
+#endif
+#ifdef WOLFBOOT_HASH_SHA384
+    wolfBoot_printf("%s: using SHA-384\n", tag);
+#endif
+#ifdef WOLFBOOT_HASH_SHA3_384
+    wolfBoot_printf("%s: using SHA3-384\n", tag);
+#endif
+}
+
 /**
  * @brief Verify the integrity of the image using the stored SHA hash.
  *
@@ -1437,7 +1488,29 @@ int wolfBoot_verify_integrity(struct wolfBoot_image *img)
 {
     uint8_t *stored_sha;
     uint16_t stored_sha_len;
+
+    dump_hash_info("verify_integrity");
+#ifdef IMAGE_HEADER_SIZE
+    printf("IMAGE_HEADER_SIZE=%d", IMAGE_HEADER_SIZE);
+#endif
+    if (image_hash(img, digest) != 0)
+        return -1;
+
     stored_sha_len = get_header(img, WOLFBOOT_SHA_HDR, &stored_sha);
+
+    wolfBoot_printf("Stored SHA:    ");
+    for (int i = 0; i < stored_sha_len; i++)
+        wolfBoot_printf("%02x", stored_sha[i]);
+    wolfBoot_printf("\n");
+
+    wolfBoot_printf("Computed SHA:  ");
+    for (int i = 0; i < stored_sha_len; i++)
+        wolfBoot_printf("%02x", digest[i]);
+    wolfBoot_printf("\n");
+
+    if (memcmp(digest, stored_sha, stored_sha_len) != 0)
+        return -1;
+
     if (stored_sha_len != WOLFBOOT_SHA_DIGEST_SIZE)
         return -1;
     if (image_hash(img, digest) != 0)

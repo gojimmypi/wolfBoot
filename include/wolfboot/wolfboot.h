@@ -99,7 +99,11 @@ extern "C" {
 
 
 #ifndef IMAGE_HEADER_SIZE
-#  define IMAGE_HEADER_SIZE 256
+#   if defined(WOLFBOOT_HASH_SHA384) || defined(WOLFBOOT_HASH_SHA3_384)
+#       define IMAGE_HEADER_SIZE 512
+#   else
+#       define IMAGE_HEADER_SIZE 256
+#   endif
 #endif
 #define IMAGE_HEADER_OFFSET (2 * sizeof(uint32_t))
 
@@ -270,12 +274,13 @@ extern "C" {
     typedef wc_Sha256 wolfBoot_hash_t;
 #   define HDR_HASH HDR_SHA256
 #elif defined(WOLFBOOT_HASH_SHA384)
-#ifdef WOLFBOOT_HASH_SHA256
-#   error "Found WOLFBOOT_HASH_SHA256 with WOLFBOOT_HASH_SHA384. Pick one"
-#endif
-#ifdef WOLFBOOT_HASH_SHA3_384
-#   error "Found WOLFBOOT_HASH_SHA3_384 with WOLFBOOT_HASH_SHA384. Pick one"
-#endif
+#   ifdef WOLFBOOT_HASH_SHA256
+#       error "Found WOLFBOOT_HASH_SHA256 with WOLFBOOT_HASH_SHA384. Pick one"
+#   endif
+#   ifdef WOLFBOOT_HASH_SHA3_384
+#       error "Found WOLFBOOT_HASH_SHA3_384 with WOLFBOOT_HASH_SHA384. Pick one"
+#   endif
+
     #include "wolfssl/wolfcrypt/sha512.h"
 #   ifndef WOLFBOOT_SHA_BLOCK_SIZE
 #     define WOLFBOOT_SHA_BLOCK_SIZE (256)
@@ -296,7 +301,8 @@ extern "C" {
 #   endif
 #   ifdef WOLFBOOT_HASH_SHA384
 #       error "Found WOLFBOOT_HASH_SHA384 with WOLFBOOT_HASH_SHA3_384. Pick one"
-#endif
+#   endif
+
     #include "wolfssl/wolfcrypt/sha3.h"
 #   ifndef WOLFBOOT_SHA_BLOCK_SIZE
 #     define WOLFBOOT_SHA_BLOCK_SIZE (256)
@@ -311,6 +317,12 @@ extern "C" {
     typedef wc_Sha3 wolfBoot_hash_t;
 #   define HDR_HASH HDR_SHA3_384
 #else
+#ifdef ed25519_default_TODO
+#error ed25519_default_TODO
+#endif
+#ifdef sha256_default_TODO
+#error sha256_default_TODO
+#endif
 #   error "No valid hash algorithm defined!"
 #endif
 

@@ -3017,6 +3017,9 @@ int main(int argc, char** argv)
 
 #ifdef DEBUG_SIGNTOOL
     wolfSSL_Debugging_ON();
+    #ifdef IMAGE_HEADER_SIZE
+        printf("IMAGE_HEADER_SIZE=%d", IMAGE_HEADER_SIZE);
+    #endif
 #endif
 
     printf("wolfBoot KeyTools (Compiled C version)\n");
