@@ -14,6 +14,7 @@ jobs:
 
     strategy:
       fail-fast: false
+      max-parallel: 8
       matrix:
         # For default IMAGE_HEADER_SIZE values see include\wolfboot\wolfboot.h
         # Incorrect or mismatch IMAGE_HEADER_SIZE values will result in validation failure.
