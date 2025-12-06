@@ -99,7 +99,11 @@ extern "C" {
 
 
 #ifndef IMAGE_HEADER_SIZE
-#  if defined(WOLFBOOT_SIGN_RSA4096) || defined(WOLFBOOT_SIGN_RSA3072) || \
+#   if defined(WOLFBOOT_SIGN_RSA4096)
+#       define IMAGE_HEADER_SIZE 1024
+#   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA384)
+#       define IMAGE_HEADER_SIZE 256
+#   elif defined(WOLFBOOT_SIGN_RSA3072) || \
       defined(WOLFBOOT_SIGN_ECC521)  || defined(WOLFBOOT_SIGN_ED448)   || \
       defined(WOLFBOOT_HASH_SHA384)  || defined(WOLFBOOT_HASH_SHA3_384)
 #       define IMAGE_HEADER_SIZE 512
