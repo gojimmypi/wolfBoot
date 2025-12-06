@@ -103,37 +103,49 @@ extern "C" {
 */
 
 #ifndef IMAGE_HEADER_SIZE
+/* Largest cases first */
 #   if defined(WOLFBOOT_SIGN_RSA4096)
 #       define IMAGE_HEADER_SIZE 1024
-#   elif defined(WOLFBOOT_SIGN_RSA3072) && defined(WOLFBOOT_HASH_SHA384)
+
+    /* RSA3072 + strong hash */
+#   elif (defined(WOLFBOOT_SIGN_RSA3072) && \
+          (defined(WOLFBOOT_HASH_SHA384) || defined(WOLFBOOT_HASH_SHA3_384)))
 #       define IMAGE_HEADER_SIZE 1024
-#   elif defined(WOLFBOOT_SIGN_RSA3072) && defined(WOLFBOOT_HASH_SHA3_384)
-#       define IMAGE_HEADER_SIZE 1024
+
+    /* RSA2048 + SHA256 */
 #   elif defined(WOLFBOOT_SIGN_RSA2048) && defined(WOLFBOOT_HASH_SHA256)
 #       define IMAGE_HEADER_SIZE 512
-#   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA3_384)
-#       define IMAGE_HEADER_SIZE 256
-#   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA384)
-#       define IMAGE_HEADER_SIZE 256
-#   elif defined(WOLFBOOT_SIGN_ED25519) && defined(WOLFBOOT_HASH_SHA3)
-#       define IMAGE_HEADER_SIZE 256
+
+    /* ECC384 requires 512 with SHA256 */
 #   elif defined(WOLFBOOT_SIGN_ECC384) && defined(WOLFBOOT_HASH_SHA256)
 #       define IMAGE_HEADER_SIZE 512
-#   elif defined(WOLFBOOT_SIGN_ECC256) && defined(WOLFBOOT_HASH_SHA384)
+
+    /* ED25519 + any 384-bit or SHA3 hash */
+#   elif defined(WOLFBOOT_SIGN_ED25519) && \
+        (defined(WOLFBOOT_HASH_SHA384) || \
+         defined(WOLFBOOT_HASH_SHA3)   || \
+         defined(WOLFBOOT_HASH_SHA3_384))
 #       define IMAGE_HEADER_SIZE 256
-#   elif defined(WOLFBOOT_SIGN_ECC256) && defined(WOLFBOOT_HASH_SHA3_384)
+
+    /* ECC256 + any 384-bit hash */
+#   elif defined(WOLFBOOT_SIGN_ECC256) && \
+        (defined(WOLFBOOT_HASH_SHA384) || defined(WOLFBOOT_HASH_SHA3_384))
 #       define IMAGE_HEADER_SIZE 256
+
+    /* Secondary 512-byte fallbacks */
 #   elif defined(WOLFBOOT_SIGN_RSA3072) || \
-      defined(WOLFBOOT_SIGN_ECC521)  || defined(WOLFBOOT_SIGN_ED448)   || \
-      defined(WOLFBOOT_HASH_SHA384)  || defined(WOLFBOOT_HASH_SHA3_384)
+          defined(WOLFBOOT_SIGN_ECC521) || \
+          defined(WOLFBOOT_SIGN_ED448)  || \
+          defined(WOLFBOOT_HASH_SHA384) || \
+          defined(WOLFBOOT_HASH_SHA3_384)
 #       define IMAGE_HEADER_SIZE 512
+
+    /* Default header size */
 #   else
 #       define IMAGE_HEADER_SIZE 256
 #   endif
-#else
-// TODO test
-#    define IMAGE_HEADER_SIZE 2560
-#endif
+
+#endif /* IMAGE_HEADER_SIZE */
 #define IMAGE_HEADER_OFFSET (2 * sizeof(uint32_t))
 
 #ifndef FLASHBUFFER_SIZE
