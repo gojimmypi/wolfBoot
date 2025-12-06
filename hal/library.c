@@ -237,6 +237,7 @@ int main(int argc, const char* argv[])
 #endif
     if (ret == 0) {
         wolfBoot_printf("Checking image... ");
+        wolfBoot_printf("IMAGE_HEADER_SIZE=%d", IMAGE_HEADER_SIZE);
         ret = wolfBoot_start();
     }
     if (ret == 0) {

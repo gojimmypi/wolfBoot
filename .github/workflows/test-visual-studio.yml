@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Visual Studio Keytools Tests (sign=${{ matrix.sign }}, hash=${{ matrix.hash }})
+    name: VS Keytools (sign=${{ matrix.sign }}, hash=${{ matrix.hash }})
     runs-on: windows-latest
 
     strategy:

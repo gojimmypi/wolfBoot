@@ -275,6 +275,7 @@ language.settings.xml
 # Any Visual Studio / VisualGDB
 /**/.vs/**
 /**/.visualgdb/**
+/**/enc_temp_folder/**
 
 # --- Whitelist specific files in the *root* .vs folder ---
 # Allow Git to descend into the root .vs directory
