@@ -46,9 +46,7 @@
       <TargetHeaderDest>$(IntDir)target.h</TargetHeaderDest>
     </PropertyGroup>
     <!-- Always show a clear message -->
-    <Message Importance="High"
-             Text="Checking target.h. Destination: $(TargetHeaderDest)  Source: $(UnitTestsTargetHeader)" />
-
+    <Message Importance="High" Text="Checking target.h. Destination: $(TargetHeaderDest)  Source: $(UnitTestsTargetHeader)" />
     <!-- Make sure the intermediate directory exists -->
     <MakeDir Directories="$(IntDir)" />
     <!-- Copy only if destination is missing -->
@@ -90,18 +88,12 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>wolfBootTestLib</ProjectName>
   </PropertyGroup>
-
   <!-- Shared alg config (SIGN/HASH -> SIGN_PREPROC/HASH_PREPROC) -->
   <Import Project="$(MSBuildThisFileDirectory)wolfBootSignHash.props" />
   <!-- Debug props (both x64 and x86 use the same file here) -->
-  <Import Project="$(MSBuildThisFileDirectory)wolfBootDebug.props"
-          Condition="Exists('$(MSBuildThisFileDirectory)wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|x64'" />
-
-  <Import Project="$(MSBuildThisFileDirectory)wolfBootDebug.props"
-          Condition="Exists('$(MSBuildThisFileDirectory)wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|Win32'" />
-
+  <Import Project="$(MSBuildThisFileDirectory)wolfBootDebug.props" Condition="Exists('$(MSBuildThisFileDirectory)wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <Import Project="$(MSBuildThisFileDirectory)wolfBootDebug.props" Condition="Exists('$(MSBuildThisFileDirectory)wolfBootDebug.props') and '$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -193,7 +185,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;$(HASH_PREPROC);$(SIGN_PREPROC);WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;NO_ED25519_MAKE_KEY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WOLFBOOT;WOLFBOOT_NO_PARTITIONS;$(HASH_PREPROC);$(SIGN_PREPROC);WOLFSSL_USER_SETTINGS;WOLFSSL_HAVE_MIN;WOLFSSL_HAVE_MAX;NO_ED25519_MAKE_KEY;KEYSTORE_ANY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Important: ensure ../../include is listed first to avoice user_settings.h conflict in other directories -->
       <AdditionalIncludeDirectories>
         $(THIS_WOLFBOOT_ROOT)/include;
@@ -386,7 +378,6 @@
   <!-- Intuitive error when keystore.c file is missing -->
   <Target Name="EnsureKeystore" BeforeTargets="ClCompile">
     <Message Importance="High" Text="Checking for keystore at $(KeystoreFile)" />
-        <Error Condition="!Exists('$(KeystoreFile)')"
-               Text="keystore.c not found at $(KeystoreFile). Run the keygen tool first to generate keys (or run the CI keytools workflow)." />
+    <Error Condition="!Exists('$(KeystoreFile)')" Text="keystore.c not found at $(KeystoreFile). Run the keygen tool first to generate keys (or run the CI keytools workflow)." />
   </Target>
 </Project>

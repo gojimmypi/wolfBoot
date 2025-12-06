@@ -5,8 +5,8 @@
   <!-- Algorithm selection driven by MSBuild properties SIGN and HASH -->
   <PropertyGroup Label="AlgConfig">
     <!-- Defaults used when SIGN/HASH are not passed via /p: -->
-    <SIGN Condition="'$(SIGN)'==''">ed25519_default_TODO</SIGN>
-    <HASH Condition="'$(HASH)'==''">sha256_default_TODO</HASH>
+    <SIGN Condition="'$(SIGN)'==''">ecc384</SIGN>
+    <HASH Condition="'$(HASH)'==''">sha384</HASH>
   </PropertyGroup>
 
   <!-- Map SIGN string to WOLFBOOT_SIGN_* macro -->
