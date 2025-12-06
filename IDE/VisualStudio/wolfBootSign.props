@@ -15,7 +15,8 @@
         <_DefaultArgs></_DefaultArgs>
 
         <!-- Effective debugger args are either the user-provided args or the SIGNED_IMAGE fallback -->
-        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">--ed25519 --sha256 "$(ProjectDir)test.bin" "$(THIS_KEYSTORE_ROOT)\$(THIS_PRIVATE_KEY_DER)" 1</_DefaultArgs>
+        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(SIGN)' != '' and '$(HASH)' != ''" >--$(SIGN) --$(HASH) "$(ProjectDir)test.bin" "$(THIS_KEYSTORE_ROOT)\$(THIS_PRIVATE_KEY_DER)" 1</_DefaultArgs>
+        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(SIGN)' == '' and '$(HASH)' == ''" >--ed25519 --sha256 "$(ProjectDir)test.bin" "$(THIS_KEYSTORE_ROOT)\$(THIS_PRIVATE_KEY_DER)" 1</_DefaultArgs>
 
         <!-- Effective arguments: user-provided wins; otherwise defaults -->
         <EFFECTIVE_DEBUG_ARGS Condition="'$(_UserSetArgs)' == 'true'">$(LocalDebuggerCommandArguments)</EFFECTIVE_DEBUG_ARGS>

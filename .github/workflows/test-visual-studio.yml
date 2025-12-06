@@ -101,8 +101,8 @@ jobs:
         id: export-keygen-debug-args
         shell: bash
         run: |
-          # MSBuid should have written the generated default debug args to a file in wolfBootKeygen.props
-          args_file="IDE/VisualStudio/${CONFIG}/${PLATFORM}/wolfBootKeygenTool/effective-debug-args.txt"
+          # MSBuild should have written the generated default debug args to a file in wolfBootKeygenTool
+          args_file="IDE/VisualStudio/${PLATFORM}/${CONFIG}/wolfBootKeygenTool/effective-debug-args.txt"
 
           echo "Checking args file: ${args_file}"
 

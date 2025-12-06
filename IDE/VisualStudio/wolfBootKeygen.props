@@ -15,7 +15,8 @@
         <_DefaultArgs></_DefaultArgs>
 
         <!-- Effective debugger args are either the user-provided args or the SIGNED_IMAGE fallback -->
-        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">--no-overwrite --ed25519 -g "$(THIS_KEYSTORE_ROOT)\$(THIS_PRIVATE_KEY_DER)" -keystoreDir "$(THIS_KEYSTORE_ROOT)"</_DefaultArgs>
+        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(SIGN)' != '' " >-no-overwrite --$(SIGN) -g "$(THIS_KEYSTORE_ROOT)\$(THIS_PRIVATE_KEY_DER)" -keystoreDir "$(THIS_KEYSTORE_ROOT)</_DefaultArgs>
+        <_DefaultArgs Condition="'$(Configuration)|$(Platform)'=='Debug|x64' and '$(SIGN)' == '' " >-no-overwrite --ed25519 -g "$(THIS_KEYSTORE_ROOT)\$(THIS_PRIVATE_KEY_DER)" -keystoreDir "$(THIS_KEYSTORE_ROOT)</_DefaultArgs>
 
         <!-- Effective arguments: user-provided wins; otherwise defaults -->
         <EFFECTIVE_DEBUG_ARGS Condition="'$(_UserSetArgs)' == 'true'">$(LocalDebuggerCommandArguments)</EFFECTIVE_DEBUG_ARGS>
