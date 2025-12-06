@@ -112,6 +112,9 @@ extern "C" {
 #   else
 #       define IMAGE_HEADER_SIZE 256
 #   endif
+#else
+// TODO test
+#    define IMAGE_HEADER_SIZE 2560
 #endif
 #define IMAGE_HEADER_OFFSET (2 * sizeof(uint32_t))
 
